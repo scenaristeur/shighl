@@ -5,11 +5,20 @@ S-olid HIGH L-evel
 
 - Some facilities to interact with a Solid POD
 - based on ldflex-query
+- use it in your project ? just copy  /dist/window/shighl.bundle.js to tour folder and import with
+```
+  <script src="window/shighl.bundle.js"> </script>
+  <script>
+  const sh = new Shighl()
+  console.log(sh)
+  sh.test()
+  </script>
+  ```
 
 see /dist/index.html
 
-Hosted on a POD : https://shighl.solid.community/public/demo/demo.html
-Hosted on gh-pages : https://scenaristeur.github.io/shighl/
+- Hosted on a POD : https://shighl.solid.community/public/demo/demo.html
+- Hosted on gh-pages : https://scenaristeur.github.io/shighl/
 
 # Based
 
