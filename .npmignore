@@ -1,0 +1,10 @@
+!dist/
+!src/
+!tests/
+!package.json/
+.bin/test
+*#
+*~
+drafts
+drafts/*
+
