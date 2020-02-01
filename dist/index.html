@@ -1,0 +1,34 @@
+
+<html>
+<body>
+
+  <ul id="friends">
+
+
+  </ul>
+</body>
+<script src="./window/shighl.bundle.js"> </script>
+<script>
+
+  const sh = new Shighl()
+  console.log(sh)
+  sh.test()
+
+  async function run(){
+    let friends  = await sh.getFriends("https://spoggy.solid.community/profile/card#me")
+    console.log(friends)
+    const friends_ul = document.getElementById("friends")
+    friends.forEach(function(f){
+      var li = document.createElement("LI")
+      var t = document.createTextNode(f.webId);
+      li.appendChild(t);
+      friends_ul.appendChild(li)
+    })
+  }
+
+  run()
+
+
+</script>
+
+</html>
