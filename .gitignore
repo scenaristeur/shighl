@@ -10,7 +10,7 @@ node_modules/
 .npm
 .nyc_output
 coverage/
-dist/
+dist/node/
 test-folder/
 examples/cred.json
 .bin/test

@@ -11,14 +11,26 @@ const common = {
   },
   externals: {
     'solid-auth-cli': 'null',
-    'rdflib': {
-      commonjs: 'rdflib',
-      commonjs2: 'rdflib',
-      amd: 'rdflib',
-      root: '$rdf'
-    },
+    //  '@solid/query-ldflex': 'query-ldflex',
+    /*  '@solid/query-ldflex': {
+    commonjs: 'query-ldflex',
+    commonjs2: 'query-ldflex',
+    amd: 'query-ldflex',
+    root: 'data'
+  },*/
+  'rdflib': {
+    commonjs: 'rdflib',
+    commonjs2: 'rdflib',
+    amd: 'rdflib',
+    root: '$rdf'
   },
-  devtool: 'source-map',
+},
+devtool: 'source-map',
+/*optimization: {
+  splitChunks: {
+    chunks: 'all',
+  },
+},*/
 }
 
 // Configurations specific to the window build
