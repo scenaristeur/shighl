@@ -18,14 +18,23 @@ const common = {
     amd: 'query-ldflex',
     root: 'data'
   },*/
-  'rdflib': {
+  /*'rdflib': {
     commonjs: 'rdflib',
     commonjs2: 'rdflib',
     amd: 'rdflib',
     root: '$rdf'
-  },
+  },*/
 },
 devtool: 'source-map',
+devServer: {
+  contentBase: path.join(__dirname, 'dist'),
+  compress: true,
+  port: 9000,
+  historyApiFallback: true,
+  inline: true,
+  open: true,
+  hot: true
+},
 /*optimization: {
   splitChunks: {
     chunks: 'all',
@@ -50,15 +59,6 @@ const window = {
         exclude: /node_modules/,
       },
     ],
-  },
-  devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    port: 9000,
-    historyApiFallback: true,
-    inline: true,
-    open: true,
-    hot: true
   },
   devtool: "eval-source-map",
   performance: { hints: false }

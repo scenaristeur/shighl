@@ -28,10 +28,10 @@ class Shighl {
   }
 
   async getFriends(webId = this.webId){
-    console.log(webId)
+    //  console.log(webId)
     this.friends = []
     for await (const fwebid of data[webId].friends){
-      console.log(friend)
+      //  console.log(friend)
       var friend = {}
       friend.webId = `${fwebid}`
       this.friends = [... this.friends, friend]
