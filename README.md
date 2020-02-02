@@ -89,13 +89,6 @@ async function run(){
 
 ```
 
-
-
-
-# Loading from https://cdn.jsdelivr.net
-
-```
-
   <!doctype html>
   <html lang="en">
   <head>
@@ -149,15 +142,19 @@ async function run(){
 
 # Functionnalities
 - General
-- [ ] login / logout () return webId/null
+- [ X ] login / logout () return webId/null
+<iframe width="100%" height="300" src="//jsfiddle.net/smag0/3bpzx26d/18/embedded/html,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
 - [ ] checkSession() return webId/null
 - [ ] getWebId() return String
+- [ ] getPhoto() return String
 - [ ] getInbox() return String
 - [ ] getAcl(path) return Array
 
 - Profile
 - [ ] getName(webId) return String
-- [ ] getFriends(webId) return Array of Friends (String ? Object?)
+- [ X ] getFriends(webId) return Array of Friends (String)
+<iframe width="100%" height="300" src="//jsfiddle.net/smag0/0px1w4re/6/embedded/html,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+
 - [ ] getPublicTypeIndex(webId) return String
 - [ ] getInstances(publicTypeIndex, [type]) return Array
 - [ ] (? getDetails(webId) return Object)

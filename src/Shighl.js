@@ -4,23 +4,13 @@ import data from "@solid/query-ldflex";
 class Shighl {
   constructor () {
     console.log("Shighl loaded")
-      this.webId = null
-      this.friends = []
-    }
+    this.webId = null
+    this.friends = []
+  }
 
   async test(){
     var name = await data['https://spoggy.solid.community/profile/card#me'].vcard$fn
     console.log(`${name}`);
-  }
-
-  async readName (url) {
-    try {
-      const fullname = await data.user.vcard$fn;
-      console.log(`\nNAME: ${fullname}`);
-      return `${fullname}`
-    }catch(e){
-      return e
-    }
   }
 
   trackSession(cb) {
@@ -35,12 +25,13 @@ class Shighl {
     })
   }
 
-  login(cb) {
-    this.popupLogin().then((session) => cb(session.webId));
+  async login() {
+    const webId = await this.popupLogin()
+    return `${webId}`
   }
 
-  logout(cb) {
-    auth.logout().then(() => cb());
+  logout() {
+    auth.logout()
   }
 
   async popupLogin() {
@@ -48,10 +39,10 @@ class Shighl {
     let popupUri = './dist-popup/popup.html';
     if (!session)
     {
-      return session = await auth.popupLogin({ popupUri });
+      session = await auth.popupLogin({ popupUri });
+      return session.webId
     }else{
-      alert("You are already logged")
-      return session
+      return null
     }
   }
 
@@ -59,31 +50,34 @@ class Shighl {
     return this.webId
   }
 
-
-  async getFriends(webId = this.webId){
-    console.log(webId)
-    this.friends = []
-    for await (const fwebid of data[webId].friends){
-      //  console.log(friend)
-      var friend = {}
-      friend.webId = `${fwebid}`
-      this.friends = [... this.friends, friend]
-    }
-    return this.friends
+  async getPhoto(webId = this.webId){
+    return await data[webId].vcard$hasPhoto
   }
 
 
-  async getName(){
-    console.log(this.webId)
-    try {
-      const fullname = await data.user.vcard$fn;
-      console.log(`\nNAME: ${fullname}`);
-      return `${fullname}`
+  async getFriends(webId = this.webId){
+    this.friends = []
+    try{
+      for await (const fwebid of data[webId].friends){
+        //  console.log(friend)
+        var friend = {}
+        friend.webId = `${fwebid}`
+        this.friends = [... this.friends, friend]
+      }
+      return this.friends
     }catch(e){
       return e
     }
   }
 
+  async getName (webId = this.webId) {
+    try {
+      const fullname = await data[webId].vcard$fn;
+      return `${fullname}`
+    }catch(e){
+      return e
+    }
+  }
 
   async getPublicTypeIndex(webId){
     console.log(webId)
