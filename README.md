@@ -88,8 +88,6 @@ async function run(){
 # Loading from https://cdn.jsdelivr.net
 
 ```
-<<<<<<< HEAD
-=======
 
 
 
@@ -98,7 +96,6 @@ async function run(){
 
 ```
 
->>>>>>> ac54be65635ad0c65c4273cecd24a792291fca43
   <!doctype html>
   <html lang="en">
   <head>
@@ -146,13 +143,9 @@ async function run(){
     </script>
 
     </html>
-<<<<<<< HEAD
-```
-=======
 
 ```
 
->>>>>>> ac54be65635ad0c65c4273cecd24a792291fca43
 
 # Functionnalities
 - General
