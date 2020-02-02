@@ -87,14 +87,14 @@ async function run(){
   </html>
 
 
-  ```
+```
 
 
 
 
-  # Loading from https://cdn.jsdelivr.net
+# Loading from https://cdn.jsdelivr.net
 
-  ```
+```
 
   <!doctype html>
   <html lang="en">
@@ -144,7 +144,7 @@ async function run(){
 
     </html>
 
-    ```
+```
 
 
 # Functionnalities
