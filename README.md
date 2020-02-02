@@ -81,21 +81,13 @@ async function run(){
 
   run()
 
-
   </script>
-
   </html>
+```
 
+# Loading from https://cdn.jsdelivr.net
 
-  ```
-
-
-
-
-  # Loading from https://cdn.jsdelivr.net
-
-  ```
-
+```
   <!doctype html>
   <html lang="en">
   <head>
@@ -143,35 +135,33 @@ async function run(){
     </script>
 
     </html>
-
-    ```
-
+```
 
 # Functionnalities
 - General
-[] login / logout () return webId/null
-[] checkSession() return webId/null
-[] getWebId() return String
-[] getInbox() return String
-[] getAcl(path) return Array
+- [ ] login / logout () return webId/null
+- [ ] checkSession() return webId/null
+- [ ] getWebId() return String
+- [ ] getInbox() return String
+- [ ] getAcl(path) return Array
 
 - Profile
-[] getName(webId) return String
-[] getFriends(webId) return Array of Friends (String ? Object?)
-[] getPublicTypeIndex(webId) return String
-[] getInstances(publicTypeIndex, [type]) return Array
-([] ? getDetails(webId) return Object)
+- [ ] getName(webId) return String
+- [ ] getFriends(webId) return Array of Friends (String ? Object?)
+- [ ] getPublicTypeIndex(webId) return String
+- [ ] getInstances(publicTypeIndex, [type]) return Array
+- [ ] (? getDetails(webId) return Object)
 
 - LongChat
-[] getFolder(publicTypeIndex) return String
-[] getPath(folder) return String
-[] getMessages(path) return Array of Messages
-[] getDetails(messageUrl) return Object
+- [ ] getFolder(publicTypeIndex) return String
+- [ ] getPath(folder) return String
+- [ ] getMessages(path) return Array of Messages
+- [ ] getDetails(messageUrl) return Object
 
 -Inbox
-[] getMessages(inbox) return Array (with basic details ?)
-[] getDetails(messageUrl) return Object/Array
-[] sendMessage(inbox_dest) return result/error
+- [ ] getMessages(inbox) return Array (with basic details ?)
+- [ ] getDetails(messageUrl) return Object/Array
+- [ ] sendMessage(inbox_dest) return result/error
 
 
 templates bootstrap https://bootsnipp.com/tags/chat
