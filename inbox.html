@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Shighl</title>
+  <script src="window/shighl.bundle.js"> </script>
+</head>
+<body>
+
+  <h1>Shigh</h1>
+  <h2>Inbox</h2>
+
+  <input id="webId" value="https://spoggy.solid.community/profile/card#me" size="70"/><br>  <br>
+
+
+  <button onclick="getInbox()">getInbox(webId)</button>
+  <br>
+  Inbox :   <input id="inbox_input" value="" size="70"/><br>  <br>
+  <br>
+  <br>
+  <button onclick="getMessages()">getMessages(inbox)</button>  <br>
+  Messages : <br>
+  <ul id="messages">
+  </ul>
+
+
+
+  <br><br>
+  <a href="index.html">Back to index</a> |
+  <a href="https://github.com/scenaristeur/shighl/tree/master/dist/inbox.html" target="_blank">
+    Source</a>
+  </body>
+
+  <script>
+  // initialisation
+  const sh = new Shighl()
+  console.log(sh)
+  sh.test()
+
+  function callbackSession(webId){
+    if (webId != null){
+      document.getElementById("webId").value = webId
+    }else{
+      document.getElementById("webId").value = "You must be connected, see Session part."
+    }
+  }
+  // run trackSession
+  sh.trackSession(callbackSession)
+
+  //////////////////////////////////
+  //getInbox
+  //////////////////////////////////
+  const inbox_input = document.getElementById("inbox_input")
+  async function getInbox(){
+    const webId = document.getElementById("webId").value
+    const inbox = await sh.getInbox(webId)
+    inbox_input.value = inbox
+  }
+
+  //////////////////////////////////
+  //getMessages
+  //////////////////////////////////
+  const messages_ul = document.getElementById("messages")
+  async function getMessages(){
+
+    const inbox_url = document.getElementById("inbox_input").value
+    console.log(inbox_url)
+    let messages  = await sh.getMessages(inbox_url)
+    console.log(messages)
+    messages_ul.innerHTML = ""
+    messages.forEach(function(m){
+      var li = document.createElement("LI")
+      var text = [m.url, m.label, m.creator, m.dateSent, m.text].join(' | ')
+      var t = document.createTextNode(text);
+      li.appendChild(t);
+      messages_ul.appendChild(li)
+    })
+  }
+
+
+
+
+
+
+
+</script>
+
+</html>

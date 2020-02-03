@@ -18,80 +18,64 @@
   <h1>Shigh</h1>
 
   <h2>  # Functionnalities</h2>
-  <h3>  A. General</h3>
-  <ol>
+    <ol>
     <li>
-      <a href="tracksession-login-logout.html">trackSession / login / logout</a></li>
-      <iframe width="100%" height="300" src="//jsfiddle.net/smag0/3bpzx26d/18/embedded/html,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
-    <li>
-
-    </li>
-    <li>
-
-    </li>
-
-
-  </ol>
-
-  <h4>  A.3. [ ] getWebId() return String</h4>
-
-
-  <h4>  A.4. [ ] getPhoto() return String</h4>
-  <img id="img" width="250px">
+      <h3>Session : </h3>
+      trackSession(), login(), logout(), getWebId()<br>
+      <a href="tracksession-login-logout.html">Session</a></li>
+      <li>
+      <h3>  Profile : </h3>
+        getName(webId), getPhoto(webId), getFriends(webId), getPublicTypeIndex(webId) / instances <br>
+        <a href="profile.html">Profile</a></li>
+      </li>
+      <li>
+        <h3>Inbox</h3>
+        getInbox() , getMessages(inbox), getDetails(messageUrl), sendMessage(inbox_dest)<br>
+        <a href="inbox.html">Inbox</a>
+      </li>
 
 
-  <h4>  A.5. [ ] getInbox() return String</h4>
-  <h4>  A.6. [ ] getAcl(path) return Array</h4>
+    </ol>
 
-  <h3> B. Profile</h3>
-  <h4> B.1. [ ] getName(webId) return String</h4>
+    <h3> C. LongChat</h3>
+    <h4> C.1. [ ] getFolder(publicTypeIndex) return String</h4>
+    <h4> C.2. [ ] getPath(folder) return String</h4>
+    <h4> C.3. [ ] getMessages(path) return Array of Messages</h4>
+    <h4> C.4. [ ] getDetails(messageUrl) return Object</h4>
 
 
-  <h4> B.2. [ X ] getFriends(webId) return Array of Friends (String)</h4>
-  <iframe width="100%" height="300" src="//jsfiddle.net/smag0/0px1w4re/6/embedded/html,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
 
-  <h4> B.3. [ ] getPublicTypeIndex(webId) return String</h4>
-  <h4> B.4. [ ] getInstances(publicTypeIndex, [type]) return Array</h4>
-  <h4> B.5. [ ] (? getDetails(webId) return Object)</h4>
+    - Folder / Files
+    - [ ] SolidFileClient ?
 
-  <h3> C. LongChat</h3>
-  <h4> C.1. [ ] getFolder(publicTypeIndex) return String</h4>
-  <h4> C.2. [ ] getPath(folder) return String</h4>
-  <h4> C.3. [ ] getMessages(path) return Array of Messages</h4>
-  <h4> C.4. [ ] getDetails(messageUrl) return Object</h4>
-
-  <h3> D. Inbox</h3>
-  <h4> D.1. [ ] getMessages(inbox) return Array (with basic details ?)</h4>
-  <h4> D.2. [ ] getDetails(messageUrl) return Object/Array</h4>
-  <h4> D.3. [ ] sendMessage(inbox_dest) return result/error</h4>
+- General Gestion
+        <h4>  A.6. [ ] getAcl(path) return Array</h4>
 
 
 
 
 
+  </body>
+
+  <script>
+
+  const sh = new Shighl()
+  console.log(sh)
+  sh.test()
 
 
-</body>
-
-<script>
-
-const sh = new Shighl()
-console.log(sh)
-sh.test()
-
-
-//B.2. getFriends
-async function getFriends(){
-  let friends  = await sh.getFriends("https://spoggy.solid.community/profile/card#me")
-  //console.log(friends)
-  const friends_ul = document.getElementById("friends")
-  friends.forEach(function(f){
-    var li = document.createElement("LI")
-    var t = document.createTextNode(f.webId);
-    li.appendChild(t);
-    friends_ul.appendChild(li)
-  })
-}
+  //B.2. getFriends
+  async function getFriends(){
+    let friends  = await sh.getFriends("https://spoggy.solid.community/profile/card#me")
+    //console.log(friends)
+    const friends_ul = document.getElementById("friends")
+    friends.forEach(function(f){
+      var li = document.createElement("LI")
+      var t = document.createTextNode(f.webId);
+      li.appendChild(t);
+      friends_ul.appendChild(li)
+    })
+  }
 
 
 

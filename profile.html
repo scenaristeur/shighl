@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Shighl</title>
+  <script src="window/shighl.bundle.js"> </script>
+</head>
+<body>
+
+  <h1>Shigh</h1>
+  <h2>Profile</h2>
+  <input id="webId" value="https://spoggy.solid.community/profile/card#me" size="70"/><br>  <br>
+
+  <button onclick="getName()">getName(webId)</button><br>
+  Name : <span id="info"></span><br><br>
+
+  <button onclick="getPhoto()">getPhoto(webId)</button><br>
+  Photo :<br>   <img id="img" width="250px"><br><br>
+
+
+  <button onclick="getFriends()">getFriends(webId)</button><br>
+  Friends : <br>
+  <ul id="friends">
+  </ul>
+
+  <button onclick="getPublicTypeIndex()">getPublicTypeIndex(webId) / instances</button><br>
+  publicTypeIndex : <span id="info2"></span><br><br>
+  Instances : <br>
+  <ul id="instances">
+  </ul>
+
+
+
+  <br><br>
+  <a href="index.html">Back to index</a> |
+  <a href="https://github.com/scenaristeur/shighl/tree/master/dist/profile.html" target="_blank">
+    Source</a>
+  </body>
+
+  <script>
+  // initialisation
+  const sh = new Shighl()
+  console.log(sh)
+  sh.test()
+
+  //////////////////////////////////
+  //getName
+  //////////////////////////////////
+  const info = document.getElementById("info")
+  async function getName(){
+    const webId = document.getElementById("webId").value
+    let name  = await sh.getName(webId)
+    info.innerHTML = name
+  }
+
+  //////////////////////////////////
+  //getPhoto
+  //////////////////////////////////
+  const img = document.getElementById("img")
+  async function getPhoto(){
+    const webId = document.getElementById("webId").value
+    let photo  = await sh.getPhoto(webId)
+    img.src = photo
+  }
+
+  //////////////////////////////////
+  //getFriends
+  //////////////////////////////////
+  const friends_ul = document.getElementById("friends")
+  async function getFriends(){
+    friends_ul.innerHTML = ""
+    const webId = document.getElementById("webId").value
+    let friends  = await sh.getFriends(webId)
+    friends.forEach(function(f){
+      var li = document.createElement("LI")
+      var t = document.createTextNode(f.webId);
+      li.appendChild(t);
+      friends_ul.appendChild(li)
+    })
+  }
+
+  //////////////////////////////////
+  //getPublicTypeIndex / Instances
+  //////////////////////////////////
+  const info2 = document.getElementById("info2")
+  const instances = document.getElementById("instances")
+  async function getPublicTypeIndex(){
+    info2.innerHTML = ""
+    instances.innerHTML = ""
+    const webId = document.getElementById("webId").value
+    let pti  = await sh.getPublicTypeIndex(webId)
+    info2.innerHTML = pti.url
+    pti.instances.forEach(function(i){
+      var li = document.createElement("LI")
+      var text = [i.subject, i.predicate, i.object, i.classe, i.shortClasse].join(' | ')
+      var t = document.createTextNode(text);
+      li.appendChild(t);
+      instances.appendChild(li)
+    })
+  }
+
+</script>
+
+</html>
