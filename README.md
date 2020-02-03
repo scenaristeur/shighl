@@ -83,11 +83,11 @@ async function run(){
 
   </script>
   </html>
-```
+  ```
 
-# Loading from https://cdn.jsdelivr.net
+  # Loading from https://cdn.jsdelivr.net
 
-```
+  ```
 
   <!doctype html>
   <html lang="en">
@@ -137,41 +137,40 @@ async function run(){
 
     </html>
 
-```
+    ```
 
 
-# Functionnalities
-- General
-- [ X ] login / logout () return webId/null
-<iframe width="100%" height="300" src="//jsfiddle.net/smag0/3bpzx26d/18/embedded/html,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
-- [ ] checkSession() return webId/null
-- [ ] getWebId() return String
-- [ ] getPhoto() return String
-- [ ] getInbox() return String
-- [ ] getAcl(path) return Array
+    # Functionnalities
+    - General
+    - [ X ] Session : trackSession() / login() / logout () / getWebId() return webId/null
+    <a href="https://scenaristeur.github.io/shighl/tracksession-login-logout.html" target="_blank">Session</a>
 
-- Profile
-- [ ] getName(webId) return String
-- [ X ] getFriends(webId) return Array of Friends (String)
-<iframe width="100%" height="300" src="//jsfiddle.net/smag0/0px1w4re/6/embedded/html,result/dark/" allowfullscreen="allowfullscreen" allowpaymentrequest frameborder="0"></iframe>
+    - Profile
+    - [ X ] getName(webId) return String
+    - [ X ] getPhoto(webId) return String
+    - [ X ] getFriends(webId) return Array of friends (String)
+    - [ X ] getPublicTypeIndex(webId) return String / Array of instances (Objects) with props subject, predicate, object, classe, shortClasse
+    <a href="https://scenaristeur.github.io/shighl/profile.html" target="_blank">Profile</a>
 
-- [ ] getPublicTypeIndex(webId) return String
-- [ ] getInstances(publicTypeIndex, [type]) return Array
-- [ ] (? getDetails(webId) return Object)
+    - publicTypeIndex
+    - [ ] (? getDetails(webId) return Object)
 
-- LongChat
-- [ ] getFolder(publicTypeIndex) return String
-- [ ] getPath(folder) return String
-- [ ] getMessages(path) return Array of Messages
-- [ ] getDetails(messageUrl) return Object
+    - LongChat
+    - [ ] getFolder(publicTypeIndex) return String
+    - [ ] getPath(folder) return String
+    - [ ] getMessages(path) return Array of Messages
+    - [ ] getDetails(messageUrl) return Object
 
--Inbox
-- [ ] getMessages(inbox) return Array (with basic details ?)
-- [ ] getDetails(messageUrl) return Object/Array
-- [ ] sendMessage(inbox_dest) return result/error
+    - Inbox
+    - [ ] getInbox() return String
+    - [ ] getMessages(inbox) return Array (with basic details ?)
+    - [ ] getDetails(messageUrl) return Object/Array
+    - [ ] sendMessage(inbox_dest) return result/error
 
+    - Acl
+    - [ ] getAcl(path) return Array
 
-templates bootstrap https://bootsnipp.com/tags/chat
+    templates bootstrap https://bootsnipp.com/tags/chat
 
     # webpack build copied from @jeffz https://jeff-zucker.github.io/solid-file-client
 

@@ -1,6 +1,21 @@
 import * as auth from 'solid-auth-client';
 import data from "@solid/query-ldflex";
 
+///////////////////////////////////////////////////////////////////////////////
+// What is a Shighl ?
+// Shighl, is for S-olid high L-evel
+// a tool that let you write simple html/js to interact with a Solid POD
+// Session, Profile, Inbox, Chat...
+// Source : https://github.com/scenaristeur/shighl/
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Qu'est-ce que Shighl ?
+// Shighl, c'est pour S-olid high L-evel
+// un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
+// Session, Profil, Messagerie, Chat...
+// Source : https://github.com/scenaristeur/shighl/
+///////////////////////////////////////////////////////////////////////////////
+
 class Shighl {
   constructor () {
     console.log("Shighl loaded")
@@ -13,6 +28,9 @@ class Shighl {
     console.log(`${name}`);
   }
 
+  ///////////////////
+  // Session
+  //////////////////
   trackSession(cb) {
     var module = this
     auth.trackSession(async function(session) {
@@ -46,14 +64,26 @@ class Shighl {
     }
   }
 
-  get getWebId(){
+  getWebId(){
     return this.webId
+  }
+
+
+  ///////////////
+  //Profile
+  //////////////
+  async getName (webId = this.webId) {
+    try {
+      const fullname = await data[webId].vcard$fn;
+      return `${fullname}`
+    }catch(e){
+      return e
+    }
   }
 
   async getPhoto(webId = this.webId){
     return await data[webId].vcard$hasPhoto
   }
-
 
   async getFriends(webId = this.webId){
     this.friends = []
@@ -70,15 +100,9 @@ class Shighl {
     }
   }
 
-  async getName (webId = this.webId) {
-    try {
-      const fullname = await data[webId].vcard$fn;
-      return `${fullname}`
-    }catch(e){
-      return e
-    }
-  }
-
+  /////////////////////
+  // publicTypeIndex
+  ////////////////////
   async getPublicTypeIndex(webId){
     console.log(webId)
     var pti = {}
@@ -113,6 +137,47 @@ class Shighl {
     }
     return pti
   }
+
+  ////////////////////////////
+  // Inbox
+  //////////////////////////
+  async getInbox(webId = this.webId){
+    return await data[webId].ldp$inbox
+  }
+
+  async getMessages(inbox){
+    this.messages = []
+    try{
+      for await (const mess of data[inbox]['ldp$contains']){
+          console.log(`${mess}`)
+        if ( `${mess}`.endsWith('/log.ttl') == false){
+          var m = {}
+          m.url = `${mess}`
+          m.dateSent = new Date(await data[m.url].schema$dateSent)
+          m.date = m.dateSent.toLocaleString(navigator.language)
+          m.label = await data[m.url].rdfs$label
+          m.sender = await data[m.url].schema$sender
+          m.text = await data[m.url].schema$text
+          m.senderName = await data[m.sender].vcard$fn;
+          this.messages = [... this.messages, m]
+        }
+        else{
+          this.messages.log = `${mess}`
+        }
+      }
+      console.log(this.messages)
+      return this.messages
+    }catch(e){
+      return e
+    }
+  }
+
+  //getDetails(messageUrl), sendMessage(inbox_dest)
+  async getDetails(messageUrl){
+
+  }
+
+
 
   async getPages(folder){
     var pages = {}
@@ -162,7 +227,7 @@ class Shighl {
     return pages
   }
 
-  async getMessages(pages){
+  async getMessages1(pages){
     var messages = []
     console.log(pages)
     var path = pages.folder+[pages.year,pages.month,pages.day,""].join('/')

@@ -11,11 +11,22 @@
 
   <h1>Shigh</h1>
   <h2>trackSession, Login, Logout</h2>
+
+  <h3>trackSession()</h3>
   Session : <span id="info"></span>
+
+  <h3>login() / logout()</h3>
   <button id="login_btn" onclick="login()">Login</button>
   <button id="logout_btn" onclick="logout()">Logout</button>
-  <br>
 
+  <h3>getWebId()</h3>
+  <button onclick="getWebId()">Get webId</button>
+  <br>
+  WebId : <span id="info2"></span>
+
+
+
+  <br><br>
   <a href="index.html">Back to index</a> |
   <a href="https://github.com/scenaristeur/shighl/tree/master/dist/tracksession-login-logout.html" target="_blank">
     Source</a>
@@ -28,10 +39,28 @@
   sh.test()
 
   // trackSession / Login /logout
-  const divinfo = document.getElementById("info")
+  const info = document.getElementById("info")
   const login_btn = document.getElementById("login_btn")
   const logout_btn = document.getElementById("logout_btn")
 
+  function callbackSession(webId){
+    if (webId != null){
+      info.innerHTML = webId
+      login_btn.style.display = "none"
+      logout_btn.style.display = "block"
+    }else{
+      info.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
+      login_btn
+      login_btn.style.display = "block"
+      logout_btn.style.display = "none"
+    }
+  }
+  // run trackSession
+  sh.trackSession(callbackSession)
+
+  //////////////////////////////////
+  //  Login / Logout
+  //////////////////////////////////
   async function login(){
     const webId = await sh.login()
     afterLogin(webId)
@@ -50,22 +79,22 @@
     alert("You are not logged")
   }
 
-  function callbackSession(webId){
-    if (webId != null){
-      divinfo.innerHTML = webId
-      login_btn.style.display = "none"
-      logout_btn.style.display = "block"
-    }else{
-      divinfo.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
-      login_btn
-      login_btn.style.display = "block"
-      logout_btn.style.display = "none"
-    }
+  //////////////////////////////////
+  //getWebId
+  //////////////////////////////////
+  const info2 = document.getElementById("info2")
+  async function getWebId(){
 
+    var webId = sh.getWebId()
+    console.log(webId)
+    info2.innerHTML = webId
   }
-  
-  // run trackSession
-  sh.trackSession(callbackSession)
+
+
+
+
+
+
 </script>
 
 </html>
