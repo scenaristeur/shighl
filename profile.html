@@ -28,6 +28,9 @@
   <button onclick="getPublicTypeIndex()">getPublicTypeIndex(webId) / instances</button><br>
   publicTypeIndex : <span id="info2"></span><br><br>
   Instances : <br>
+
+  <h1>!!!  only LongChat for the moment !!!</h1><br>
+
   <ul id="instances">
   </ul>
 
@@ -97,9 +100,26 @@
       var text = [i.subject, i.predicate, i.object, i.classe, i.shortClasse].join(' | ')
       var t = document.createTextNode(text);
       li.appendChild(t);
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "Open "
+      btn.value = i.subject
+      btn.addEventListener('click', event => {
+        open(i)
+      });
+      li.appendChild(btn)
       instances.appendChild(li)
     })
   }
+
+  async function open(instance){
+    console.log(instance)
+    let docs = await sh.openInstance(instance)
+    console.log(docs)
+  }
+
+
+
+
 
 </script>
 
