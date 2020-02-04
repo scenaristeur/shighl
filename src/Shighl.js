@@ -256,43 +256,56 @@ class Shighl {
     return instance
   }
 
+  async asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
   async getLongChatMessagesDetails(instance){
-    await instance.documents.forEach(async function(d){
+    await this.asyncForEach(instance.documents, async (d) => {
+      //  await instance.documents.forEach(async function(d){
       //filtre les messages
+      console.log(d)
       if (d.url.split('#')[1].startsWith('Msg')){
         d.types = []
         d.comments = []
         d.statements = []
         var values = []
-      //  console.log(d.url)
         for await (const property of data[d.url].properties) {
           //  console.log("Prop",`${property}`)
           switch(`${property}`) {
             case "http://xmlns.com/foaf/0.1/maker":
-            var maker = await data[d.url][`${property}`]
-            console.log(`${maker}`)
+            let maker = await data[d.url][`${property}`]
+            let makername = await data[`${maker}`].vcard$fn
+            let makerimg = await data[`${maker}`].vcard$hasPhoto
             d.maker = `${maker}`
-            d.makername = await data[`${d.maker}`].vcard$fn
-            d.makerimg = await data[`${d.maker}`].vcard$hasPhoto
+            d.makername = `${makername}`
+            d.makerimg = `${makerimg}`
             break;
             case "http://purl.org/dc/terms/created":
-            d.date = await data[d.url][`${property}`]
+            let date = await data[d.url][`${property}`]
+            d.date = `${date}`
             break;
             case "http://rdfs.org/sioc/ns#content":
-            d.content = await data[d.url][`${property}`]
+            let content = await data[d.url][`${property}`]
+            d.content = `${content}`
             break;
             case "http://www.w3.org/2000/01/rdf-schema#type":
             for await (const type of data[d.url][`${property}`]){
-              d.types = [... d.types, `${type}`]
+              let ty = `${type}`
+              d.types = [... d.types, ty]
             }
             break;
             case "http://schema.org/parentItem":
             case "http://schema.org/target":
-            d.parentItem = await data[d.url][`${property}`]
+            let parentItem = await data[d.url][`${property}`]
+            d.maker = `${parentItem}`
             break;
             case "http://schema.org/comment":
             for await (const comment of data[d.url][`${property}`]){
-              d.comments = [... d.comments, `${comment}`]
+              let co = `${comment}`
+              d.comments = [... d.comments, co]
             }
             break;
 
@@ -304,7 +317,8 @@ class Shighl {
               /*if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
               d.likeAction = true
             }*/
-            values.push(`${val}`)
+            let  va = `${val}`
+            values.push(va)
             console.log(values)
           }
 
