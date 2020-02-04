@@ -149,7 +149,7 @@ class Shighl {
     this.messages = []
     try{
       for await (const mess of data[inbox]['ldp$contains']){
-          console.log(`${mess}`)
+        console.log(`${mess}`)
         if ( `${mess}`.endsWith('/log.ttl') == false){
           var m = {}
           m.url = `${mess}`
@@ -172,102 +172,259 @@ class Shighl {
     }
   }
 
+  // Instances Lonchat, Notes ...
   //getDetails(messageUrl), sendMessage(inbox_dest)
-  async getDetails(messageUrl){
-
+  async getInstanceDetails(instance){
+    console.log("not finished yet", instance)
+    switch(instance.shortClasse) {
+      case "LongChat":
+      return await this.getLongChatInstance(instance)
+      break;
+      case "TextDigitalDocument":
+      case "MediaObject":
+      case "Bookmark":
+      case "Meeting":
+      default:
+      return  await this.getDefaultInstance(instance)
+    }
   }
 
+  async getLongChatInstance(instance){
+    instance = await this.getCalendar(instance)
+    instance = await this.getLongChatMessages(instance)
+    instance = await this.getLongChatMessagesDetails(instance)
+    console.log(instance)
+    return instance
+  }
 
-
-  async getPages(folder){
-    var pages = {}
+  async getCalendar(instance){
+    instance.folder = instance.object.substring(0,instance.object.lastIndexOf('/')+1)
+    //YEAR
     var years = []
-    for await (const year of data[folder]['ldp$contains']){
-      //  console.log("YEAR",`${year}`);
+    for await (const year of data[instance.folder]['ldp$contains']){
       if ( `${year}`.endsWith('/')){
         var localyear = this.localName(`${year}`.slice(0, -1))
         years.push(localyear)
       }
     }
-    //  console.log(years)
-    var last_year = Math.max(...years)
-
+    let last_year = Math.max(...years)
     //MONTH
     var months = []
-    for await (const month of data[folder+last_year+'/']['ldp$contains']){
-      //  console.log("MONTH",`${month}`);
+    for await (const month of data[instance.folder+last_year+'/']['ldp$contains']){
       if ( `${month}`.endsWith('/')){
         var localmonth = this.localName(`${month}`.slice(0, -1))
         months.push(localmonth)
       }
     }
-    //  console.log(months)
-    var last_month = ("0" + Math.max(...months)).slice(-2)
-
+    let last_month = ("0" + Math.max(...months)).slice(-2)
     //DAY
     var days = []
-    for await (const day of data[folder+last_year+'/'+last_month+'/']['ldp$contains']){
-      //  console.log("DAY",`${day}`);
+    for await (const day of data[instance.folder+last_year+'/'+last_month+'/']['ldp$contains']){
       if ( `${day}`.endsWith('/')){
         var localday = this.localName(`${day}`.slice(0, -1))
         days.push(localday)
       }
     }
-    //console.log(days)
-    var last_day = ("0" + Math.max(...days)).slice(-2)
-    //  console.log("Last day",last_day)
-
-    pages.years = years.sort()
-    pages.months = months.sort()
-    pages.days = days.sort()
-    pages.year = last_year
-    pages.month = last_month
-    pages.day = last_day
-    pages.folder = folder
-    return pages
+    instance.years = years.sort()
+    instance.months = months.sort()
+    instance.days = days.sort()
+    instance.year = last_year
+    instance.month = last_month
+    instance.day = ("0" + Math.max(...days)).slice(-2)
+    console.log(instance)
+    return instance
   }
 
-  async getMessages1(pages){
-    var messages = []
-    console.log(pages)
-    var path = pages.folder+[pages.year,pages.month,pages.day,""].join('/')
+  async getLongChatMessages(instance){
+    var path = instance.folder+[instance.year, instance.month, instance.day,""].join('/')
     //  console.log(path)
     //console.log("Clear")
     await data.clearCache()
     let chatfile = await data[path]['ldp$contains'];
     //  console.log("ChatFile",`${chatfile}`);
-
+    let documents = []
+    var docs = []
     for await (const subject of data[chatfile].subjects){
       //  console.log("subject", `${subject}` );
-      if (( `${subject}` != pages.folder) && ( `${subject}` != chatfile) && ( `${subject}` != pages.instance)){ // ne semble pas fonctionner ??
-        messages = [... messages, `${subject}`]
+      if ( `${subject}` != instance.object){ // ne semble pas fonctionner ??
+        docs = [... docs, {url:`${subject}`}]
         //console.log(docs)
       }
     }
-    //  console.log(docs)
-    messages.sort().reverse()
-    console.log(messages)
-    return messages
+    instance.documents = docs
+    console.log(instance)
+    return instance
   }
 
-  async messageDetails(msgurl){
-    console.log(msgurl)
-    var details = {}
-    details.date = await data[msgurl]['http://purl.org/dc/terms/created']
-    return details
-  }
+  async getLongChatMessagesDetails(instance){
+    await instance.documents.forEach(async function(d){
+      //filtre les messages
+      if (d.url.split('#')[1].startsWith('Msg')){
+        d.types = []
+        d.comments = []
+        d.statements = []
+        var values = []
+      //  console.log(d.url)
+        for await (const property of data[d.url].properties) {
+          //  console.log("Prop",`${property}`)
+          switch(`${property}`) {
+            case "http://xmlns.com/foaf/0.1/maker":
+            var maker = await data[d.url][`${property}`]
+            console.log(`${maker}`)
+            d.maker = `${maker}`
+            d.makername = await data[`${d.maker}`].vcard$fn
+            d.makerimg = await data[`${d.maker}`].vcard$hasPhoto
+            break;
+            case "http://purl.org/dc/terms/created":
+            d.date = await data[d.url][`${property}`]
+            break;
+            case "http://rdfs.org/sioc/ns#content":
+            d.content = await data[d.url][`${property}`]
+            break;
+            case "http://www.w3.org/2000/01/rdf-schema#type":
+            for await (const type of data[d.url][`${property}`]){
+              d.types = [... d.types, `${type}`]
+            }
+            break;
+            case "http://schema.org/parentItem":
+            case "http://schema.org/target":
+            d.parentItem = await data[d.url][`${property}`]
+            break;
+            case "http://schema.org/comment":
+            for await (const comment of data[d.url][`${property}`]){
+              d.comments = [... d.comments, `${comment}`]
+            }
+            break;
 
-  localName(str){
-    var ln = str.substring(str.lastIndexOf('#')+1);
-    //console.log(ln)
-    ln == str ? ln = str.substring(str.lastIndexOf('/')+1) : "";
-    return ln
-  }
+            default:
+            //  console.log("default", this.url)
 
-  testCallBack(cb){
-    var test = "this is a test for your callback"
-    cb(test)
+            for await (const val of data[d.url][`${property}`])
+            {
+              /*if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
+              d.likeAction = true
+            }*/
+            values.push(`${val}`)
+            console.log(values)
+          }
+
+          d.statements = [... d.statements, {property: `${property}` , values: values}]
+        }
+
+      }
+    }
+  });
+  return instance
+}
+
+async getDefaultInstance(instance){
+  instance.documents = []
+  for await (const subject of data[instance.object].subjects){
+    console.log(`${subject}`);
+    const doc = `${subject}`
+    instance.documents.push(doc)
   }
+  return instance
+}
+
+
+
+
+async getDetails(messageUrl){
+
+}
+
+
+
+async getPages(folder){
+  var pages = {}
+  var years = []
+  for await (const year of data[folder]['ldp$contains']){
+    //  console.log("YEAR",`${year}`);
+    if ( `${year}`.endsWith('/')){
+      var localyear = this.localName(`${year}`.slice(0, -1))
+      years.push(localyear)
+    }
+  }
+  //  console.log(years)
+  var last_year = Math.max(...years)
+
+  //MONTH
+  var months = []
+  for await (const month of data[folder+last_year+'/']['ldp$contains']){
+    //  console.log("MONTH",`${month}`);
+    if ( `${month}`.endsWith('/')){
+      var localmonth = this.localName(`${month}`.slice(0, -1))
+      months.push(localmonth)
+    }
+  }
+  //  console.log(months)
+  var last_month = ("0" + Math.max(...months)).slice(-2)
+
+  //DAY
+  var days = []
+  for await (const day of data[folder+last_year+'/'+last_month+'/']['ldp$contains']){
+    //  console.log("DAY",`${day}`);
+    if ( `${day}`.endsWith('/')){
+      var localday = this.localName(`${day}`.slice(0, -1))
+      days.push(localday)
+    }
+  }
+  //console.log(days)
+  var last_day = ("0" + Math.max(...days)).slice(-2)
+  //  console.log("Last day",last_day)
+
+  pages.years = years.sort()
+  pages.months = months.sort()
+  pages.days = days.sort()
+  pages.year = last_year
+  pages.month = last_month
+  pages.day = last_day
+  pages.folder = folder
+  return pages
+}
+
+async getMessages1(pages){
+  var messages = []
+  console.log(pages)
+  var path = pages.folder+[pages.year,pages.month,pages.day,""].join('/')
+  //  console.log(path)
+  //console.log("Clear")
+  await data.clearCache()
+  let chatfile = await data[path]['ldp$contains'];
+  //  console.log("ChatFile",`${chatfile}`);
+
+  for await (const subject of data[chatfile].subjects){
+    //  console.log("subject", `${subject}` );
+    if (( `${subject}` != pages.folder) && ( `${subject}` != chatfile) && ( `${subject}` != pages.instance)){ // ne semble pas fonctionner ??
+      messages = [... messages, `${subject}`]
+      //console.log(docs)
+    }
+  }
+  //  console.log(docs)
+  messages.sort().reverse()
+  console.log(messages)
+  return messages
+}
+
+async messageDetails(msgurl){
+  console.log(msgurl)
+  var details = {}
+  details.date = await data[msgurl]['http://purl.org/dc/terms/created']
+  return details
+}
+
+localName(str){
+  var ln = str.substring(str.lastIndexOf('#')+1);
+  //console.log(ln)
+  ln == str ? ln = str.substring(str.lastIndexOf('/')+1) : "";
+  return ln
+}
+
+testCallBack(cb){
+  var test = "this is a test for your callback"
+  cb(test)
+}
 
 
 
