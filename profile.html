@@ -29,11 +29,13 @@
   publicTypeIndex : <span id="info2"></span><br><br>
   Instances : <br>
 
-  <h1>!!!  only LongChat for the moment !!!</h1><br>
-
   <ul id="instances">
   </ul>
 
+  Documents : <br>
+
+  <ul id="documents">
+  </ul>
 
 
   <br><br>
@@ -112,12 +114,45 @@
   }
 
   async function open(instance){
+    instance = await sh.getInstanceDetails(instance)
+    switch(instance.shortClasse) {
+      case "LongChat":
+      updateLongChat(instance)
+      break;
+      case "TextDigitalDocument":
+      case "MediaObject":
+      case "Bookmark":
+      case "Meeting":
+      default:
+      updateDefault(instance)
+    }
+  }
+
+  function  updateLongChat(instance){
     console.log(instance)
-    let docs = await sh.openInstance(instance)
-    console.log(docs)
+    let documents_ul = document.getElementById("documents")
+    documents_ul.innerHTML = ""
+    instance.documents.forEach(function(d){
+      console.log(d)
+      var li = document.createElement("LI")
+      var t = document.createTextNode(d.maker+" : "+d.content);
+      li.appendChild(t);
+      documents_ul.appendChild(li)
+    })
   }
 
 
+  function  updateDefault(instance){
+    console.log(instance)
+    let documents_ul = document.getElementById("documents")
+    documents_ul.innerHTML = ""
+    instance.documents.forEach(function(d){
+      var li = document.createElement("LI")
+      var t = document.createTextNode(d);
+      li.appendChild(t);
+      documents_ul.appendChild(li)
+    })
+  }
 
 
 
