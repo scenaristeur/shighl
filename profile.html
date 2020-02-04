@@ -135,7 +135,12 @@
     instance.documents.forEach(function(d){
       console.log(d)
       var li = document.createElement("LI")
-      var t = document.createTextNode(d.maker+" : "+d.content);
+      var link = document.createElement("A")
+      link.href = d.maker
+      link.innerHTML = d.makername
+      li.appendChild(link)
+
+      var t = document.createTextNode(d.date+" : "+d.content);
       li.appendChild(t);
       documents_ul.appendChild(li)
     })
