@@ -274,7 +274,7 @@ class Shighl {
         d.statements = []
         var values = []
         for await (const property of data[d.url].properties) {
-            console.log("Prop",`${property}`)
+          console.log("Prop",`${property}`)
           switch(`${property}`) {
             case "http://xmlns.com/foaf/0.1/maker":
             let maker = await data[d.url][`${property}`]
@@ -345,8 +345,8 @@ async getDefaultInstance(instance){
   return instance
 }
 
-async sendChatMessage(instance, content, webId, postType = null, replyTo = null, recipient = null){
-  console.log(instance, content, webId, postType, replyTo, recipient)
+async sendChatMessage(instance, content, webId, postType = null, replyTo = null, inbox = null){
+  console.log(instance, content, webId, postType, replyTo, inbox)
   try {
     if (content.length > 0){
       var dateObj = new Date();
@@ -378,9 +378,9 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
         try{
           // post notification
           var message = {}
-          message.recipient =  recipient
+          message.recipient =  inbox
           message.title = "Chat reply notif."
-          message.content = "New reply to your post' "+this.replyTo+" '. \n You can find it here : ' "+url+"."
+          message.content = url+" is a new reply to your post' "+replyTo
 
           if( message.recipient.length > 0){
             message.date = new Date(Date.now())
@@ -388,7 +388,8 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
             message.sender = webId
             message.url = message.recipient+message.id+".ttl"
             await this.buildMessage(message)
-            replyTo = ""
+          //  console.log("NOTIF",message)
+
           }else{
             alert("Recipient  empty")
           }

@@ -36,10 +36,10 @@
 
   <ul id="documents">
   </ul>
-<br>
+  <br>
   You must select a chatInstance to be able to post<br>
-<input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
-<input id="recipient" placeholder="Recipient" value=""  size="100"/><br>
+  <input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
+  <input id="inbox" placeholder="Inbox" value=""  size="100"/><br>
 
 
   <textarea id="message_content" row=10></textarea>
@@ -149,12 +149,15 @@
   async function sendChatMessage(){
     var content = document.getElementById("message_content").value.trim()
     var replyTo = document.getElementById("replyTo").value.trim()
-    var recipient = document.getElementById("recipient").value.trim()
+    var inbox = document.getElementById("inbox").value.trim()
     var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
     console.log(currentInstance)
     console.log(userWebId)
-    var result = await sh.sendChatMessage(currentInstance, content, userWebId, postType, replyTo, recipient)
+    var result = await sh.sendChatMessage(currentInstance, content, userWebId, postType, replyTo, inbox)
     console.log(result)
+    document.getElementById("message_content").value = ""
+    document.getElementById("replyTo").value = ""
+    document.getElementById("inbox").value = ""
     open(currentInstance)
   }
 
@@ -182,11 +185,13 @@
     })
   }
 
-function reply(url, recipient){
-  console.log(url, recipient)
-document.getElementById("replyTo").value = url
-document.getElementById("recipient").value = recipient
-}
+  async function reply(url, maker){
+    console.log(url, maker)
+    var inbox = await sh.getInbox(maker)
+    console.log("Inbox",inbox)
+    document.getElementById("replyTo").value = url
+    document.getElementById("inbox").value = inbox
+  }
 
   function  updateDefault(instance){
     console.log(instance)
