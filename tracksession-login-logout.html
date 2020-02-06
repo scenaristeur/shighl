@@ -85,7 +85,7 @@
   const info2 = document.getElementById("info2")
   async function getWebId(){
 
-    var webId = sh.getWebId()
+    var webId = await sh.getWebId()
     console.log(webId)
     info2.innerHTML = webId
   }

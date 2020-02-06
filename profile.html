@@ -36,6 +36,15 @@
 
   <ul id="documents">
   </ul>
+<br>
+  You must select a chatInstance to be able to post<br>
+<input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
+<input id="recipient" placeholder="Recipient" value=""  size="100"/><br>
+
+
+  <textarea id="message_content" row=10></textarea>
+
+  <button onclick="sendChatMessage()">Send message</button>
 
 
   <br><br>
@@ -49,6 +58,14 @@
   const sh = new Shighl()
   console.log(sh)
   sh.test()
+  let currentInstance = {}
+  let userWebId = ""
+  function callbackSession(webId){
+    userWebId = webId
+    console.log(userWebId)
+  }
+  // run trackSession
+  sh.trackSession(callbackSession)
 
   //////////////////////////////////
   //getName
@@ -103,7 +120,7 @@
       var t = document.createTextNode(text);
       li.appendChild(t);
       var btn = document.createElement("BUTTON")
-      btn.innerHTML = "Open "
+      btn.innerHTML = "Open "+i.object
       btn.value = i.subject
       btn.addEventListener('click', event => {
         open(i)
@@ -115,6 +132,7 @@
 
   async function open(instance){
     instance = await sh.getInstanceDetails(instance)
+    currentInstance = instance
     switch(instance.shortClasse) {
       case "LongChat":
       updateLongChat(instance)
@@ -128,6 +146,18 @@
     }
   }
 
+  async function sendChatMessage(){
+    var content = document.getElementById("message_content").value.trim()
+    var replyTo = document.getElementById("replyTo").value.trim()
+    var recipient = document.getElementById("recipient").value.trim()
+    var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
+    console.log(currentInstance)
+    console.log(userWebId)
+    var result = await sh.sendChatMessage(currentInstance, content, userWebId, postType, replyTo, recipient)
+    console.log(result)
+    open(currentInstance)
+  }
+
   function  updateLongChat(instance){
     console.log(instance)
     let documents_ul = document.getElementById("documents")
@@ -139,13 +169,24 @@
       link.href = d.maker
       link.innerHTML = d.makername
       li.appendChild(link)
-
       var t = document.createTextNode(d.date+" : "+d.content);
       li.appendChild(t);
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "Reply"
+      btn.addEventListener('click', event => {
+        console.log(d.url, d.maker)
+        reply(d.url, d.maker)
+      });
+      li.appendChild(btn)
       documents_ul.appendChild(li)
     })
   }
 
+function reply(url, recipient){
+  console.log(url, recipient)
+document.getElementById("replyTo").value = url
+document.getElementById("recipient").value = recipient
+}
 
   function  updateDefault(instance){
     console.log(instance)
