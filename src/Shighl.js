@@ -1,5 +1,6 @@
 import * as auth from 'solid-auth-client';
 import data from "@solid/query-ldflex";
+import { namedNode } from '@rdfjs/data-model';
 
 ///////////////////////////////////////////////////////////////////////////////
 // What is a Shighl ?
@@ -31,7 +32,7 @@ class Shighl {
   ///////////////////
   // Session
   //////////////////
-  trackSession(cb) {
+  async trackSession(cb) {
     var module = this
     auth.trackSession(async function(session) {
       if (!session){
@@ -273,12 +274,15 @@ class Shighl {
         d.statements = []
         var values = []
         for await (const property of data[d.url].properties) {
-          //  console.log("Prop",`${property}`)
+            console.log("Prop",`${property}`)
           switch(`${property}`) {
             case "http://xmlns.com/foaf/0.1/maker":
             let maker = await data[d.url][`${property}`]
+            console.log(`${maker}`)
             let makername = await data[`${maker}`].vcard$fn
+            console.log(`${makername}`)
             let makerimg = await data[`${maker}`].vcard$hasPhoto
+            console.log(`${makerimg}`)
             d.maker = `${maker}`
             d.makername = `${makername}`
             d.makerimg = `${makerimg}`
@@ -341,7 +345,80 @@ async getDefaultInstance(instance){
   return instance
 }
 
+async sendChatMessage(instance, content, webId, postType = null, replyTo = null, recipient = null){
+  console.log(instance, content, webId, postType, replyTo, recipient)
+  try {
+    if (content.length > 0){
+      var dateObj = new Date();
+      var messageId = "#Msg"+dateObj.getTime()
+      var month = ("0" + (dateObj.getUTCMonth() + 1)).slice(-2); //months from 1-12
+      var day = ("0" + dateObj.getUTCDate()).slice(-2);
+      var year = dateObj.getUTCFullYear();
+      var path = instance.folder+[year, month, day, ""].join("/")
+      console.log(path)
 
+      var url = path+"chat.ttl"+messageId
+      var date = dateObj.toISOString()
+      var index = instance.folder+"index.ttl#this"
+      console.log(date)
+      await data[url].dct$created.add(date)
+      await data[url].sioc$content.add(content)
+      await data[url].foaf$maker.add(namedNode(webId))
+      await data.from(url)[index]['http://www.w3.org/2005/01/wf/flow#message'].add(namedNode(url))
+      //  var postType = this.shadowRoot.querySelector('input[name="inlineRadioOptions"]:checked').value
+      if (postType != "InstantMessage"){
+        await data[url].rdfs$type.add(namedNode('http://rdfs.org/sioc/types#'+postType))
+      }
+
+      if (replyTo != null && replyTo.length >0){
+        await data[url].rdfs$type.add(namedNode('https://schema.org/Comment'))
+        await data[url].schema$parentItem.add(namedNode(replyTo)) // schema$parentItem plante le chat solid
+        await data[replyTo].schema$comment.add(namedNode(url))
+
+        try{
+          // post notification
+          var message = {}
+          message.recipient =  recipient
+          message.title = "Chat reply notif."
+          message.content = "New reply to your post' "+this.replyTo+" '. \n You can find it here : ' "+url+"."
+
+          if( message.recipient.length > 0){
+            message.date = new Date(Date.now())
+            message.id = message.date.getTime()
+            message.sender = webId
+            message.url = message.recipient+message.id+".ttl"
+            await this.buildMessage(message)
+            replyTo = ""
+          }else{
+            alert("Recipient  empty")
+          }
+        }catch(e){
+          alert(e)
+        }
+      }
+    }
+    return "ok"
+  }catch(e){
+    alert(e)
+    return e
+  }
+}
+
+async buildMessage(message){
+  var mess = message.url
+  console.log(message)
+  try{
+    await data[mess].schema$text.add(message.content);
+    await data[mess].rdfs$label.add(message.title)
+    await data[mess].schema$dateSent.add(message.date.toISOString())
+    await data[mess].rdf$type.add(namedNode('https://schema.org/Message'))
+    await data[mess].schema$sender.add(namedNode(this.webId))
+    var notif = message.recipient+"log.ttl#"+message.id
+    await data[notif].schema$message.add(namedNode(mess))
+  }catch(e){
+    alert(e)
+  }
+}
 
 
 async getDetails(messageUrl){
