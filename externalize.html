@@ -6,36 +6,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
   <title>Shighl</title>
   <script src="https://cdn.jsdelivr.net/npm/solid-auth-client@2.3.0/dist-lib/solid-auth-client.bundle.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@solid/query-ldflex@2.5.1/dist/solid-query-ldflex.bundle.js"></script>
-  <script src="window/shighl.bundle.js"> </script>
+  <script src="vendor/solid-query-ldflex.bundle.js"></script>
+  <script>
+  //let exports = {}
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log("hello", solid)
+let data = solid.data
+    const user = solid.data.user;
+    alert(`Welcome, ${await user}!`);
+  });
+  </script>
+    <script src="window/shighl.bundle.js"> </script>
 </head>
 <body>
 
   <h1>Shigh</h1>
   <ul id="friends">
   </ul>
+  <br><br>
 
+  <a href="index.html">Back to index</a> |
+  <a href="https://github.com/scenaristeur/shighl/tree/master/dist/externalize.html" target="_blank">
+    Source</a>
 </body>
 
 <script>
-
+//console.log(LDFlex)
 const sh = new Shighl()
 console.log(sh)
 sh.test()
-
+/*
 async function run(){
-  let friends  = await sh.getFriends("https://spoggy.solid.community/profile/card#me")
-  console.log(friends)
-  const friends_ul = document.getElementById("friends")
-  friends.forEach(function(f){
-    var li = document.createElement("LI")
-    var t = document.createTextNode(f.webId);
-    li.appendChild(t);
-    friends_ul.appendChild(li)
-  })
+let friends  = await sh.getFriends("https://spoggy.solid.community/profile/card#me")
+console.log(friends)
+const friends_ul = document.getElementById("friends")
+friends.forEach(function(f){
+var li = document.createElement("LI")
+var t = document.createTextNode(f.webId);
+li.appendChild(t);
+friends_ul.appendChild(li)
+})
 }
 
-run()
+run()*/
 
 
 </script>

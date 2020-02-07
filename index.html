@@ -18,13 +18,13 @@
   <h1>Shigh</h1>
 
   <h2>  # Functionnalities</h2>
-    <ol>
+  <ol>
     <li>
       <h3>Session : </h3>
       trackSession(), login(), logout(), getWebId()<br>
       <a href="tracksession-login-logout.html">Session</a></li>
       <li>
-      <h3>  Profile : </h3>
+        <h3>  Profile : </h3>
         getName(webId), getPhoto(webId), getFriends(webId), getPublicTypeIndex(webId) / instances <br>
         <a href="profile.html">Profile</a></li>
       </li>
@@ -33,10 +33,13 @@
         getInbox() , getMessages(inbox), getDetails(messageUrl), sendMessage(inbox_dest)<br>
         <a href="inbox.html">Inbox</a>
       </li>
-
+      <li>
+        <h3>Externalize ldflex-query</h3>
+        <a href="externalize.html">Externalize</a>
+      </li>
 
     </ol>
-<!--
+    <!--
     <h3> C. LongChat</h3>
     <h4> C.1. [ ] getFolder(publicTypeIndex) return String</h4>
     <h4> C.2. [ ] getPath(folder) return String</h4>
@@ -48,34 +51,34 @@
     - Folder / Files
     - [ ] SolidFileClient ?
 
-- General Gestion
-        <h4>  A.6. [ ] getAcl(path) return Array</h4>
+    - General Gestion
+    <h4>  A.6. [ ] getAcl(path) return Array</h4>
 
--->
-
-
-
-  </body>
-
-  <script>
-
-  const sh = new Shighl()
-  console.log(sh)
-  sh.test()
+  -->
 
 
-  //B.2. getFriends
-  async function getFriends(){
-    let friends  = await sh.getFriends("https://spoggy.solid.community/profile/card#me")
-    //console.log(friends)
-    const friends_ul = document.getElementById("friends")
-    friends.forEach(function(f){
-      var li = document.createElement("LI")
-      var t = document.createTextNode(f.webId);
-      li.appendChild(t);
-      friends_ul.appendChild(li)
-    })
-  }
+
+</body>
+
+<script>
+
+const sh = new Shighl()
+console.log(sh)
+sh.test()
+
+
+//B.2. getFriends
+async function getFriends(){
+  let friends  = await sh.getFriends("https://spoggy.solid.community/profile/card#me")
+  //console.log(friends)
+  const friends_ul = document.getElementById("friends")
+  friends.forEach(function(f){
+    var li = document.createElement("LI")
+    var t = document.createTextNode(f.webId);
+    li.appendChild(t);
+    friends_ul.appendChild(li)
+  })
+}
 
 
 
