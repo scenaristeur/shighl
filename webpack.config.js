@@ -11,6 +11,8 @@ const common = {
   },
   externals: {
     'solid-auth-cli': 'null',
+  //  '@solid/query-ldflex': 'solid_query_ldflex'
+  //  'solid-auth-cli': 'null',
     //  '@solid/query-ldflex': 'query-ldflex',
     /*  '@solid/query-ldflex': {
     commonjs: 'query-ldflex',

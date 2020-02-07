@@ -181,3 +181,4 @@ async function run(){
     https://blog.jakoblind.no/webpack-code-splitting-libraries-what-to-do-with-the-files/
  - build ldflex-query
  https://gist.github.com/bellbind/24d9a5851397d45e4fa83fa8ec30449c
+https://git.happy-dev.fr/startinblox/framework/sib-store/blob/master/package.json
