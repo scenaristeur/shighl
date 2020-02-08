@@ -175,11 +175,12 @@ class Shighl {
 
   // Instances Lonchat, Notes ...
   //getDetails(messageUrl), sendMessage(inbox_dest)
-  async getInstanceDetails(instance){
-    console.log("not finished yet", instance)
+  async initInstance(instance){
+    //console.log("not finished yet", instance)
     switch(instance.shortClasse) {
       case "LongChat":
-      return await this.getLongChatInstance(instance)
+      //  return await this.getCalendar(instance)
+      //  return await this.initLongChatInstance(instance)
       break;
       case "TextDigitalDocument":
       case "MediaObject":
@@ -189,62 +190,64 @@ class Shighl {
       return  await this.getDefaultInstance(instance)
     }
   }
-
+  /*
   async getLongChatInstance(instance){
-    instance = await this.getCalendar(instance)
-    instance = await this.getLongChatMessages(instance)
-    instance = await this.getLongChatMessagesDetails(instance)
-    console.log(instance)
-    return instance
-  }
+  instance = await this.getCalendar(instance)
+  //  instance = await this.getLongChatMessages(instance)
+  //  instance = await this.getLongChatMessagesDetails(instance)
+  console.log(instance)
+  return instance
+}*/
 
-  async getCalendar(instance){
-    instance.folder = instance.object.substring(0,instance.object.lastIndexOf('/')+1)
-    //YEAR
-    var years = []
-    for await (const year of data[instance.folder]['ldp$contains']){
-      if ( `${year}`.endsWith('/')){
-        var localyear = this.localName(`${year}`.slice(0, -1))
-        years.push(localyear)
-      }
+async initLongChatInstance(instance){
+  instance.folder = instance.object.substring(0,instance.object.lastIndexOf('/')+1)
+  //YEAR
+  var years = []
+  for await (const year of data[instance.folder]['ldp$contains']){
+    if ( `${year}`.endsWith('/')){
+      var localyear = this.localName(`${year}`.slice(0, -1))
+      years.push(localyear)
     }
-    let last_year = Math.max(...years)
-    //MONTH
-    var months = []
-    for await (const month of data[instance.folder+last_year+'/']['ldp$contains']){
-      if ( `${month}`.endsWith('/')){
-        var localmonth = this.localName(`${month}`.slice(0, -1))
-        months.push(localmonth)
-      }
-    }
-    let last_month = ("0" + Math.max(...months)).slice(-2)
-    //DAY
-    var days = []
-    for await (const day of data[instance.folder+last_year+'/'+last_month+'/']['ldp$contains']){
-      if ( `${day}`.endsWith('/')){
-        var localday = this.localName(`${day}`.slice(0, -1))
-        days.push(localday)
-      }
-    }
-    instance.years = years.sort()
-    instance.months = months.sort()
-    instance.days = days.sort()
-    instance.year = last_year
-    instance.month = last_month
-    instance.day = ("0" + Math.max(...days)).slice(-2)
-    console.log(instance)
-    return instance
   }
+  let last_year = Math.max(...years)
+  //MONTH
+  var months = []
+  for await (const month of data[instance.folder+last_year+'/']['ldp$contains']){
+    if ( `${month}`.endsWith('/')){
+      var localmonth = this.localName(`${month}`.slice(0, -1))
+      months.push(localmonth)
+    }
+  }
+  let last_month = ("0" + Math.max(...months)).slice(-2)
+  //DAY
+  var days = []
+  for await (const day of data[instance.folder+last_year+'/'+last_month+'/']['ldp$contains']){
+    if ( `${day}`.endsWith('/')){
+      var localday = this.localName(`${day}`.slice(0, -1))
+      days.push(localday)
+    }
+  }
+  instance.years = years.sort()
+  instance.months = months.sort()
+  instance.days = days.sort()
+  instance.year = last_year
+  instance.month = last_month
+  instance.day = ("0" + Math.max(...days)).slice(-2)
+  console.log(instance)
+  return instance
+}
 
-  async getLongChatMessages(instance){
-    var path = instance.folder+[instance.year, instance.month, instance.day,""].join('/')
-    //  console.log(path)
-    //console.log("Clear")
-    await data.clearCache()
+async getLongChatMessages(instance){
+  var path = instance.folder+[instance.year, instance.month, instance.day,""].join('/')
+  console.log(path)
+  //console.log("Clear")
+
+  try{
     let chatfile = await data[path]['ldp$contains'];
-    //  console.log("ChatFile",`${chatfile}`);
+    console.log("ChatFile",`${chatfile}`);
     let documents = []
     var docs = []
+    await data.clearCache()
     for await (const subject of data[chatfile].subjects){
       //  console.log("subject", `${subject}` );
       if ( `${subject}` != instance.object){ // ne semble pas fonctionner ??
@@ -254,85 +257,93 @@ class Shighl {
     }
     instance.documents = docs
     console.log(instance)
-    return instance
+    //  return instance
+  }catch(e){
+    console.log(e)
+    console.log("impossible to get messgaes")
+    instance.erreur = "No Chat message in "+path
+    //  return instance
   }
+  instance = await this.getLongChatMessagesDetails(instance)
+  return instance
+}
 
-  async asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
-    }
+async asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
   }
+}
 
-  async getLongChatMessagesDetails(instance){
-    await this.asyncForEach(instance.documents, async (d) => {
-      //  await instance.documents.forEach(async function(d){
-      //filtre les messages
-      console.log(d)
-      if (d.url.split('#')[1].startsWith('Msg')){
-        d.types = []
-        d.comments = []
-        d.statements = []
-        var values = []
-        for await (const property of data[d.url].properties) {
-          console.log("Prop",`${property}`)
-          switch(`${property}`) {
-            case "http://xmlns.com/foaf/0.1/maker":
-            let maker = await data[d.url][`${property}`]
-            console.log(`${maker}`)
-            let makername = await data[`${maker}`].vcard$fn
-            console.log(`${makername}`)
-            let makerimg = await data[`${maker}`].vcard$hasPhoto
-            console.log(`${makerimg}`)
-            d.maker = `${maker}`
-            d.makername = `${makername}`
-            d.makerimg = `${makerimg}`
-            break;
-            case "http://purl.org/dc/terms/created":
-            let date = await data[d.url][`${property}`]
-            d.date = `${date}`
-            break;
-            case "http://rdfs.org/sioc/ns#content":
-            let content = await data[d.url][`${property}`]
-            d.content = `${content}`
-            break;
-            case "http://www.w3.org/2000/01/rdf-schema#type":
-            for await (const type of data[d.url][`${property}`]){
-              let ty = `${type}`
-              d.types = [... d.types, ty]
-            }
-            break;
-            case "http://schema.org/parentItem":
-            case "http://schema.org/target":
-            let parentItem = await data[d.url][`${property}`]
-            d.maker = `${parentItem}`
-            break;
-            case "http://schema.org/comment":
-            for await (const comment of data[d.url][`${property}`]){
-              let co = `${comment}`
-              d.comments = [... d.comments, co]
-            }
-            break;
-
-            default:
-            //  console.log("default", this.url)
-
-            for await (const val of data[d.url][`${property}`])
-            {
-              /*if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
-              d.likeAction = true
-            }*/
-            let  va = `${val}`
-            values.push(va)
-            console.log(values)
+async getLongChatMessagesDetails(instance){
+  await this.asyncForEach(instance.documents, async (d) => {
+    //  await instance.documents.forEach(async function(d){
+    //filtre les messages
+    console.log(d)
+    if (d.url.split('#')[1].startsWith('Msg')){
+      d.types = []
+      d.comments = []
+      d.statements = []
+      var values = []
+      for await (const property of data[d.url].properties) {
+        console.log("Prop",`${property}`)
+        switch(`${property}`) {
+          case "http://xmlns.com/foaf/0.1/maker":
+          let maker = await data[d.url][`${property}`]
+          console.log(`${maker}`)
+          let makername = await data[`${maker}`].vcard$fn
+          console.log(`${makername}`)
+          let makerimg = await data[`${maker}`].vcard$hasPhoto
+          console.log(`${makerimg}`)
+          d.maker = `${maker}`
+          d.makername = `${makername}`
+          d.makerimg = `${makerimg}`
+          break;
+          case "http://purl.org/dc/terms/created":
+          let date = await data[d.url][`${property}`]
+          d.date = `${date}`
+          break;
+          case "http://rdfs.org/sioc/ns#content":
+          let content = await data[d.url][`${property}`]
+          d.content = `${content}`
+          break;
+          case "http://www.w3.org/2000/01/rdf-schema#type":
+          for await (const type of data[d.url][`${property}`]){
+            let ty = `${type}`
+            d.types = [... d.types, ty]
           }
+          break;
+          case "http://schema.org/parentItem":
+          case "http://schema.org/target":
+          let parentItem = await data[d.url][`${property}`]
+          d.maker = `${parentItem}`
+          break;
+          case "http://schema.org/comment":
+          for await (const comment of data[d.url][`${property}`]){
+            let co = `${comment}`
+            d.comments = [... d.comments, co]
+          }
+          break;
 
-          d.statements = [... d.statements, {property: `${property}` , values: values}]
+          default:
+          //  console.log("default", this.url)
+
+          for await (const val of data[d.url][`${property}`])
+          {
+            /*if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
+            d.likeAction = true
+          }*/
+          let  va = `${val}`
+          values.push(va)
+          console.log(values)
         }
 
+        d.statements = [... d.statements, {property: `${property}` , values: values}]
       }
+
     }
-  });
-  return instance
+  }
+});
+return instance
 }
 
 async getDefaultInstance(instance){
@@ -388,7 +399,7 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
             message.sender = webId
             message.url = message.recipient+message.id+".ttl"
             await this.buildMessage(message)
-          //  console.log("NOTIF",message)
+            //  console.log("NOTIF",message)
 
           }else{
             alert("Recipient  empty")
@@ -421,10 +432,10 @@ async buildMessage(message){
   }
 }
 
-
+/*
 async getDetails(messageUrl){
 
-}
+}*/
 
 
 
