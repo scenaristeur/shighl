@@ -32,8 +32,6 @@
   <ul id="instances">
   </ul>
 
-  Calendar : <div id="calendar"></div><br><br>
-
   Documents : <br>
 
   <ul id="documents">
@@ -116,103 +114,45 @@
     const webId = document.getElementById("webId").value
     let pti  = await sh.getPublicTypeIndex(webId)
     info2.innerHTML = pti.url
-    pti.instances.forEach(function(i){
+    for (let indice = 0; indice<pti.length; indice++){
+      let instance = pti[indice]
       var li = document.createElement("LI")
-      var text = [i.shortClasse, i.subject].join(' | ') //i.predicate, i.object, i.classe,
+      var text = [instance.shortClasse, instance.object,].join(' : ') //instance.subject, instance.predicate,  instance.classe,
       var t = document.createTextNode(text);
       li.appendChild(t);
       var btn = document.createElement("BUTTON")
-      btn.innerHTML = "Init "+i.object
-      btn.value = i.subject
+      btn.innerHTML = "Init "+instance.object
+      btn.instance = instance
+      btn.indice = indice
       btn.addEventListener('click', event => {
-        initInstance(i)
+        open(this)
       });
       li.appendChild(btn)
       instances.appendChild(li)
-    })
+    }
   }
 
-  async function initInstance(instance){
+  async function open(e){
+    console.log(e)
+    let instance = e.getAttribute(instance)
     console.log(instance)
     currentInstance = instance
     switch(instance.shortClasse) {
       case "LongChat":
-      instance = await sh.initLongChatInstance(instance)
-      console.log(instance)
-      updateCalendar(instance)
+      instance = await sh.getCalendar(instance)
+      //  updateLongChat(instance)
+
       break;
       case "TextDigitalDocument":
       case "MediaObject":
       case "Bookmark":
       case "Meeting":
       default:
-      instance = await sh.initInstance(instance)
+      instance = await sh.getInstanceDetails(instance)
+
       updateDefault(instance)
     }
   }
-
-  function updateCalendar(instance){
-    var calendarDiv = document.getElementById("calendar")
-    var yearsDiv = document.createElement("DIV")
-    var monthsDiv = document.createElement("DIV")
-    var daysDiv = document.createElement("DIV")
-    yearsDiv.innerHTML = "YEARS : "
-    monthsDiv.innerHTML = "MONTHS : "
-    daysDiv.innerHTML = "DAYS : "
-    calendarDiv.appendChild(yearsDiv)
-    calendarDiv.appendChild(monthsDiv)
-    calendarDiv.appendChild(daysDiv)
-
-    instance.years.forEach(function(y){
-      var y_btn = document.createElement("BUTTON")
-      y_btn.innerHTML = y
-      y == instance.year? y_btn.style.background_color="red": "";
-      y_btn.addEventListener('click', async function(event) {
-        //set year
-        instance.year = y
-        getMessages(instance)
-      });
-      yearsDiv.appendChild(y_btn)
-    })
-
-    for (let m = 1; m <= 12; m++){
-      var m_btn = document.createElement("BUTTON")
-      m = ("0" + m).slice(-2);
-      m_btn.innerHTML = m
-      m == instance.month? m_btn.style.background_color="red": "";
-      m_btn.addEventListener('click', async function(event) {
-        instance.month = m
-        getMessages(instance)
-      });
-      monthsDiv.appendChild(m_btn)
-    }
-
-    for (let d = 1; d <= 31; d++){
-      var d_btn = document.createElement("BUTTON")
-      d = ("0" + d).slice(-2);
-      d_btn.innerHTML = d
-      d == instance.day? d_btn.style.background_color="red": "";
-      d_btn.addEventListener('click', async function(event) {
-        instance.day = d
-        getMessages(instance)
-      });
-      daysDiv.appendChild(d_btn)
-    }
-
-
-  }
-
-  async function getMessages(instance){
-    try{
-      instance = await sh.getLongChatMessages ( instance)
-      updateLongChat(instance)
-    }catch(e){
-      alert(e)
-    }
-
-  }
-  //  sh.getLongChatDetailsByDay ( init_object_long_chat , { year:"2020", month:"01", day:"30" } )
-
 
   async function sendChatMessage(){
     var content = document.getElementById("message_content").value.trim()
@@ -231,32 +171,26 @@
 
   function  updateLongChat(instance){
     console.log(instance)
-
-    if (instance.documents.length == 0){
-      // DOES NOT WORK AS LONG AS LDFLEX DON'T RETURN A error for a 404 ?
-      alert("No Message on "+instance.year+"/"+instance.month+"/"+instance.day)
-    }else{
-      let documents_ul = document.getElementById("documents")
-      documents_ul.innerHTML = ""
-      instance.documents.forEach(function(d){
-        console.log(d)
-        var li = document.createElement("LI")
-        var link = document.createElement("A")
-        link.href = d.maker
-        link.innerHTML = d.makername
-        li.appendChild(link)
-        var t = document.createTextNode(d.date+" : "+d.content);
-        li.appendChild(t);
-        var btn = document.createElement("BUTTON")
-        btn.innerHTML = "Reply"
-        btn.addEventListener('click', event => {
-          console.log(d.url, d.maker)
-          reply(d.url, d.maker)
-        });
-        li.appendChild(btn)
-        documents_ul.appendChild(li)
-      })
-    }
+    let documents_ul = document.getElementById("documents")
+    documents_ul.innerHTML = ""
+    instance.documents.forEach(function(d){
+      console.log(d)
+      var li = document.createElement("LI")
+      var link = document.createElement("A")
+      link.href = d.maker
+      link.innerHTML = d.makername
+      li.appendChild(link)
+      var t = document.createTextNode(d.date+" : "+d.content);
+      li.appendChild(t);
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "Reply"
+      btn.addEventListener('click', event => {
+        console.log(d.url, d.maker)
+        reply(d.url, d.maker)
+      });
+      li.appendChild(btn)
+      documents_ul.appendChild(li)
+    })
   }
 
   async function reply(url, maker){
