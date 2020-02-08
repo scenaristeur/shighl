@@ -201,7 +201,7 @@ class Shighl {
 
 async initLongChatInstance(instance){
   instance.folder = instance.object.substring(0,instance.object.lastIndexOf('/')+1)
-  //YEAR
+  instance.name = this.localName(instance.folder)  //YEAR
   var years = []
   for await (const year of data[instance.folder]['ldp$contains']){
     if ( `${year}`.endsWith('/')){
@@ -267,6 +267,37 @@ async getLongChatMessages(instance){
   instance = await this.getLongChatMessagesDetails(instance)
   return instance
 }
+
+async getMonthsOfYear(instance){
+
+  //MONTH
+  var months = []
+  for await (const month of data[instance.folder+instance.year+'/']['ldp$contains']){
+    //  console.log("MONTH",`${month}`);
+    if ( `${month}`.endsWith('/')){
+      var localmonth = this.localName(`${month}`.slice(0, -1))
+      months.push(localmonth)
+    }
+  }
+  instance.months = months
+  return instance
+}
+
+async getDaysOfMonth(instance){
+
+  //DAY
+  var days = []
+  for await (const day of data[instance.folder+instance.year+'/'+instance.month+'/']['ldp$contains']){
+    if ( `${day}`.endsWith('/')){
+      var localday = this.localName(`${day}`.slice(0, -1))
+      days.push(localday)
+    }
+  }
+  instance.days = days
+  return instance
+}
+
+
 
 async asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
@@ -372,6 +403,8 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
       var date = dateObj.toISOString()
       var index = instance.folder+"index.ttl#this"
       console.log(date)
+      console.log(url)
+      console.log(index)
       await data[url].dct$created.add(date)
       await data[url].sioc$content.add(content)
       await data[url].foaf$maker.add(namedNode(webId))
