@@ -1,3 +1,21 @@
+///////////////////////////////////////////////////////////////////////////////
+// What is a Shighl ?
+// Shighl, is for S-olid high L-evel
+// a tool that let you write simple html/js to interact with a Solid POD
+// Session, Profile, Inbox, Chat...
+// Source : https://github.com/scenaristeur/shighl/
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Qu'est-ce que Shighl ?
+// Shighl, c'est pour S-olid high L-evel
+// un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
+// Session, Profil, Messagerie, Chat...
+// Source : https://github.com/scenaristeur/shighl/
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
 # shighl
