@@ -227,12 +227,22 @@
     var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
     console.log(currentInstance)
     console.log(userWebId)
+    if (userWebId == null ){
+      userWebId = await sh.login()
+      alert ("you must login ! go back to index at the bottom, ")
+    }
+    //  if (currentInstance.url != undefined){
     var result = await sh.sendChatMessage(currentInstance, content, userWebId, postType, replyTo, inbox)
+    //  }else{
+    //  alert("I can't post a message if there is not instance selected !")
+    //}
+
+
     console.log(result)
     document.getElementById("message_content").value = ""
     document.getElementById("replyTo").value = ""
     document.getElementById("inbox").value = ""
-    open(currentInstance)
+    getMessages(currentInstance)
   }
 
   function  updateLongChat(instance){
@@ -251,6 +261,13 @@
         link.href = d.maker
         link.innerHTML = d.makername
         li.appendChild(link)
+
+        if (d.parentItem != undefined && d.parentItem != "undefined" && d.parentItem.length > 0){
+          var replySpan = document.createElement("SPAN")
+          replySpan.innerHTML = "is a reply to : "+d.parentItem+ " at "
+          li.appendChild(replySpan)
+        }
+
         var t = document.createTextNode(d.date+" : "+d.content);
         li.appendChild(t);
         var btn = document.createElement("BUTTON")

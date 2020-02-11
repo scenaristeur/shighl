@@ -245,17 +245,23 @@ async getLongChatMessages(instance){
   try{
     let chatfile = await data[path]['ldp$contains'];
     console.log("ChatFile",`${chatfile}`);
-    let documents = []
+    //  let documents = []
     var docs = []
+    var other = []
     await data.clearCache()
     for await (const subject of data[chatfile].subjects){
       //  console.log("subject", `${subject}` );
       if ( `${subject}` != instance.object){ // ne semble pas fonctionner ??
-        docs = [... docs, {url:`${subject}`}]
+        if (`${subject}`.split('#')[1] != undefined && `${subject}`.split('#')[1].startsWith('Msg')){
+          docs = [... docs, {url:`${subject}`}]
+        }else{
+          other = [... other, {url:`${subject}`}]
+        }
         //console.log(docs)
       }
     }
     instance.documents = docs
+    instance.other = other
     console.log(instance)
     //  return instance
   }catch(e){
@@ -309,70 +315,70 @@ async getLongChatMessagesDetails(instance){
   await this.asyncForEach(instance.documents, async (d) => {
     //  await instance.documents.forEach(async function(d){
     //filtre les messages
-    console.log(d)
-    if (d.url.split('#')[1].startsWith('Msg')){
-      d.types = []
-      d.comments = []
-      d.statements = []
-      var values = []
-      for await (const property of data[d.url].properties) {
-        console.log("Prop",`${property}`)
-        switch(`${property}`) {
-          case "http://xmlns.com/foaf/0.1/maker":
-          let maker = await data[d.url][`${property}`]
-          console.log(`${maker}`)
-          let makername = await data[`${maker}`].vcard$fn
-          console.log(`${makername}`)
-          let makerimg = await data[`${maker}`].vcard$hasPhoto
-          console.log(`${makerimg}`)
-          d.maker = `${maker}`
-          d.makername = `${makername}`
-          d.makerimg = `${makerimg}`
-          break;
-          case "http://purl.org/dc/terms/created":
-          let date = await data[d.url][`${property}`]
-          d.date = `${date}`
-          break;
-          case "http://rdfs.org/sioc/ns#content":
-          let content = await data[d.url][`${property}`]
-          d.content = `${content}`
-          break;
-          case "http://www.w3.org/2000/01/rdf-schema#type":
-          for await (const type of data[d.url][`${property}`]){
-            let ty = `${type}`
-            d.types = [... d.types, ty]
-          }
-          break;
-          case "http://schema.org/parentItem":
-          case "http://schema.org/target":
-          let parentItem = await data[d.url][`${property}`]
-          d.maker = `${parentItem}`
-          break;
-          case "http://schema.org/comment":
-          for await (const comment of data[d.url][`${property}`]){
-            let co = `${comment}`
-            d.comments = [... d.comments, co]
-          }
-          break;
+    //  console.log(d)
 
-          default:
-          //  console.log("default", this.url)
-
-          for await (const val of data[d.url][`${property}`])
-          {
-            /*if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
-            d.likeAction = true
-          }*/
-          let  va = `${val}`
-          values.push(va)
-          console.log(values)
+    d.types = []
+    d.comments = []
+    d.statements = []
+    var values = []
+    for await (const property of data[d.url].properties) {
+      //  console.log("Prop",`${property}`)
+      switch(`${property}`) {
+        case "http://xmlns.com/foaf/0.1/maker":
+        let maker = await data[d.url][`${property}`]
+        //  console.log(`${maker}`)
+        let makername = await data[`${maker}`].vcard$fn
+        //  console.log(`${makername}`)
+        let makerimg = await data[`${maker}`].vcard$hasPhoto
+        //  console.log(`${makerimg}`)
+        d.maker = `${maker}`
+        d.makername = `${makername}`
+        d.makerimg = `${makerimg}`
+        break;
+        case "http://purl.org/dc/terms/created":
+        let date = await data[d.url][`${property}`]
+        d.date = `${date}`
+        break;
+        case "http://rdfs.org/sioc/ns#content":
+        let content = await data[d.url][`${property}`]
+        d.content = `${content}`
+        break;
+        case "http://www.w3.org/2000/01/rdf-schema#type":
+        for await (const type of data[d.url][`${property}`]){
+          let ty = `${type}`
+          d.types = [... d.types, ty]
         }
+        break;
+        case "http://schema.org/parentItem":
+        case "http://schema.org/target":
+        let parentItem = await data[d.url][`${property}`]
+        d.parentItem = `${parentItem}`
+        break;
+        case "http://schema.org/comment":
+        for await (const comment of data[d.url][`${property}`]){
+          let co = `${comment}`
+          d.comments = [... d.comments, co]
+        }
+        break;
 
-        d.statements = [... d.statements, {property: `${property}` , values: values}]
+        default:
+        //  console.log("default", this.url)
+
+        for await (const val of data[d.url][`${property}`])
+        {
+          /*if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
+          d.likeAction = true
+        }*/
+        let  va = `${val}`
+        values.push(va)
+        //  console.log(values)
       }
 
+      d.statements = [... d.statements, {property: `${property}` , values: values}]
     }
+
   }
+
 });
 return instance
 }
@@ -380,7 +386,7 @@ return instance
 async getDefaultInstance(instance){
   instance.documents = []
   for await (const subject of data[instance.object].subjects){
-    console.log(`${subject}`);
+    //  console.log(`${subject}`);
     const doc = `${subject}`
     instance.documents.push(doc)
   }
