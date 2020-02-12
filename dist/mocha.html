@@ -10,7 +10,7 @@
 
 
 
-  <div id='mocha'></div>
+
   <script src='./vendor/mocha.js'></script>
   <script src='./vendor/chai.js'></script>
   <script>window.onerror=function(msg,url,line){document.getElementById('mocha').innerHTML+='<h1>'+msg+'</'+'h1>'+'<h2>'+url+':'+line+'</'+'h2>';return false}</script>
@@ -24,8 +24,7 @@
       const expect = chai.expect
       let sh = new Shighl()
     </script>
-    <!-- tests to run: -->
-    <script src='session-tests.js'></script>
+
 
     <h1>Shigh</h1>
     <h2>trackSession, Login, Logout</h2>
@@ -41,9 +40,12 @@
     <button onclick="getWebId()">Get webId</button>
     <br>
     WebId : <span id="info2"></span>
-
+<br><br>
     <button onclick="run_tests()">Run Mocha tests</button>
 
+    <div id='mocha'></div>
+    <!-- tests to run: -->
+    <script src='session-tests.js'></script>
     <script src='user-tests.js'></script>
 
 
@@ -52,6 +54,22 @@
       function run_tests(){
           mocha.run();
       }
+//logout()
+
+function callbackSession(webId){
+  if (webId != null){
+    info.innerHTML = webId
+    login_btn.style.display = "none"
+    logout_btn.style.display = "block"
+  }else{
+    info.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
+    login_btn
+    login_btn.style.display = "block"
+    logout_btn.style.display = "none"
+  }
+}
+// run trackSession
+sh.trackSession(callbackSession)
 
     </script>
   </body>
