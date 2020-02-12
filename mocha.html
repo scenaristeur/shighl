@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Shighl & Mocha</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <link href='./vendor/mocha.css' rel='stylesheet' />
+</head>
+<body>
+
+
+
+  <div id='mocha'></div>
+  <script src='./vendor/mocha.js'></script>
+  <script src='./vendor/chai.js'></script>
+  <script>window.onerror=function(msg,url,line){document.getElementById('mocha').innerHTML+='<h1>'+msg+'</'+'h1>'+'<h2>'+url+':'+line+'</'+'h2>';return false}</script>
+    <script class="mocha-init">
+      mocha.setup('bdd');
+      mocha.checkLeaks();
+    </script>
+    <!-- what to test: -->
+    <script src='../window/shighl.bundle.js'></script>
+    <script>
+      const expect = chai.expect
+      let sh = new Shighl()
+    </script>
+    <!-- tests to run: -->
+    <script src='session-tests.js'></script>
+
+    <h1>Shigh</h1>
+    <h2>trackSession, Login, Logout</h2>
+
+    <h3>trackSession()</h3>
+    Session : <span id="info"></span>
+
+    <h3>login() / logout()</h3>
+    <button id="login_btn" onclick="login()">Login</button>
+    <button id="logout_btn" onclick="logout()">Logout</button>
+
+    <h3>getWebId()</h3>
+    <button onclick="getWebId()">Get webId</button>
+    <br>
+    WebId : <span id="info2"></span>
+
+    <button onclick="run_tests()">Run Mocha tests</button>
+
+    <script src='user-tests.js'></script>
+
+
+    <!--<script src='second_test.js'></script>-->
+    <script class="mocha-exec">
+      function run_tests(){
+          mocha.run();
+      }
+
+    </script>
+  </body>
+  </html>
