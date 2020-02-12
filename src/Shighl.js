@@ -5,6 +5,7 @@ import { namedNode } from '@rdfjs/data-model';
 import ShighlInbox from './Shighl-inbox'
 import ShighlSession from './Shighl-session'
 import ShighlLongchat from './Shighl-longchat'
+import ShighlUser from './Shighl-user'
 
 class Shighl {
   constructor () {
@@ -14,6 +15,7 @@ class Shighl {
     this.inbox = new ShighlInbox()
     this.session = new ShighlSession()
     this.longchat = new ShighlLongchat()
+    this.user = new ShighlUser()
   }
 
   async test(){
@@ -567,4 +569,4 @@ testCallBack(cb){
 
 export default Shighl
 
-module.exports = Shighl;
+//module.exports = Shighl;

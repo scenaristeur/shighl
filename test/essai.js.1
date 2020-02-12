@@ -1,0 +1,37 @@
+
+//https://github.com/jeff-zucker/solid-auth-cli
+
+const path = require('path');
+let  fn = fn || path.join(process.env.HOME,".solid-auth-cli-config.json")
+console.log(fn)
+
+
+
+it.skip('Login session', async () => {
+
+  const solid = { auth:require('solid-auth-cli') }
+  const resource = "https://solidarity.inrupt.net/public/ChatTest/index.ttl"
+  const expected = "only the owner"
+//  const idp = "https://solid.community"
+
+  console.log("logging in ...")
+  login().then( session => {
+    console.log("sess", session)
+    console.log(`logged in as <${session.webId}>`)
+    solid.auth.fetch(resource).then( response => {
+      if (!response.ok) console.log(response.status+" "+response.statusText)
+      response.text().then( content => {
+        if( content.match(new RegExp(expected)) ) console.log("ok")
+        else console.log("Got something , but not the right thing.")
+      },e => console.log("Error parsing : "+e))
+    },e => console.log("Error fetching : "+e))
+  },e => console.log("Error logging in : "+e))
+
+  async function login() {
+    var session = await solid.auth.currentSession()
+    console.log("session",session)
+    if (!session) session = await solid.auth.login()
+    console.log("SESSION",`${session}`)
+    return session;
+  }
+})

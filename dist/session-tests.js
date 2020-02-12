@@ -1,11 +1,11 @@
-const chai = require('chai')
-const expect = chai.expect
+//const chai = require('chai')
 
 
-const Shighl = require('../src/Shighl')
-let sh = new Shighl()
 
-var assert = require('assert');
+//const Shighl = require('../src/Shighl')
+
+
+//var assert = require('assert');
 describe('Loading Shighl test', function() {
   describe('"Spoggy" is vcard$fullname of https://spoggy.solid.community/profile/card#me', function() {
     it('sh.test() should return "Spoggy"', async () => {
