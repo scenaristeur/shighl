@@ -9,7 +9,7 @@
 describe('User', function() {
   describe('"Spoggy" is vcard$fullname of https://spoggy.solid.community/profile/card#me', function() {
     it('sh.test() should return "Spoggy"', async () => {
-    sh.trackSession(callbackSession)
+  //  sh.trackSession(callbackSession)
     })
 
   /*  it('sh.test() should return "Spoggy"', async () => {
@@ -24,18 +24,6 @@ const info = document.getElementById("info")
 const login_btn = document.getElementById("login_btn")
 const logout_btn = document.getElementById("logout_btn")
 
-function callbackSession(webId){
-  if (webId != null){
-    info.innerHTML = webId
-    login_btn.style.display = "none"
-    logout_btn.style.display = "block"
-  }else{
-    info.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
-    login_btn
-    login_btn.style.display = "block"
-    logout_btn.style.display = "none"
-  }
-}
 
 //////////////////////////////////
 //  Login / Logout
