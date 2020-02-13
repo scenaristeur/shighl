@@ -18,6 +18,65 @@
 
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
+
+# Shighl
+
+## session
+- sh.session.track() listen session changes
+- sh.session.get() return webId/null
+- sh.session.login() return webId if logged else opens login popup & return webId
+- sh.session.logout() return success/error
+
+## user ## profile
+- sh.user.name.get() return success/error
+- sh.user.name.set(string)
+- sh.user.publictypeindex.get(webId)
+- sh.user.privatetypeindex.get(webId)
+- sh.user.storage.get(webId)
+- sh.user.getInstances(typeOfInstance)
+
+## note
+- sh.notes.get(instance) return Array
+- (sh.notes.subjects.get(instance) return Array) ??
+- sh.notes.create(webId) return success/error
+- sh.notes.remove(webId) return success/error
+- sh.notes.update(webId) return success/error
+- sh.notes.delete(webId) return success/error
+
+## chat
+- sh.chat.get(instance) return Array
+- (sh.chat.subjects.get(instance) return Array) ??
+- sh.chat.calendar.get(instance) return {years: Array, months: Array, days: Array}
+- sh.chat.messages.get(date) return Array
+- sh.chat.message.detail(messageUrl)
+- sh.chat.message.send({creator: webId, content:content} )
+- sh.chat.message.reply(parentMessageUrl)
+
+## friends
+- sh.friends.get() return Array
+- sh.friends.create(webId) return success/error
+- sh.friends.remove(webId) return success/error
+- sh.friends.update(webId) return success/error
+- sh.friends.delete(webId) return success/error
+
+## inbox
+- sh.inbox.get(webId)
+- sh.inbox.get.messages(inbox)
+- sh.inbox.send.message()
+
+## bookmark
+- sh.bookmarks.get(instance) return Array
+- sh.bookmarks.create(webId) return success/error
+- sh.bookmarks.remove(webId) return success/error
+- sh.bookmarks.update(webId) return success/error
+- sh.bookmarks.delete(webId) return success/error
+
+## hola (Holacratie)
+- sh.hola.tension.create
+...
+
+
+
 # shighl
 S-olid HIGH L-evel
 
@@ -197,6 +256,6 @@ async function run(){
 
 
     https://blog.jakoblind.no/webpack-code-splitting-libraries-what-to-do-with-the-files/
- - build ldflex-query
- https://gist.github.com/bellbind/24d9a5851397d45e4fa83fa8ec30449c
-https://git.happy-dev.fr/startinblox/framework/sib-store/blob/master/package.json
+    - build ldflex-query
+    https://gist.github.com/bellbind/24d9a5851397d45e4fa83fa8ec30449c
+    https://git.happy-dev.fr/startinblox/framework/sib-store/blob/master/package.json

@@ -2,9 +2,9 @@ import * as auth from 'solid-auth-client';
 import data from "@solid/query-ldflex";
 import { namedNode } from '@rdfjs/data-model';
 
-class ShighlLongchat {
+class ShighlChat {
   constructor () {
-    console.log("Shighl LONGCHAT loaded")
+    console.log("Shighl CHAT loaded")
     this.webId = null
     this.friends = []
   }
@@ -16,4 +16,4 @@ class ShighlLongchat {
 
 }
 
-export default ShighlLongchat
+export default ShighlChat

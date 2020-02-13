@@ -4,8 +4,9 @@ import { namedNode } from '@rdfjs/data-model';
 
 import ShighlInbox from './Shighl-inbox'
 import ShighlSession from './Shighl-session'
-import ShighlLongchat from './Shighl-longchat'
+import ShighlChat from './Shighl-chat'
 import ShighlUser from './Shighl-user'
+import ShighlHola from './Shighl-hola'
 
 class Shighl {
   constructor () {
@@ -14,8 +15,9 @@ class Shighl {
     this.friends = []
     this.inbox = new ShighlInbox()
     this.session = new ShighlSession()
-    this.longchat = new ShighlLongchat()
+    this.chat = new ShighlChat()
     this.user = new ShighlUser()
+    this.hola = new ShighlHola()
   }
 
   async test(){
