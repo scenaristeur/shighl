@@ -1,16 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////
-// What is a Shighl ?
-// Shighl, is for S-olid high L-evel
-// a tool that let you write simple html/js to interact with a Solid POD
-// Session, Profile, Inbox, Chat...
-// Source : https://github.com/scenaristeur/shighl/
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// Qu'est-ce que Shighl ?
-// Shighl, c'est pour S-olid high L-evel
-// un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
-// Session, Profil, Messagerie, Chat...
-// Source : https://github.com/scenaristeur/shighl/
+# What is a Shighl ?
+- Shighl, is for S-olid high L-evel
+- a tool that let you write simple html/js to interact with a Solid POD
+- Session, Profile, Inbox, Chat...
+- Source : https://github.com/scenaristeur/shighl/
+
+# Qu'est-ce que Shighl ?
+- Shighl, c'est pour S-olid high L-evel
+- un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
+- Session, Profil, Messagerie, Chat...
+- Source : https://github.com/scenaristeur/shighl/
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -82,22 +81,35 @@ S-olid HIGH L-evel
 
 - Some facilities to interact with a Solid POD
 - based on ldflex-query
-- use it in your project ? just copy  /dist/window/shighl.bundle.js to tour folder and import with
+
+# use it in your project ? just copy  /dist/window/shighl.bundle.js to tour folder and import with
 ```
 <script src="window/shighl.bundle.js"> </script>
 <script>
 const sh = new Shighl()
-console.log(sh)
 sh.test()
 </script>
 ```
-- or import
+# or import
+```
+npm install --save scenaristeur/shighl
+```
+
 ```
 import  Shighl  from 'shighl'
 ...
 const sh = new Shighl()
-console.log(sh)
 sh.test()
+```
+
+then you should see the result of this test
+
+```
+async test(){
+  var name = await data['https://spoggy.solid.community/profile/card#me'].vcard$fn
+  console.log(`${name}`);
+  return `${name}`
+}
 ```
 
 see /dist/index.html
@@ -214,48 +226,48 @@ async function run(){
 
     </html>
 
-    ```
+```
 
 
-    # Functionnalities
-    - General
-    - [ X ] Session : trackSession() / login() / logout () / getWebId() return webId/null
+# Functionnalities
+- General
+- [ X ] Session : trackSession() / login() / logout () / getWebId() return webId/null
     <a href="https://scenaristeur.github.io/shighl/tracksession-login-logout.html" target="_blank">Session</a>
 
-    - Profile
-    - [ X ] getName(webId) return String
-    - [ X ] getPhoto(webId) return String
-    - [ X ] getFriends(webId) return Array of friends (String)
-    - [ X ] getPublicTypeIndex(webId) return String / Array of instances (Objects) with props subject, predicate, object, classe, shortClasse
+- Profile
+- [ X ] getName(webId) return String
+- [ X ] getPhoto(webId) return String
+- [ X ] getFriends(webId) return Array of friends (String)
+- [ X ] getPublicTypeIndex(webId) return String / Array of instances (Objects) with props subject, predicate, object, classe, shortClasse
     <a href="https://scenaristeur.github.io/shighl/profile.html" target="_blank">Profile</a>
 
-    - publicTypeIndex
-    - [ ] (? getDetails(webId) return Object)
+- publicTypeIndex
+- [ ] (? getDetails(webId) return Object)
 
-    - LongChat
-    - [ ] getFolder(publicTypeIndex) return String
-    - [ ] getPath(folder) return String
-    - [ ] getMessages(path) return Array of Messages
-    - [ ] getDetails(messageUrl) return Object
+- LongChat
+- [ ] getFolder(publicTypeIndex) return String
+- [ ] getPath(folder) return String
+- [ ] getMessages(path) return Array of Messages
+- [ ] getDetails(messageUrl) return Object
 
-    - Inbox
-    - [ ] getInbox() return String
-    - [ ] getMessages(inbox) return Array (with basic details ?)
-    - [ ] getDetails(messageUrl) return Object/Array
-    - [ ] sendMessage(inbox_dest) return result/error
+- Inbox
+- [ ] getInbox() return String
+- [ ] getMessages(inbox) return Array (with basic details ?)
+- [ ] getDetails(messageUrl) return Object/Array
+- [ ] sendMessage(inbox_dest) return result/error
 
-    - Acl
-    - [ ] getAcl(path) return Array
+- Acl
+- [ ] getAcl(path) return Array
 
     templates bootstrap https://bootsnipp.com/tags/chat
 
     # webpack build copied from @jeffz https://jeff-zucker.github.io/solid-file-client
 
-    - build & publish to gh-pages
+- build & publish to gh-pages
     npm run build && git subtree push --prefix dist origin gh-pages
 
 
     https://blog.jakoblind.no/webpack-code-splitting-libraries-what-to-do-with-the-files/
-    - build ldflex-query
+- build ldflex-query
     https://gist.github.com/bellbind/24d9a5851397d45e4fa83fa8ec30449c
     https://git.happy-dev.fr/startinblox/framework/sib-store/blob/master/package.json
