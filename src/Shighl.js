@@ -134,39 +134,6 @@ class Shighl {
     return pti
   }
 
-  ////////////////////////////
-  // Inbox
-  //////////////////////////
-  async getInbox(webId = this.webId){
-    return await data[webId].ldp$inbox
-  }
-
-  async getMessages(inbox){
-    this.messages = []
-    try{
-      for await (const mess of data[inbox]['ldp$contains']){
-        console.log(`${mess}`)
-        if ( `${mess}`.endsWith('/log.ttl') == false){
-          var m = {}
-          m.url = `${mess}`
-          m.dateSent = new Date(await data[m.url].schema$dateSent)
-          m.date = m.dateSent.toLocaleString(navigator.language)
-          m.label = await data[m.url].rdfs$label
-          m.sender = await data[m.url].schema$sender
-          m.text = await data[m.url].schema$text
-          m.senderName = await data[m.sender].vcard$fn;
-          this.messages = [... this.messages, m]
-        }
-        else{
-          this.messages.log = `${mess}`
-        }
-      }
-      console.log(this.messages)
-      return this.messages
-    }catch(e){
-      return e
-    }
-  }
 
   // Instances Lonchat, Notes ...
   //getDetails(messageUrl), sendMessage(inbox_dest)
@@ -432,7 +399,7 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
             message.id = message.date.getTime()
             message.sender = webId
             message.url = message.recipient+message.id+".ttl"
-            await this.buildMessage(message)
+            await this.inbox.buildMessage(message)
             //  console.log("NOTIF",message)
 
           }else{
@@ -450,6 +417,8 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
   }
 }
 
+
+/*
 async buildMessage(message){
   var mess = message.url
   console.log(message)
@@ -464,7 +433,7 @@ async buildMessage(message){
   }catch(e){
     alert(e)
   }
-}
+}*/
 
 /*
 async getDetails(messageUrl){
