@@ -24,7 +24,7 @@ class ShighlUser {
 
   get photo() {
    return (async () => {
-       var p = await data[webId].vcard$hasPhoto;
+       var p = await data[this.webId].vcard$hasPhoto;
        return `${p}`
    })();
 }
