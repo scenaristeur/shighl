@@ -14,15 +14,15 @@ class ShighlUser {
 
   }
 
-
-  get name() {
-   return (async () => {
-     console.log(this.webId)
-       var name =await data[this.webId].vcard$fn;
-         console.log(`${name}`);
-       return `${name}`
-   })();
-}
+  //new sh.user("https://solidarity.inrupt.net/profile/card#me").name
+    get name() {
+     return (async () => {
+       console.log(this.webId)
+         var name =await data[this.webId].vcard$fn;
+           console.log(`${name}`);
+         return `${name}`
+     })();
+  }
 
   async test(){
     var name = await data['https://spoggy.solid.community/profile/card#me'].vcard$fn
