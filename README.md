@@ -10,9 +10,8 @@
 - un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
 - Session, Profil, Messagerie, Chat...
 - Source : https://github.com/scenaristeur/shighl/
+
 ///////////////////////////////////////////////////////////////////////////////
-
-
 
 
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
@@ -26,7 +25,7 @@
 - sh.session.login() return webId if logged else opens login popup & return webId
 - sh.session.logout() return success/error
 
-## user ## profile
+## user / profile
 - sh.user.name.get() return success/error
 - sh.user.name.set(string)
 - sh.user.publictypeindex.get(webId)
