@@ -2,31 +2,28 @@ import * as auth from 'solid-auth-client';
 import data from "@solid/query-ldflex";
 import { namedNode } from '@rdfjs/data-model';
 
-///////////////////////////////////////////////////////////////////////////////
-// What is a Shighl ?
-// Shighl, is for S-olid high L-evel
-// a tool that let you write simple html/js to interact with a Solid POD
-// Session, Profile, Inbox, Chat...
-// Source : https://github.com/scenaristeur/shighl/
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// Qu'est-ce que Shighl ?
-// Shighl, c'est pour S-olid high L-evel
-// un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
-// Session, Profil, Messagerie, Chat...
-// Source : https://github.com/scenaristeur/shighl/
-///////////////////////////////////////////////////////////////////////////////
+import ShighlInbox from './Shighl-inbox'
+import ShighlSession from './Shighl-session'
+import ShighlChat from './Shighl-chat'
+import ShighlUser from './Shighl-user'
+import ShighlHola from './Shighl-hola'
 
 class Shighl {
   constructor () {
     console.log("Shighl loaded")
     this.webId = null
     this.friends = []
+    this.inbox = new ShighlInbox()
+    this.session = new ShighlSession()
+    this.chat = new ShighlChat()
+    this.user = new ShighlUser()
+    this.hola = new ShighlHola()
   }
 
   async test(){
     var name = await data['https://spoggy.solid.community/profile/card#me'].vcard$fn
     console.log(`${name}`);
+    return `${name}`
   }
 
   ///////////////////
@@ -139,39 +136,6 @@ class Shighl {
     return pti
   }
 
-  ////////////////////////////
-  // Inbox
-  //////////////////////////
-  async getInbox(webId = this.webId){
-    return await data[webId].ldp$inbox
-  }
-
-  async getMessages(inbox){
-    this.messages = []
-    try{
-      for await (const mess of data[inbox]['ldp$contains']){
-        console.log(`${mess}`)
-        if ( `${mess}`.endsWith('/log.ttl') == false){
-          var m = {}
-          m.url = `${mess}`
-          m.dateSent = new Date(await data[m.url].schema$dateSent)
-          m.date = m.dateSent.toLocaleString(navigator.language)
-          m.label = await data[m.url].rdfs$label
-          m.sender = await data[m.url].schema$sender
-          m.text = await data[m.url].schema$text
-          m.senderName = await data[m.sender].vcard$fn;
-          this.messages = [... this.messages, m]
-        }
-        else{
-          this.messages.log = `${mess}`
-        }
-      }
-      console.log(this.messages)
-      return this.messages
-    }catch(e){
-      return e
-    }
-  }
 
   // Instances Lonchat, Notes ...
   //getDetails(messageUrl), sendMessage(inbox_dest)
@@ -437,7 +401,7 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
             message.id = message.date.getTime()
             message.sender = webId
             message.url = message.recipient+message.id+".ttl"
-            await this.buildMessage(message)
+            await this.inbox.buildMessage(message)
             //  console.log("NOTIF",message)
 
           }else{
@@ -455,6 +419,8 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
   }
 }
 
+
+/*
 async buildMessage(message){
   var mess = message.url
   console.log(message)
@@ -469,7 +435,7 @@ async buildMessage(message){
   }catch(e){
     alert(e)
   }
-}
+}*/
 
 /*
 async getDetails(messageUrl){
@@ -573,3 +539,5 @@ testCallBack(cb){
 }
 
 export default Shighl
+
+//module.exports = Shighl;

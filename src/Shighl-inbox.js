@@ -2,21 +2,6 @@ import * as auth from 'solid-auth-client';
 import data from "@solid/query-ldflex";
 import { namedNode } from '@rdfjs/data-model';
 
-///////////////////////////////////////////////////////////////////////////////
-// What is a Shighl ?
-// Shighl, is for S-olid high L-evel
-// a tool that let you write simple html/js to interact with a Solid POD
-// Session, Profile, Inbox, Chat...
-// Source : https://github.com/scenaristeur/shighl/
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// Qu'est-ce que Shighl ?
-// Shighl, c'est pour S-olid high L-evel
-// un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
-// Session, Profil, Messagerie, Chat...
-// Source : https://github.com/scenaristeur/shighl/
-///////////////////////////////////////////////////////////////////////////////
-
 class ShighlInbox {
   constructor () {
     console.log("Shighl INBOX loaded")
@@ -29,7 +14,59 @@ class ShighlInbox {
     console.log(`${name}`);
   }
 
+  ////////////////////////////
+  // Inbox
+  //////////////////////////
+  async getInbox(webId = this.webId){
+    return await data[webId].ldp$inbox
+  }
 
+  async getMessages(inbox){
+    this.messages = []
+    try{
+      for await (const mess of data[inbox]['ldp$contains']){
+        //  console.log(`${mess}`)
+        if ( `${mess}`.endsWith('/log.ttl') == false){
+          try{
+            var m = {}
+            m.url = `${mess}`
+            m.dateSent = new Date(await data[m.url].schema$dateSent)
+            m.date = m.dateSent.toLocaleString(navigator.language)
+            m.label = await data[m.url].rdfs$label
+            m.sender = await data[m.url].schema$sender
+            m.text = await data[m.url].schema$text
+            m.senderName = await data[m.sender].vcard$fn;
+            this.messages = [... this.messages, m]
+          }catch(e){
+            console.log(e, `${mess}`)
+          }
+        }
+        else{
+          this.messages.log = `${mess}`
+        }
+      }
+      //  console.log(this.messages)
+      return this.messages
+    }catch(e){
+      console.log(e)
+    }
+  }
+
+  async buildMessage(message){
+    var mess = message.url
+    console.log(message)
+    try{
+      await data[mess].schema$text.add(message.content);
+      await data[mess].rdfs$label.add(message.title)
+      await data[mess].schema$dateSent.add(message.date.toISOString())
+      await data[mess].rdf$type.add(namedNode('https://schema.org/Message'))
+      await data[mess].schema$sender.add(namedNode(this.webId))
+      var notif = message.recipient+"log.ttl#"+message.id
+      await data[notif].schema$message.add(namedNode(mess))
+    }catch(e){
+      alert(e)
+    }
+  }
 
 }
 

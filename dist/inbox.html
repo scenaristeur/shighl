@@ -8,14 +8,11 @@
   <script src="window/shighl.bundle.js"> </script>
 </head>
 <body>
-
+  
   <h1>Shigh</h1>
   <h2>Inbox</h2>
-
-  <input id="webId" value="https://spoggy.solid.community/profile/card#me" size="70"/><br>  <br>
-
-
-  <button onclick="getInbox()">getInbox(webId)</button>
+    <input id="webId" value="https://spoggy.solid.community/profile/card#me" size="70"/><br>  <br>
+    <button onclick="getInbox()">getInbox(webId)</button>
   <br>
   Inbox :   <input id="inbox_input" value="" size="70"/><br>  <br>
   <br>
@@ -24,10 +21,7 @@
   Messages : <br>
   <ul id="messages">
   </ul>
-
-
-
-  <br><br>
+    <br><br>
   <a href="index.html">Back to index</a> |
   <a href="https://github.com/scenaristeur/shighl/tree/master/dist/inbox.html" target="_blank">
     Source</a>
@@ -55,7 +49,7 @@
   const inbox_input = document.getElementById("inbox_input")
   async function getInbox(){
     const webId = document.getElementById("webId").value
-    const inbox = await sh.getInbox(webId)
+    const inbox = await sh.inbox.getInbox(webId)
     inbox_input.value = inbox
   }
 
@@ -67,7 +61,7 @@
 
     const inbox_url = document.getElementById("inbox_input").value
     console.log(inbox_url)
-    let messages  = await sh.getMessages(inbox_url)
+    let messages  = await sh.inbox.getMessages(inbox_url)
     console.log(messages)
     messages_ul.innerHTML = ""
     messages.forEach(function(m){
