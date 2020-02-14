@@ -17,12 +17,17 @@ class ShighlUser {
   //new sh.user("https://solidarity.inrupt.net/profile/card#me").name
     get name() {
      return (async () => {
-       console.log(this.webId)
-         var name =await data[this.webId].vcard$fn;
-           console.log(`${name}`);
-         return `${name}`
+         var n = await data[this.webId].vcard$fn;
+         return `${n}`
      })();
   }
+
+  get photo() {
+   return (async () => {
+       var p = await data[webId].vcard$hasPhoto;
+       return `${p}`
+   })();
+}
 
   async test(){
     var name = await data['https://spoggy.solid.community/profile/card#me'].vcard$fn
