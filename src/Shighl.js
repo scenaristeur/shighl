@@ -16,7 +16,7 @@ class Shighl {
     this.inbox = new ShighlInbox()
     this.session = new ShighlSession()
     this.chat = new ShighlChat()
-    this.user = new ShighlUser()
+    this.user = ShighlUser
     this.hola = new ShighlHola()
   }
 
@@ -71,12 +71,8 @@ class Shighl {
   //Profile
   //////////////
   async getName (webId = this.webId) {
-    try {
-      const fullname = await data[webId].vcard$fn;
-      return `${fullname}`
-    }catch(e){
-      return e
-    }
+    console.warn("getName(webId) will be Deprecated, use new sh.user('https://solidarity.inrupt.net/profile/card#me').name instead ")
+    this.user(webId).name
   }
 
   async getPhoto(webId = this.webId){
@@ -422,19 +418,19 @@ async sendChatMessage(instance, content, webId, postType = null, replyTo = null,
 
 /*
 async buildMessage(message){
-  var mess = message.url
-  console.log(message)
-  try{
-    await data[mess].schema$text.add(message.content);
-    await data[mess].rdfs$label.add(message.title)
-    await data[mess].schema$dateSent.add(message.date.toISOString())
-    await data[mess].rdf$type.add(namedNode('https://schema.org/Message'))
-    await data[mess].schema$sender.add(namedNode(this.webId))
-    var notif = message.recipient+"log.ttl#"+message.id
-    await data[notif].schema$message.add(namedNode(mess))
-  }catch(e){
-    alert(e)
-  }
+var mess = message.url
+console.log(message)
+try{
+await data[mess].schema$text.add(message.content);
+await data[mess].rdfs$label.add(message.title)
+await data[mess].schema$dateSent.add(message.date.toISOString())
+await data[mess].rdf$type.add(namedNode('https://schema.org/Message'))
+await data[mess].schema$sender.add(namedNode(this.webId))
+var notif = message.recipient+"log.ttl#"+message.id
+await data[notif].schema$message.add(namedNode(mess))
+}catch(e){
+alert(e)
+}
 }*/
 
 /*
