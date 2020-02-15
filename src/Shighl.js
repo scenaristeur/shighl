@@ -14,12 +14,12 @@ class Shighl {
     console.log("Shighl loaded")
     this.webId = null
     this.friends = []
-    this.inbox = new ShighlInbox()
-    this.session = new ShighlSession()
-    this.chat = new ShighlChat()
+    this.inbox = ShighlInbox
+    this.session = ShighlSession
+    this.chat = ShighlChat
     this.pod = ShighlPod
-    this.hola = new ShighlHola()
-    this.notes = new ShighlNotes()
+    this.hola = ShighlHola
+    this.notes = ShighlNotes
   }
 
   async test(){
@@ -31,6 +31,7 @@ class Shighl {
   ///////////////////
   // Session
   //////////////////
+  //migrated to Shighl-session.js
   async trackSession(cb) {
     var module = this
     auth.trackSession(async function(session) {

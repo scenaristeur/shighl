@@ -17,48 +17,53 @@
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
 # example
-with shighl.bundle.js that you can find in the /dist/window/ folder of the present repo
 
-[link to example](https://scenaristeur.github.io/shighl/pod.html)
+
+# Shighl
+
+## pod
+[see sh.pod live example](https://scenaristeur.github.io/shighl/pod.html)
+
+[codepen version](https://codepen.io/spoggy/pen/eYNZNoO)
+
+use shighl.bundle.js that you can find in the /dist/window/ folder
+
 
 ```
 <html>
 <script src="./window/shighl.bundle.js"> </script>
 <script>
-  async function init(){
-    let sh = new Shighl()
-    console.log(sh)
-    let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
+async function init(){
+  let sh = new Shighl()
+  console.log(sh)
+  let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
 
-    let name = await pod.name
-    let photo = await pod.photo
-    let friends = await pod.friends
-    let pti = await pod.pti
-    let role = await pod.role
-    let storage = await pod.storage
+  let name = await pod.name
+  let photo = await pod.photo
+  let friends = await pod.friends
+  let pti = await pod.pti
+  let role = await pod.role
+  let storage = await pod.storage
 
-    console.log("Name: ",name)
-    console.log("Photo: ",photo)
-    console.log("Friends: ",friends)
-    console.log("publicTypeIndex & instances: ",pti)
-    console.log("Role:",role)
-    console.log("Storage: ",storage)
-  }
+  console.log("Name: ",name)
+  console.log("Photo: ",photo)
+  console.log("Friends: ",friends)
+  console.log("publicTypeIndex & instances: ",pti)
+  console.log("Role:",role)
+  console.log("Storage: ",storage)
+}
 </script>
 <body onload="init()">
-  Look the web console to see the pod infos (Ctrl+Maj+i)
+Look the web console to see the pod infos (Ctrl+Maj+i)
 </body>
 </html>
 ```
 
-# Shighl
 
-## pod
-[see sh.pod](https://scenaristeur.github.io/shighl/pod.html)
-[old version](https://codepen.io/spoggy/pen/eYNZNoO)
+
 ```
 let pod = new sh.pod(webId)
- //example : let pod = new sh.pod("https://solidarity.inrupt.net/profile/card#me")
+//example : let pod = new sh.pod("https://solidarity.inrupt.net/profile/card#me")
 let name = await pod.name  --> return String
 let photo = await pod.photo --> return String of photo url
 let friends = await pod.friends --> return Array of webId
@@ -81,16 +86,75 @@ classe: "http://www.w3.org/ns/pim/meeting#LongChat"
 
 ### setting pod infos
 - [] sh.pod.name = string
+- [] sh.pod.create for creating a new pti instance (bookmark, notes, longchat...)
 
 
 ## session
-- sh.session.track() listen session changes
-- sh.session.get() return webId/null
-- sh.session.login() return webId if logged else opens login popup & return webId
-- sh.session.logout() return success/error
+```
+<html>
+<script src="./window/shighl.bundle.js"> </script>
+
+<body onload="init()">
+
+Look the web console to see the pod infos (Ctrl+Maj+i)<br><br>
+
+<h3>trackSession()</h3>
+Session : <span id="info"></span>
+
+<h3>login() / logout()</h3>
+<button id="login_btn" onclick="session.login()">Login</button>
+<br>  <button id="logout_btn" onclick="session.logout()">Logout</button>
+<br> <br>
+
+
+<a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+<br>
+<a href="index.html">Back to index</a>
+<script>
+
+const info = document.getElementById("info")
+const login_btn = document.getElementById("login_btn")
+const logout_btn = document.getElementById("logout_btn")
+const sh = new Shighl()
+console.log(sh)
+let session = new sh.session()
+
+async function init(){
+  await session.track(mycallback)
+}
+
+function mycallback(webId){
+  console.log("WebId: ",webId)
+  if (webId != null){
+    info.innerHTML = webId
+    login_btn.style.display = "none"
+    logout_btn.style.display = "block"
+  }
+  else{
+    info.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
+    login_btn.style.display = "block"
+    logout_btn.style.display = "none"
+    session.login()
+  }
+}
+
+
+</script>
+</body>
+
+</html>
+```
+
+
+- [x] session.track(callback) listen session changes and then execute callback
+- [x] session.login() return webId if logged else open login popup & return webId
+- [x] session.logout()
+- [] session.webId return webId/null
 
 
 ## note
+when you get an instance (with pod.pti) of shortClasse "Notes" and once you are logged with sh.session
+
 - sh.notes.get(instance) return Array
 - (sh.notes.subjects.get(instance) return Array) ??
 - sh.notes.create(webId) return success/error
@@ -282,50 +346,50 @@ async function run(){
 
     </html>
 
-```
+    ```
 
 
-# Functionnalities
-- General
-- [ X ] Session : trackSession() / login() / logout () / getWebId() return webId/null
+    # Functionnalities
+    - General
+    - [ X ] Session : trackSession() / login() / logout () / getWebId() return webId/null
     <a href="https://scenaristeur.github.io/shighl/tracksession-login-logout.html" target="_blank">Session</a>
 
-- Profile
-- [ X ] getName(webId) return String
-- [ X ] getPhoto(webId) return String
-- [ X ] getFriends(webId) return Array of friends (String)
-- [ X ] getPublicTypeIndex(webId) return String / Array of instances (Objects) with props subject, predicate, object, classe, shortClasse
+    - Profile
+    - [ X ] getName(webId) return String
+    - [ X ] getPhoto(webId) return String
+    - [ X ] getFriends(webId) return Array of friends (String)
+    - [ X ] getPublicTypeIndex(webId) return String / Array of instances (Objects) with props subject, predicate, object, classe, shortClasse
     <a href="https://scenaristeur.github.io/shighl/profile.html" target="_blank">Profile</a>
 
-- publicTypeIndex
-- [ ] (? getDetails(webId) return Object)
+    - publicTypeIndex
+    - [ ] (? getDetails(webId) return Object)
 
-- LongChat
-- [ ] getFolder(publicTypeIndex) return String
-- [ ] getPath(folder) return String
-- [ ] getMessages(path) return Array of Messages
-- [ ] getDetails(messageUrl) return Object
+    - LongChat
+    - [ ] getFolder(publicTypeIndex) return String
+    - [ ] getPath(folder) return String
+    - [ ] getMessages(path) return Array of Messages
+    - [ ] getDetails(messageUrl) return Object
 
-- Inbox
-- [ ] getInbox() return String
-- [ ] getMessages(inbox) return Array (with basic details ?)
-- [ ] getDetails(messageUrl) return Object/Array
-- [ ] sendMessage(inbox_dest) return result/error
+    - Inbox
+    - [ ] getInbox() return String
+    - [ ] getMessages(inbox) return Array (with basic details ?)
+    - [ ] getDetails(messageUrl) return Object/Array
+    - [ ] sendMessage(inbox_dest) return result/error
 
-- Acl
-- [ ] getAcl(path) return Array
+    - Acl
+    - [ ] getAcl(path) return Array
 
     templates bootstrap https://bootsnipp.com/tags/chat
 
     # webpack build copied from @jeffz https://jeff-zucker.github.io/solid-file-client
 
-- build & publish to gh-pages
-```
+    - build & publish to gh-pages
+    ```
     npm run build  
     git subtree push --prefix dist origin gh-pages
-```
+    ```
 
     https://blog.jakoblind.no/webpack-code-splitting-libraries-what-to-do-with-the-files/
-- build ldflex-query
+    - build ldflex-query
     https://gist.github.com/bellbind/24d9a5851397d45e4fa83fa8ec30449c
     https://git.happy-dev.fr/startinblox/framework/sib-store/blob/master/package.json
