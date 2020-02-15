@@ -30,7 +30,7 @@ class ShighlUser {
         for await (const fwebid of data[this.webId].friends){
           var friend = {}
           friend.webId = `${fwebid}`
-          friends = [... friends, friend]
+          friends.push(friend)
         }
         return friends
     })();
