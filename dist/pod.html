@@ -10,11 +10,15 @@
     let photo = await pod.photo
     let friends = await pod.friends
     let pti = await pod.pti
+    let role = await pod.role
+    let storage = await pod.storage
 
-    console.log(name)
-    console.log(photo)
-    console.log(friends)
-    console.log(pti)
+    console.log("Name: ",name)
+    console.log("Photo: ",photo)
+    console.log("Friends: ",friends)
+    console.log("publicTypeIndex & instances: ",pti)
+    console.log("Role:",role)
+    console.log("Storage: ",storage)
   }
 
 </script>

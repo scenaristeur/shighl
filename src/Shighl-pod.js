@@ -77,14 +77,22 @@ class ShighlPod {
 
   get privatetypeindex() {
     return (async () => {
-      var prti = await data[this.webId].vcard$fn;
-      return `${prti}`
+      console.log("todo")
+    /*  var prti = await data[this.webId].vcard$fn;
+      return `${prti}`*/
+    })();
+  }
+
+  get role() {
+    return (async () => {
+      var s = await data[this.webId].vcard$role;
+      return `${s}`
     })();
   }
 
   get storage() {
     return (async () => {
-      var s = await data[this.webId].vcard$fn;
+      var s = await data[this.webId]['http://www.w3.org/ns/pim/space#storage'];
       return `${s}`
     })();
   }

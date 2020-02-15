@@ -17,7 +17,11 @@
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
 # example
-```[link to example](https://scenaristeur.github.io/shighl/pod.html)
+with shighl.bundle.js that you can find in the /dist/window/ folder of the present repo
+
+[link to example](https://scenaristeur.github.io/shighl/pod.html)
+
+```
 <html>
 <script src="./window/shighl.bundle.js"> </script>
 <script>
@@ -30,35 +34,24 @@
     let photo = await pod.photo
     let friends = await pod.friends
     let pti = await pod.pti
+    let role = await pod.role
+    let storage = await pod.storage
 
-    console.log(name)
-    console.log(photo)
-    console.log(friends)
-    console.log(pti)
+    console.log("Name: ",name)
+    console.log("Photo: ",photo)
+    console.log("Friends: ",friends)
+    console.log("publicTypeIndex & instances: ",pti)
+    console.log("Role:",role)
+    console.log("Storage: ",storage)
   }
-
 </script>
-
 <body onload="init()">
-
   Look the web console to see the pod infos (Ctrl+Maj+i)
-
 </body>
-
 </html>
-
 ```
 
-
-
-
 # Shighl
-
-## session
-- sh.session.track() listen session changes
-- sh.session.get() return webId/null
-- sh.session.login() return webId if logged else opens login popup & return webId
-- sh.session.logout() return success/error
 
 ## pod
 [see sh.pod](https://scenaristeur.github.io/shighl/pod.html)
@@ -78,13 +71,23 @@ classe: "http://www.w3.org/ns/pim/meeting#LongChat"
 ​​​shortClasse: "LongChat"
 ​​​url: "https://spoggy.solid.community/public/thirdChat/index.ttl#this"
 ```
+### getting pod infos
 - [x] sh.pod.name
 - [x] sh.pod.photo
 - [x] sh.pod.friends
-- [] sh.pod.pti (publicTypeIndex & instances)
-- [] sh.pod.role
+- [x] sh.pod.pti (return publicTypeIndex & instances)
+- [x] sh.pod.role
+- [x] sh.pod.storage
+
+### setting pod infos
 - [] sh.pod.name = string
-- [] sh.pod.storage.get(webId)
+
+
+## session
+- sh.session.track() listen session changes
+- sh.session.get() return webId/null
+- sh.session.login() return webId if logged else opens login popup & return webId
+- sh.session.logout() return success/error
 
 
 ## note
