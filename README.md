@@ -18,7 +18,11 @@
 
 # Shighl
 ## Howto
-use shighl.bundle.js that you can find in the /dist/window/ folder or install with ```npm install --save scenaristeur/shighl``` and import with ```import from 'shighl'```
+see /dist folder for examples
+### Browser
+use shighl.bundle.js that you can find in the /dist/window/ folder.
+### Es6 module
+ install with ```npm install --save scenaristeur/shighl``` and import with ```import from 'shighl'```.
 
 ## sh.pod
 ### getting pod infos
@@ -83,8 +87,7 @@ classe: "http://www.w3.org/ns/pim/meeting#LongChat"
 ​​​url: "https://spoggy.solid.community/public/thirdChat/index.ttl#this"
 ```
 
-
-## session
+## sh.session
 [see sh.session live example](https://scenaristeur.github.io/shighl/session.html)
 - [x] session.track(callback) listen session changes and then execute callback
 - [x] session.login() return webId if logged else open login popup & return webId
@@ -146,7 +149,7 @@ function mycallback(webId){
 </html>
 ```
 
-## note
+## sh.note
 when you get an instance (with pod.pti) of shortClasse "Notes" and once you are logged with sh.session
 
 - sh.notes.get(instance) return Array
@@ -157,9 +160,18 @@ when you get an instance (with pod.pti) of shortClasse "Notes" and once you are 
 - sh.notes.delete(webId) return success/error
 
 ## chat
-- sh.chat.get(instance) return Array
+when you get an instance (with pod.pti) of shortClasse "LongChat" and once you are logged with sh.session
+```
+let chat = new sh.chat(instance)
+let chat_details = await chat.init
+info.innerHTML = JSON.stringify(chat_details)
+let messages = await chat.messages
+messages_liste.innerHTML = JSON.stringify(messages)
+```
+
+- [x] chat.init
+- [ ] chat.messages
 - (sh.chat.subjects.get(instance) return Array) ??
-- sh.chat.calendar.get(instance) return {years: Array, months: Array, days: Array}
 - sh.chat.messages.get(date) return Array
 - sh.chat.message.detail(messageUrl)
 - sh.chat.message.send({creator: webId, content:content} )
