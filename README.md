@@ -25,19 +25,31 @@
 - sh.session.login() return webId if logged else opens login popup & return webId
 - sh.session.logout() return success/error
 
-## user / profile (test with getter & setter)
-- get an instance of sh.user : let user = new sh.user(webId)
-- example : let user = new sh.user("https://solidarity.inrupt.net/profile/card#me")
-- then call user property user.name, user.photo...
+## pod
+[see codepen of Shighl.pod](https://codepen.io/spoggy/pen/eYNZNoO)
+```
+let pod = new sh.pod(webId)
+ //example : let pod = new sh.pod("https://solidarity.inrupt.net/profile/card#me")
+let name = await pod.name  --> return String
+let photo = await pod.photo --> return String of photo url
+let friends = await pod.friends --> return Array of webId
+let pti = await pod.pti --> read the pod publicTypeIndex & return pti.url & pti.instances (an Array of instances)
+````
+then each pti instance has keys :
+```
+classe: "http://www.w3.org/ns/pim/meeting#LongChat"
+​​​instance: "https://spoggy.solid.community/settings/publicTypeIndex.ttl#id1579184973294"
+​​​shortClasse: "LongChat"
+​​​url: "https://spoggy.solid.community/public/thirdChat/index.ttl#this"
+```
+- [x] sh.pod.name
+- [x] sh.pod.photo
+- [x] sh.pod.friends
+- [] sh.pod.pti (publicTypeIndex & instances)
+- [] sh.pod.role
+- [] sh.pod.name = string
+- [] sh.pod.storage.get(webId)
 
-
-
-- sh.user.name.get() return success/error
-- sh.user.name.set(string)
-- sh.user.publictypeindex.get(webId)
-- sh.user.privatetypeindex.get(webId)
-- sh.user.storage.get(webId)
-- sh.user.getInstances(typeOfInstance)
 
 ## note
 - sh.notes.get(instance) return Array

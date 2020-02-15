@@ -5,8 +5,9 @@ import { namedNode } from '@rdfjs/data-model';
 import ShighlInbox from './Shighl-inbox'
 import ShighlSession from './Shighl-session'
 import ShighlChat from './Shighl-chat'
-import ShighlUser from './Shighl-user'
+import ShighlPod from './Shighl-pod'
 import ShighlHola from './Shighl-hola'
+import ShighlNotes from './Shighl-notes'
 
 class Shighl {
   constructor () {
@@ -16,8 +17,9 @@ class Shighl {
     this.inbox = new ShighlInbox()
     this.session = new ShighlSession()
     this.chat = new ShighlChat()
-    this.user = ShighlUser
+    this.pod = ShighlPod
     this.hola = new ShighlHola()
+    this.notes = new ShighlNotes()
   }
 
   async test(){
@@ -71,8 +73,8 @@ class Shighl {
   //Profile
   //////////////
   async getName (webId = this.webId) {
-    console.warn("getName(webId) will be Deprecated, use new sh.user('https://solidarity.inrupt.net/profile/card#me').name instead ")
-    this.user(webId).name
+    console.warn("getName(webId) will be Deprecated, use new sh.pod('https://solidarity.inrupt.net/profile/card#me').name instead ")
+    this.pod(webId).name
   }
 
   async getPhoto(webId = this.webId){
