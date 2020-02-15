@@ -1,0 +1,72 @@
+<html>
+<script src="./window/shighl.bundle.js"> </script>
+<body onload="init()">
+
+  Look the web console to see the pod infos (Ctrl+Maj+i)<br><br>
+  <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
+  <br>
+  LongChat Details : <span id="info"></span>
+  <br>
+  <ul id="messages_liste"></ul>
+
+  <br>
+  <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+  <br>
+  <a href="index.html">Back to index</a>
+  <script>
+  let sh = new Shighl()
+  console.log(sh)
+  const instances_liste = document.getElementById("instances_liste")
+  const messages_liste = document.getElementById("messages_liste")
+  const info = document.getElementById("info")
+
+  async function init(){
+
+    let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
+    let pti = await pod.pti
+
+    console.log("publicTypeIndex & instances: ",pti)
+    instances_liste.innerHTML = ""
+    messages_liste.innerHTML = ""
+    for (const inst of pti.instances){
+      //  console.log(inst)
+      let li = document.createElement("LI")
+      li.innerHTML = inst.shortClasse+": "+inst.url
+      instances_liste.appendChild(li)
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "open"
+      btn.value = inst.url
+      btn.addEventListener('click', event => {
+        initInstance(inst)
+      });
+      li.appendChild(btn)
+
+    }
+  }
+
+  async function initInstance(instance){
+    switch(instance.shortClasse) {
+      case "LongChat":
+      let chat = new sh.chat(instance)
+      let chat_details = await chat.init
+      info.innerHTML = JSON.stringify(chat_details)
+      let messages = await chat.messages
+      messages_liste.innerHTML = JSON.stringify(messages)
+      //  updateCalendar(instance)
+      break;
+      case "TextDigitalDocument":
+      case "MediaObject":
+      case "Bookmark":
+      case "Meeting":
+      default:
+      alert("For the moment , only LongChat")
+      //  instance = await sh.initInstance(instance)
+      //  updateDefault(instance)
+    }
+  }
+
+
+</script>
+</body>
+
+</html>
