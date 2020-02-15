@@ -5,9 +5,7 @@
   Look the web console to see the pod infos (Ctrl+Maj+i)<br><br>
   <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
   <br>
-  <input id="chat_input" placeholder="Chat name"/>
-  <button  onclick="pti.create()">Create LongChat Instance</button>
-  <br>
+
   LongChat Details : <span id="info"></span>
 
   <br>
@@ -27,6 +25,10 @@
   <textarea id="message_content" row=10></textarea>
   <button onclick="sendChatMessage()">Send message</button>
   <br><br>
+
+  <input id="chat_input" placeholder="Chat name"/>
+  <button  onclick="pti.create()">Create LongChat Instance (todo)</button>
+  <br>
 
   Messages dump : <span id="messages_dump"></span>
 
@@ -87,8 +89,9 @@
       info.innerHTML = JSON.stringify(chat_details)
       let messages = await chat.messages
       messages_dump.innerHTML = JSON.stringify(messages)
+      messages_liste.innerHTML = ""
       for(const message of messages){
-        console.log(message)
+        //  console.log(message)
         chat.message = message.maker+" "+message.content+" "+message.date
         let li = document.createElement("LI")
         li.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
@@ -113,26 +116,33 @@
     var replyTo = document.getElementById("replyTo").value.trim()
     var inbox = document.getElementById("inbox").value.trim()
     var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
-    console.log(webId)
+    //  console.log(webId)
     if (webId == null ){
-      webId = await sh.session.login()
-      alert ("you must login ! go back to index at the bottom, ")
+      webId = await session.login()
+    }
+    if (chat == null ){
+      alert ("you must first open a LongChat instance ")
+    }else{
+      let mess = {content: content, webId: webId, postType: postType, replyTo: replyTo}
+      console.log(mess)
+      var result = await chat.send(mess)
+      // TODO send inbox.chatNotif
+      console.log(result)
+      document.getElementById("message_content").value = ""
+      document.getElementById("replyTo").value = ""
+      document.getElementById("inbox").value = ""
+      initInstance(chat.instance)
+      console.log("A virer une fois les websockets en place")
     }
     //  if (currentInstance.url != undefined){
-    let mess = {content: content, webId: webId, postType: postType, replyTo: replyTo}
-    var result = await chat.send(mess)
-    // TODO send inbox.chatNotif
+
 
     //  }else{
     //  alert("I can't post a message if there is not instance selected !")
     //}
 
 
-    console.log(result)
-    document.getElementById("message_content").value = ""
-    document.getElementById("replyTo").value = ""
-    document.getElementById("inbox").value = ""
-    getMessages(currentInstance)
+
   }
 
   async function reply(url, maker){
