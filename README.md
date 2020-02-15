@@ -172,6 +172,7 @@ messages_liste.innerHTML = JSON.stringify(messages)
 
 - [x] chat.init
 - [x] chat.messages
+- [x] chat.send({content: content, webId: webId, postType: postType, replyTo: replyTo})
 
 - sh.chat.messages.get(date) return Array
 - sh.chat.message.send({creator: webId, content:content} )
