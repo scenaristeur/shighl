@@ -5,9 +5,30 @@
   Look the web console to see the pod infos (Ctrl+Maj+i)<br><br>
   <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
   <br>
+  <input id="chat_input" placeholder="Chat name"/>
+  <button  onclick="pti.create()">Create LongChat Instance</button>
+  <br>
   LongChat Details : <span id="info"></span>
+
+  <br>
   <br>
   <ul id="messages_liste"></ul>
+  <br><br>
+
+  You must open a LongChat instance to be able to post<br>
+  Session : <span id="info"></span>
+  <h3>login() / logout()</h3>
+  <button id="login_btn" onclick="session.login()">Login</button>
+  <br>  <button id="logout_btn" onclick="session.logout()">Logout</button>
+  <br> <br>
+  <input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
+  <input id="inbox" placeholder="Inbox" value=""  size="100"/><br>
+
+  <textarea id="message_content" row=10></textarea>
+  <button onclick="sendChatMessage()">Send message</button>
+  <br><br>
+
+  Messages dump : <span id="messages_dump"></span>
 
   <br>
   <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
@@ -16,15 +37,30 @@
   <script>
   let sh = new Shighl()
   console.log(sh)
-  const instances_liste = document.getElementById("instances_liste")
-  const messages_liste = document.getElementById("messages_liste")
-  const info = document.getElementById("info")
+  let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
+  let session = new sh.session()
+  let pti, chat, webId
+
+
+
+  function mycallback(_webId){
+    webId = _webId
+    console.log("WebId: ",webId)
+    if (webId != null){
+      info.innerHTML = webId
+      login_btn.style.display = "none"
+      logout_btn.style.display = "block"
+    }else{
+      info.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
+      login_btn.style.display = "block"
+      logout_btn.style.display = "none"
+      session.login()
+    }
+  }
 
   async function init(){
-
-    let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
-    let pti = await pod.pti
-
+    await session.track(mycallback)
+    pti = await pod.pti
     console.log("publicTypeIndex & instances: ",pti)
     instances_liste.innerHTML = ""
     messages_liste.innerHTML = ""
@@ -40,18 +76,25 @@
         initInstance(inst)
       });
       li.appendChild(btn)
-
     }
   }
 
   async function initInstance(instance){
     switch(instance.shortClasse) {
       case "LongChat":
-      let chat = new sh.chat(instance)
+      chat = new sh.chat(instance)
       let chat_details = await chat.init
       info.innerHTML = JSON.stringify(chat_details)
       let messages = await chat.messages
-      messages_liste.innerHTML = JSON.stringify(messages)
+      messages_dump.innerHTML = JSON.stringify(messages)
+      for(const message of messages){
+        console.log(message)
+        chat.message = message.maker+" "+message.content+" "+message.date
+        let li = document.createElement("LI")
+        li.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
+        messages_liste.append(li)
+      }
+
       //  updateCalendar(instance)
       break;
       case "TextDigitalDocument":
@@ -64,6 +107,42 @@
       //  updateDefault(instance)
     }
   }
+
+  async function sendChatMessage(){
+    var content = document.getElementById("message_content").value.trim()
+    var replyTo = document.getElementById("replyTo").value.trim()
+    var inbox = document.getElementById("inbox").value.trim()
+    var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
+    console.log(webId)
+    if (webId == null ){
+      webId = await sh.session.login()
+      alert ("you must login ! go back to index at the bottom, ")
+    }
+    //  if (currentInstance.url != undefined){
+    let mess = {content: content, webId: webId, postType: postType, replyTo: replyTo}
+    var result = await chat.send(mess)
+    // TODO send inbox.chatNotif
+
+    //  }else{
+    //  alert("I can't post a message if there is not instance selected !")
+    //}
+
+
+    console.log(result)
+    document.getElementById("message_content").value = ""
+    document.getElementById("replyTo").value = ""
+    document.getElementById("inbox").value = ""
+    getMessages(currentInstance)
+  }
+
+  async function reply(url, maker){
+    console.log(url, maker)
+    var inbox = await sh.inbox.getInbox(maker)
+    console.log("Inbox",inbox)
+    document.getElementById("replyTo").value = url
+    document.getElementById("inbox").value = inbox
+  }
+
 
 
 </script>
