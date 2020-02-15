@@ -1,0 +1,51 @@
+<html>
+<script src="https://cdn.jsdelivr.net/gh/scenaristeur/shighl@master/dist/window/shighl.bundle.js"> </script>
+<script>
+  async function init(){
+    let sh = new Shighl()
+    console.log(sh)
+    let pod = new sh.user("https://spoggy.solid.community/profile/card#me")
+
+    let name = await pod.name
+    let photo = await pod.photo
+    let friends = await pod.friends
+    //let pti = await pod.pti
+
+    console.log(name)
+    console.log(photo)
+    console.log(friends)
+    //  console.log(pti)
+  }
+
+</script>
+
+<body onload="init()">
+
+  Look the web console to see the pod infos (Ctrl+Maj+i)
+
+  <pre>
+    <script src="https://cdn.jsdelivr.net/gh/scenaristeur/shighl@master/dist/window/shighl.bundle.js"> </script>
+
+    <script>
+    async function init(){
+      let sh = new Shighl()
+      console.log(sh)
+      let pod = new sh.user("https://spoggy.solid.community/profile/card#me")
+
+      let name = await pod.name
+      let photo = await pod.photo
+      let friends = await pod.friends
+      //let pti = await pod.pti
+
+      console.log(name)
+      console.log(photo)
+      console.log(friends)
+    //  console.log(pti)
+    }
+    </script>
+  </pre>
+
+
+</body>
+
+</html>
