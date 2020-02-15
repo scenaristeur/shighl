@@ -26,7 +26,8 @@
 - sh.session.logout() return success/error
 
 ## pod
-[see codepen of Shighl.pod](https://codepen.io/spoggy/pen/eYNZNoO)
+[see sh.pod](https://scenaristeur.github.io/shighl/pod.html)
+[old version](https://codepen.io/spoggy/pen/eYNZNoO)
 ```
 let pod = new sh.pod(webId)
  //example : let pod = new sh.pod("https://solidarity.inrupt.net/profile/card#me")
@@ -281,8 +282,10 @@ async function run(){
     # webpack build copied from @jeffz https://jeff-zucker.github.io/solid-file-client
 
 - build & publish to gh-pages
-    npm run build && git subtree push --prefix dist origin gh-pages
-
+```
+    npm run build  
+    git subtree push --prefix dist origin gh-pages
+```
 
     https://blog.jakoblind.no/webpack-code-splitting-libraries-what-to-do-with-the-files/
 - build ldflex-query

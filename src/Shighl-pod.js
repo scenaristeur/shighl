@@ -41,6 +41,7 @@ class ShighlPod {
       var pti = {}
       let url = await data[this.webId].publicTypeIndex
       pti.url = `${url}`
+      console.log(pti)
       try{
         if (`${pti.url}` != "undefined"){
           pti.instances = []
@@ -69,6 +70,7 @@ class ShighlPod {
       }catch(e){
         console.log(e)
       }
+      console.log(pti)
       return pti
     })();
   }
