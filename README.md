@@ -16,18 +16,24 @@
 
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
-# example
-
-
 # Shighl
+## Howto
+use shighl.bundle.js that you can find in the /dist/window/ folder or install with ```npm install --save scenaristeur/shighl``` and import with ```import from 'shighl'```
 
-## pod
-[see sh.pod live example](https://scenaristeur.github.io/shighl/pod.html)
+## sh.pod
+### getting pod infos
+- [x] sh.pod.name
+- [x] sh.pod.photo
+- [x] sh.pod.friends
+- [x] sh.pod.pti (return publicTypeIndex & instances)
+- [x] sh.pod.role
+- [x] sh.pod.storage
+### setting pod infos
+- [ ] sh.pod.name = string
+- [ ] sh.pod.create for creating a new pti instance (bookmark, notes, longchat...)
 
-[codepen version](https://codepen.io/spoggy/pen/eYNZNoO)
-
-use shighl.bundle.js that you can find in the /dist/window/ folder
-
+- [see sh.pod live example](https://scenaristeur.github.io/shighl/pod.html)
+- [codepen version](https://codepen.io/spoggy/pen/eYNZNoO)
 
 ```
 <html>
@@ -59,7 +65,7 @@ Look the web console to see the pod infos (Ctrl+Maj+i)
 </html>
 ```
 
-
+what Shighl does :
 
 ```
 let pod = new sh.pod(webId)
@@ -76,20 +82,15 @@ classe: "http://www.w3.org/ns/pim/meeting#LongChat"
 ​​​shortClasse: "LongChat"
 ​​​url: "https://spoggy.solid.community/public/thirdChat/index.ttl#this"
 ```
-### getting pod infos
-- [x] sh.pod.name
-- [x] sh.pod.photo
-- [x] sh.pod.friends
-- [x] sh.pod.pti (return publicTypeIndex & instances)
-- [x] sh.pod.role
-- [x] sh.pod.storage
-
-### setting pod infos
-- [] sh.pod.name = string
-- [] sh.pod.create for creating a new pti instance (bookmark, notes, longchat...)
 
 
 ## session
+[see sh.session live example](https://scenaristeur.github.io/shighl/session.html)
+- [x] session.track(callback) listen session changes and then execute callback
+- [x] session.login() return webId if logged else open login popup & return webId
+- [x] session.logout()
+- [ ] session.webId return webId/null
+
 ```
 <html>
 <script src="./window/shighl.bundle.js"> </script>
@@ -144,13 +145,6 @@ function mycallback(webId){
 
 </html>
 ```
-
-
-- [x] session.track(callback) listen session changes and then execute callback
-- [x] session.login() return webId if logged else open login popup & return webId
-- [x] session.logout()
-- [] session.webId return webId/null
-
 
 ## note
 when you get an instance (with pod.pti) of shortClasse "Notes" and once you are logged with sh.session
