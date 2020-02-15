@@ -160,6 +160,7 @@ when you get an instance (with pod.pti) of shortClasse "Notes" and once you are 
 - sh.notes.delete(webId) return success/error
 
 ## chat
+- [see sh.chat live example](https://scenaristeur.github.io/shighl/instances.html)
 when you get an instance (with pod.pti) of shortClasse "LongChat" and once you are logged with sh.session
 ```
 let chat = new sh.chat(instance)
