@@ -171,10 +171,9 @@ messages_liste.innerHTML = JSON.stringify(messages)
 ```
 
 - [x] chat.init
-- [ ] chat.messages
-- (sh.chat.subjects.get(instance) return Array) ??
+- [x] chat.messages
+
 - sh.chat.messages.get(date) return Array
-- sh.chat.message.detail(messageUrl)
 - sh.chat.message.send({creator: webId, content:content} )
 - sh.chat.message.reply(parentMessageUrl)
 
@@ -242,7 +241,7 @@ async test(){
 see /dist/index.html
 
 - Hosted on a POD : https://shighl.solid.community/public/demo/demo.html
-- Hosted on gh-pages : https://scenaristeur.github.io/shighl/
+- Hosted on ges : https://scenaristeur.github.io/shighl/
 
 # Based
 
@@ -390,7 +389,7 @@ async function run(){
 
     # webpack build copied from @jeffz https://jeff-zucker.github.io/solid-file-client
 
-    - build & publish to gh-pages
+    - build & publish to ges
     ```
     npm run build  
     git subtree push --prefix dist origin gh-pages

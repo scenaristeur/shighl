@@ -52,6 +52,33 @@ class ShighlInbox {
     }
   }
 
+  async chatNotif(){
+    // TODO : move to sh.inbox.notify
+    try{
+      // post notification
+      var message = {}
+      message.recipient =  mess.inbox
+      message.title = "Chat reply"
+      message.content = url+" is a reply to' "+mess.replyTo
+
+      if( message.recipient.length > 0){
+        message.date = new Date(Date.now())
+        message.id = message.date.getTime()
+        message.sender = mess.webId
+        message.url = message.recipient+message.id+".ttl"
+        await this.inbox.buildMessage(message)
+        //  console.log("NOTIF",message)
+
+      }else{
+        alert("Recipient  empty")
+      }
+    }catch(e){
+      alert(e)
+    }
+  }
+
+
+
   async buildMessage(message){
     var mess = message.url
     console.log(message)

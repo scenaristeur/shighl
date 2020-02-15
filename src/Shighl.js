@@ -74,8 +74,12 @@ class Shighl {
   //Profile
   //////////////
   async getName (webId = this.webId) {
-    console.warn("getName(webId) will be Deprecated, use new sh.pod('https://solidarity.inrupt.net/profile/card#me').name instead ")
-    this.pod(webId).name
+    try {
+      const fullname = await data[webId].vcard$fn;
+      return `${fullname}`
+    }catch(e){
+      return e
+  }
   }
 
   async getPhoto(webId = this.webId){
