@@ -16,6 +16,41 @@
 
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
+# example
+```[link to example](https://scenaristeur.github.io/shighl/pod.html)
+<html>
+<script src="./window/shighl.bundle.js"> </script>
+<script>
+  async function init(){
+    let sh = new Shighl()
+    console.log(sh)
+    let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
+
+    let name = await pod.name
+    let photo = await pod.photo
+    let friends = await pod.friends
+    let pti = await pod.pti
+
+    console.log(name)
+    console.log(photo)
+    console.log(friends)
+    console.log(pti)
+  }
+
+</script>
+
+<body onload="init()">
+
+  Look the web console to see the pod infos (Ctrl+Maj+i)
+
+</body>
+
+</html>
+
+```
+
+
+
 
 # Shighl
 
