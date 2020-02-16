@@ -209,6 +209,25 @@ set message(mess){
   })();
 }
 
+set subscribe(callback){
+let module = this
+module.callback = callback
+  console.log("Websocket", this)
+  let websocket = "wss://"+this._folder.split('/')[2];
+  let url = this._folder+[this._year,this._month,this._day,"chat.ttl"].join('/')
+  this._socket = new WebSocket(websocket);
+  this._socket.onopen = function() {
+    this.send('sub '+url);
+  };
+  this._socket.onmessage = function(msg) {
+    console.log(msg)
+    if (msg.data && msg.data.slice(0, 3) === 'pub') {
+      console.log("websocket timestamp",msg.timeStamp)
+      module.callback(msg.data)
+    }
+  };
+}
+
 
 localName(str){
   var ln = str.substring(str.lastIndexOf('#')+1);
