@@ -70,18 +70,24 @@
     }
   }
 
+  function on_new_message(changement){
+    console.log ("new Message arrived,  get it from Websocket", changement)
+    //initInstance(chat.instance)
+  }
+
   async function initInstance(instance){
     switch(instance.shortClasse) {
       case "LongChat":
       chat = new sh.chat()
       chat.instance = instance
       let chat_details = await chat.init
+      chat.subscribe = on_new_message
       info.innerHTML = JSON.stringify(chat_details)
       let messages = await chat.messages
       messages_dump.innerHTML = JSON.stringify(messages)
       messages_liste.innerHTML = ""
       for(const message of messages){
-        console.log(message)
+        //  console.log(message)
         let li = document.createElement("LI")
         li.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
         messages_liste.append(li)
@@ -137,7 +143,7 @@
       document.getElementById("message_content").value = ""
       document.getElementById("replyTo").value = ""
       document.getElementById("author").value = ""
-      initInstance(chat.instance)
+      //initInstance(chat.instance)
       console.log("A virer une fois les websockets en place")
     }
 
