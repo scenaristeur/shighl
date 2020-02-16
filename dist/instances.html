@@ -14,7 +14,7 @@
   <button id="logout_btn" onclick="session.logout()">Logout</button>
   <br> <br>
   <input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
-  <input id="inbox" placeholder="Inbox" value=""  size="100"/><br>
+  <input id="author" placeholder="author" value=""  size="100"/><br>
   <textarea id="message_content" row=10></textarea>
   <button onclick="sendChatMessage()">Send message</button>
   <br><br>
@@ -92,8 +92,6 @@
         });
         li.appendChild(btn)
       }
-
-      //  updateCalendar(instance)
       break;
       case "TextDigitalDocument":
       case "MediaObject":
@@ -109,7 +107,7 @@
   async function sendChatMessage(){
     var content = document.getElementById("message_content").value.trim()
     var replyTo = document.getElementById("replyTo").value.trim()
-    var inbox = document.getElementById("inbox").value.trim()
+    var author = document.getElementById("author").value.trim()
     var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
     //  console.log(webId)
     if (webId == null ){
@@ -122,41 +120,33 @@
       console.log(mess)
       chat.message = mess
 
-
-      if( inbox.length > 0){
-        console.log("sended")
+      if( author.length > 0){
+        console.log("author", author)
         let lastPost = chat.lastPost
-        console.log(lastPost)
-        let notif = {inbox: inbox, sender: webId, title:"solidarity reply", url:lastPost, content: lastPost+" is a "+postType+" reply to' "+replyTo,
-        replyTo: replyTo}
         let recipient_pod = new sh.pod()
-        let recipient_inbox = recipient_pod.inbox
+        console.log("pod",recipient_pod)
+        recipient_pod.webId = author
+        console.log("pod",recipient_pod)
+        let recipient_inbox = new sh.inbox()
+        recipient_inbox.inbox = await recipient_pod.inbox
+        console.log("ib",recipient_inbox)
+        let notif = {sender: webId, title:"solidarity reply", url:lastPost, content: lastPost+" is a "+postType+" reply to' "+replyTo,
+        replyTo: replyTo}
         recipient_inbox.message = notif
       }
       document.getElementById("message_content").value = ""
       document.getElementById("replyTo").value = ""
-      document.getElementById("inbox").value = ""
-      //      initInstance(chat.instance)
+      document.getElementById("author").value = ""
+      initInstance(chat.instance)
       console.log("A virer une fois les websockets en place")
     }
-    //  if (currentInstance.url != undefined){
-
-
-    //  }else{
-    //  alert("I can't post a message if there is not instance selected !")
-    //}
-
-
 
   }
 
   async function reply(message){
     console.log(message)
     document.getElementById("replyTo").value = message.url
-
-    let maker_pod =  new sh.pod()
-    maker_pod.webId = message.maker
-    document.getElementById("inbox").value = await maker_pod.inbox
+    document.getElementById("author").value = message.maker
   }
 
 

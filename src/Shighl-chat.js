@@ -198,10 +198,9 @@ set message(mess){
         if (mess.replyTo != null && mess.replyTo.length >0){
           await data[url].rdfs$type.add(namedNode('https://schema.org/Comment'))
           await data[url].schema$parentItem.add(namedNode(mess.replyTo)) // schema$parentItem plante le chat solid
-          await data[replyTo].schema$comment.add(namedNode(url))
+          await data[mess.replyTo].schema$comment.add(namedNode(url))
         }
       }
-
       return "ok"
     }catch(e){
       alert(e)

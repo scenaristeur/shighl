@@ -12,19 +12,20 @@ class ShighlInbox {
   set message(m){
     //  {inbox: inbox, webId: webId, content: content, postType: postType, replyTo: replyTo}
     console.log(m)
+    console.log(this.inbox)
     return (async () => {
       // TODO : move to sh.inbox.notify
       try{
         let d = new Date(Date.now())
         let id = d.getTime()
-        let url = m.inbox+message.id+".ttl"
+        let url = this.inbox+id+".ttl"
         console.log(url)
         await data[url].schema$text.add(m.content);
         await data[url].rdfs$label.add(m.title)
         await data[url].schema$dateSent.add(d.toISOString())
         await data[url].rdf$type.add(namedNode('https://schema.org/Message'))
         await data[url].schema$sender.add(namedNode(m.sender))
-        let notif = m.inbox+"log.ttl#"+id
+        let notif = this.inbox+"log.ttl#"+id
         console.log(notif)
         await data[notif].schema$message.add(namedNode(url))
 
