@@ -16,25 +16,50 @@
 
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
-# Shighl
-## Howto
+#Shighl
+##Examples
 see /dist folder for examples
-### Browser
-use shighl.bundle.js that you can find in the /dist/window/ folder.
-### Es6 module
- install with ```npm install --save scenaristeur/shighl``` and import with ```import from 'shighl'```.
-
-## sh.pod
-### getting pod infos
-- [x] sh.pod.name
-- [x] sh.pod.photo
-- [x] sh.pod.friends
-- [x] sh.pod.pti (return publicTypeIndex & instances)
-- [x] sh.pod.role
-- [x] sh.pod.storage
+##Usage
+###Browser
+use cdn.jsdelivr.net
+```
+<script src="https://cdn.jsdelivr.net/gh/scenaristeur/shighl@master/dist/window/shighl.bundle.js"> </script>
+```
+or shighl.bundle.js that you can find in the /dist/window/ folder.
+```
+<script src="./window/shighl.bundle.js"> </script>
+```
+###Es6 module / nodejs
+install with ```npm install --save scenaristeur/shighl``` and import with
+```
+import  Shighl  from 'shighl'
+```
+###Create a Shighl Object
+```
+const sh = new Shighl()
+sh.test() // optional te verify that the lib is loaded
+```
+then you must create Objects from Shighl submodules :
+##let pod = new sh.pod()
+```
+let pod = new sh.pod()
+pod.webId = "https://spoggy.solid.community/profile/card#me" // set "https://spoggy.solid.community/profile/card#me" to pod.webId
+let name = await pod.name //get pod.name
+console.log(name)
+```
+checked function are implemented
+###getting pod infos
+- [x] pod.name
+- [x] pod.photo
+- [x] pod.friends
+- [x] pod.pti (return publicTypeIndex & instances)
+- [x] pod.role
+- [x] pod.storage
 ### setting pod infos
-- [ ] sh.pod.name = string
-- [ ] sh.pod.create for creating a new pti instance (bookmark, notes, longchat...)
+- [x] pod.name = "New name"
+- [x] pod.photo = "photo_url" (photo must be stored on your pod, todo copy photo to pod/profile)
+- [x] pod.role = "New Role"
+- [ ] pod.create for creating a new pti instance (bookmark, notes, longchat...)
 
 - [see sh.pod live example](https://scenaristeur.github.io/shighl/pod.html)
 - [codepen version](https://codepen.io/spoggy/pen/eYNZNoO)
@@ -46,7 +71,8 @@ use shighl.bundle.js that you can find in the /dist/window/ folder.
 async function init(){
   let sh = new Shighl()
   console.log(sh)
-  let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
+  let pod = new sh.pod()
+  pod.webId = "https://spoggy.solid.community/profile/card#me"
 
   let name = await pod.name
   let photo = await pod.photo
@@ -60,7 +86,7 @@ async function init(){
   console.log("Friends: ",friends)
   console.log("publicTypeIndex & instances: ",pti)
   console.log("Role:",role)
-  console.log("Storage: ",storage)
+  console.log("Storage: ",storage)  
 }
 </script>
 <body onload="init()">
@@ -72,8 +98,9 @@ Look the web console to see the pod infos (Ctrl+Maj+i)
 what Shighl does :
 
 ```
-let pod = new sh.pod(webId)
-//example : let pod = new sh.pod("https://solidarity.inrupt.net/profile/card#me")
+let pod = new sh.pod()
+pod.webId = "mywebId"
+//example : pod = "https://solidarity.inrupt.net/profile/card#me"
 let name = await pod.name  --> return String
 let photo = await pod.photo --> return String of photo url
 let friends = await pod.friends --> return Array of webId
@@ -87,40 +114,27 @@ classe: "http://www.w3.org/ns/pim/meeting#LongChat"
 ​​​url: "https://spoggy.solid.community/public/thirdChat/index.ttl#this"
 ```
 
-## sh.session
+## let session = new sh.session()
 [see sh.session live example](https://scenaristeur.github.io/shighl/session.html)
 - [x] session.track(callback) listen session changes and then execute callback
 - [x] session.login() return webId if logged else open login popup & return webId
 - [x] session.logout()
-- [ ] session.webId return webId/null
+- [x] session.webId return webId/null
 
 ```
 <html>
 <script src="./window/shighl.bundle.js"> </script>
-
 <body onload="init()">
-
 Look the web console to see the pod infos (Ctrl+Maj+i)<br><br>
-
-<h3>trackSession()</h3>
 Session : <span id="info"></span>
-
-<h3>login() / logout()</h3>
 <button id="login_btn" onclick="session.login()">Login</button>
-<br>  <button id="logout_btn" onclick="session.logout()">Logout</button>
-<br> <br>
+<button id="logout_btn" onclick="session.logout()">Logout</button>
 
-
-<a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
-<br>
-<a href="index.html">Back to index</a>
 <script>
-
 const info = document.getElementById("info")
 const login_btn = document.getElementById("login_btn")
 const logout_btn = document.getElementById("logout_btn")
 const sh = new Shighl()
-console.log(sh)
 let session = new sh.session()
 
 async function init(){
@@ -141,11 +155,8 @@ function mycallback(webId){
     session.login()
   }
 }
-
-
 </script>
 </body>
-
 </html>
 ```
 

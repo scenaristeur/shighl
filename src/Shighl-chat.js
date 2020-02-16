@@ -3,45 +3,51 @@ import data from "@solid/query-ldflex";
 import { namedNode } from '@rdfjs/data-model';
 
 class ShighlChat {
-  constructor (instance) {
+  constructor () {
     console.log("Shighl CHAT loaded")
-    this.instance = instance
-    this.folder = this.instance.url.substring(0,this.instance.url.lastIndexOf('/')+1)
-    this.name = decodeURI(this.folder.slice(0, -1)).split("/").pop()
+  }
+  set instance(instance) {
+    this._instance = instance
+    this._folder = this._instance.url.substring(0,this._instance.url.lastIndexOf('/')+1)
+    this._name = decodeURI(this._folder.slice(0, -1)).split("/").pop()
+  }
+  
+  get instance() {
+    return this._instance
   }
 
   get init() {
     return (async () => {
       await data.clearCache()
-      this.years = []
-      for await (const year of data[this.folder]['ldp$contains']){
+      this._years = []
+      for await (const year of data[this._folder]['ldp$contains']){
         if ( `${year}`.endsWith('/')){
-          this.years.push(`${year}`.slice(0, -1).split("/").pop())
+          this._years.push(`${year}`.slice(0, -1).split("/").pop())
         }
       }
-      this.years.sort()
-      this.year = this.years[this.years.length - 1]
+      this._years.sort()
+      this._year = this._years[this._years.length - 1]
       //MONTH
-      this.months = []
-      for await (const month of data[this.folder+this.year+'/']['ldp$contains']){
+      this._months = []
+      for await (const month of data[this._folder+this._year+'/']['ldp$contains']){
         if ( `${month}`.endsWith('/')){
-          this.months.push(`${month}`.slice(0, -1).split("/").pop())
+          this._months.push(`${month}`.slice(0, -1).split("/").pop())
         }
       }
-      this.months.sort()
-      this.month = ("0" + this.months[this.months.length - 1]).slice(-2)
+      this._months.sort()
+      this._month = ("0" + this._months[this._months.length - 1]).slice(-2)
       //DAY
-      this.days = []
-      for await (const day of data[this.folder+this.year+'/'+this.month+'/']['ldp$contains']){
+      this._days = []
+      for await (const day of data[this._folder+this._year+'/'+this._month+'/']['ldp$contains']){
         if ( `${day}`.endsWith('/')){
-          this.days.push(`${day}`.slice(0, -1).split("/").pop())
+          this._days.push(`${day}`.slice(0, -1).split("/").pop())
         }
       }
 
-      this.days.sort()
-      this.day = ("0" + this.days[this.days.length - 1]).slice(-2)
+      this._days.sort()
+      this._day = ("0" + this._days[this._days.length - 1]).slice(-2)
       return this
-      //  return (this.years)
+      //  return (this._years)
       //  return instance
       //return `${s}`
     })();
@@ -49,9 +55,9 @@ class ShighlChat {
 
   get messages(){
     return (async () => {
-      var path = this.folder+[this.year, this.month, this.day,""].join('/')
+      var path = this._folder+[this._year, this._month, this._day,""].join('/')
       console.log(path)
-      this.documents = []
+      this._documents = []
       //console.log("Clear")
 
       try{
@@ -63,7 +69,7 @@ class ShighlChat {
         await data.clearCache()
         for await (const subject of data[chatfile].subjects){
           //  console.log("subject", `${subject}` );
-          if ( `${subject}` != this.instance.url){ // ne semble pas fonctionner ??
+          if ( `${subject}` != this._instance.url){ // ne semble pas fonctionner ??
             if (`${subject}`.split('#')[1] != undefined && `${subject}`.split('#')[1].startsWith('Msg')){
               docs = [... docs, {url:`${subject}`}]
             }else{
@@ -72,24 +78,24 @@ class ShighlChat {
             //console.log(docs)
           }
         }
-        this.documents = docs
+        this._documents = docs
         //  return instance
       }catch(e){
         console.log(e)
         console.log("impossible to get messgaes")
-        this.error = "No Chat message in "+path
+        this._error = "No Chat message in "+path
         //  return instance
       }
       await this.detail()
       console.log("termine")
-      return this.documents
+      return this._documents
     })();
 
   }
 
   async detail(){
     console.log ("DETAIL")
-    for (const d of this.documents){
+    for (const d of this._documents){
       d.maker = "boo"
       d.types = []
       d.comments = []
@@ -136,7 +142,7 @@ class ShighlChat {
           break;
 
           default:
-          //  console.log("default", this.url)
+          //  console.log("default", this._url)
 
           for await (const val of data[d.url][`${property}`])
           {
@@ -152,7 +158,7 @@ class ShighlChat {
       }
     }
   }
-  return this.documents
+  return this._documents
 }
 
 
@@ -165,12 +171,12 @@ async send(mess){
       var month = ("0" + (dateObj.getUTCMonth() + 1)).slice(-2); //months from 1-12
       var day = ("0" + dateObj.getUTCDate()).slice(-2);
       var year = dateObj.getUTCFullYear();
-      var path = this.folder+[this.year, this.month, this.day, ""].join("/")
+      var path = this._folder+[this._year, this._month, this._day, ""].join("/")
       console.log(path)
 
       var url = path+"chat.ttl"+messageId
       var date = dateObj.toISOString()
-      var index = this.folder+"index.ttl#this"
+      var index = this._folder+"index.ttl#this"
       console.log(date)
       console.log(url)
       console.log(index)
@@ -178,7 +184,7 @@ async send(mess){
       await data[url].sioc$content.add(mess.content)
       await data[url].foaf$maker.add(namedNode(mess.webId))
       await data.from(url)[index]['http://www.w3.org/2005/01/wf/flow#message'].add(namedNode(url))
-      //  var postType = this.shadowRoot.querySelector('input[name="inlineRadioOptions"]:checked').value
+      //  var postType = this._shadowRoot.querySelector('input[name="inlineRadioOptions"]:checked').value
       if (mess.postType != "InstantMessage"){
         await data[url].rdfs$type.add(namedNode('http://rdfs.org/sioc/types#'+mess.postType))
       }

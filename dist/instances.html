@@ -1,37 +1,27 @@
 <html>
 <script src="./window/shighl.bundle.js"> </script>
 <body onload="init()">
-
-  Look the web console to see the pod infos (Ctrl+Maj+i)<br><br>
   <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
   <br>
-
   LongChat Details : <span id="info"></span>
-
   <br>
   <br>
   <ul id="messages_liste"></ul>
   <br><br>
-
-  You must open a LongChat instance to be able to post<br>
+  You must open a LongChat instance & be logged to be able to post<br>
   Session : <span id="info"></span>
-  <h3>login() / logout()</h3>
   <button id="login_btn" onclick="session.login()">Login</button>
-  <br>  <button id="logout_btn" onclick="session.logout()">Logout</button>
+  <button id="logout_btn" onclick="session.logout()">Logout</button>
   <br> <br>
   <input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
   <input id="inbox" placeholder="Inbox" value=""  size="100"/><br>
-
   <textarea id="message_content" row=10></textarea>
   <button onclick="sendChatMessage()">Send message</button>
   <br><br>
-
   <input id="chat_input" placeholder="Chat name"/>
   <button  onclick="pti.create()">Create LongChat Instance (todo)</button>
   <br>
-
   Messages dump : <span id="messages_dump"></span>
-
   <br>
   <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
   <br>
@@ -39,11 +29,10 @@
   <script>
   let sh = new Shighl()
   console.log(sh)
-  let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
+  let pod = new sh.pod()
+  pod.webId = "https://spoggy.solid.community/profile/card#me"
   let session = new sh.session()
   let pti, chat, webId
-
-
 
   function mycallback(_webId){
     webId = _webId
@@ -84,7 +73,8 @@
   async function initInstance(instance){
     switch(instance.shortClasse) {
       case "LongChat":
-      chat = new sh.chat(instance)
+      chat = new sh.chat()
+      chat.instance = instance
       let chat_details = await chat.init
       info.innerHTML = JSON.stringify(chat_details)
       let messages = await chat.messages
