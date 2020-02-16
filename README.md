@@ -16,11 +16,11 @@
 
 !! Help : I need some help to externalize ldflex-query form the webpack bundle. !!
 
-#Shighl
-##Examples
+# Shighl
+## Examples
 see /dist folder for examples
-##Usage
-###Browser
+## Usage
+### Browser
 use cdn.jsdelivr.net
 ```
 <script src="https://cdn.jsdelivr.net/gh/scenaristeur/shighl@master/dist/window/shighl.bundle.js"> </script>
@@ -29,18 +29,18 @@ or shighl.bundle.js that you can find in the /dist/window/ folder.
 ```
 <script src="./window/shighl.bundle.js"> </script>
 ```
-###Es6 module / nodejs
+### Es6 module / nodejs
 install with ```npm install --save scenaristeur/shighl``` and import with
 ```
 import  Shighl  from 'shighl'
 ```
-###Create a Shighl Object
+### Create a Shighl Object
 ```
 const sh = new Shighl()
 sh.test() // optional te verify that the lib is loaded
 ```
 then you must create Objects from Shighl submodules :
-##let pod = new sh.pod()
+## let pod = new sh.pod()
 ```
 let pod = new sh.pod()
 pod.webId = "https://spoggy.solid.community/profile/card#me" // set "https://spoggy.solid.community/profile/card#me" to pod.webId
@@ -48,7 +48,7 @@ let name = await pod.name //get pod.name
 console.log(name)
 ```
 checked function are implemented
-###getting pod infos
+### getting pod infos
 - [x] pod.name
 - [x] pod.photo
 - [x] pod.friends
