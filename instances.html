@@ -81,11 +81,16 @@
       messages_dump.innerHTML = JSON.stringify(messages)
       messages_liste.innerHTML = ""
       for(const message of messages){
-        //  console.log(message)
-        chat.message = message.maker+" "+message.content+" "+message.date
+        console.log(message)
         let li = document.createElement("LI")
         li.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
         messages_liste.append(li)
+        var btn = document.createElement("BUTTON")
+        btn.innerHTML = "reply"
+        btn.addEventListener('click', event => {
+          reply(message)
+        });
+        li.appendChild(btn)
       }
 
       //  updateCalendar(instance)
@@ -115,13 +120,23 @@
     }else{
       let mess = {content: content, webId: webId, postType: postType, replyTo: replyTo}
       console.log(mess)
-      var result = await chat.send(mess)
-      // TODO send inbox.chatNotif
-      console.log(result)
+      chat.message = mess
+
+
+      if( inbox.length > 0){
+        console.log("sended")
+        let lastPost = chat.lastPost
+        console.log(lastPost)
+        let notif = {inbox: inbox, sender: webId, title:"solidarity reply", url:lastPost, content: lastPost+" is a "+postType+" reply to' "+replyTo,
+        replyTo: replyTo}
+        let recipient_pod = new sh.pod()
+        let recipient_inbox = recipient_pod.inbox
+        recipient_inbox.message = notif
+      }
       document.getElementById("message_content").value = ""
       document.getElementById("replyTo").value = ""
       document.getElementById("inbox").value = ""
-      initInstance(chat.instance)
+      //      initInstance(chat.instance)
       console.log("A virer une fois les websockets en place")
     }
     //  if (currentInstance.url != undefined){
@@ -135,12 +150,13 @@
 
   }
 
-  async function reply(url, maker){
-    console.log(url, maker)
-    var inbox = await sh.inbox.getInbox(maker)
-    console.log("Inbox",inbox)
-    document.getElementById("replyTo").value = url
-    document.getElementById("inbox").value = inbox
+  async function reply(message){
+    console.log(message)
+    document.getElementById("replyTo").value = message.url
+
+    let maker_pod =  new sh.pod()
+    maker_pod.webId = message.maker
+    document.getElementById("inbox").value = await maker_pod.inbox
   }
 
 
