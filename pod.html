@@ -4,7 +4,8 @@
   async function init(){
     let sh = new Shighl()
     console.log(sh)
-    let pod = new sh.pod("https://spoggy.solid.community/profile/card#me")
+    let pod = new sh.pod()
+    pod.webId = "https://spoggy.solid.community/profile/card#me"
 
     let name = await pod.name
     let photo = await pod.photo
@@ -28,7 +29,7 @@
   Look the web console to see the pod infos (Ctrl+Maj+i)<br><br>
   <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
   <br>
-  <a href="index.html">Back to index</a> 
+  <a href="index.html">Back to index</a>
 </body>
 
 </html>
