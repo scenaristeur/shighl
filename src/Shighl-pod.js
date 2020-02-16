@@ -16,20 +16,11 @@ class ShighlPod {
     this._webId = webId
   }
 
-  //new sh.pod("https://solidarity.inrupt.net/profile/card#me").name
   get name() {
-    /* mise en cache ok mais cache a nettoyer si changement de webId --> voir si c'est utile ?
-    if (this._name != undefined)
-    {
-    console.log("ok", this._name)
-    return this._name
-  }else{*/
-  return (async () => {
+    return (async () => {
     var n = await data[this._webId].vcard$fn;
-    //  this._name = `${n}`
     return `${n}`
   })();
-  //  }
 }
 
 set name(name) {
@@ -50,6 +41,13 @@ set photo(url) {
   return (async () => {
     var p = await data[this._webId].vcard$hasPhoto.set(url);
     return `${p}`
+  })();
+}
+
+get inbox(){
+  return (async () => {
+    var ib = await data[this._webId].ldp$inbox
+    return `${ib}`
   })();
 }
 

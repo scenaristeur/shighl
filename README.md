@@ -18,7 +18,7 @@
 
 # Shighl
 ## Examples
-see /dist folder for examples
+see /dist folder for examples or [https://scenaristeur.github.io/shighl/](https://scenaristeur.github.io/shighl/)
 ## Usage
 ### Browser
 use cdn.jsdelivr.net
@@ -174,7 +174,8 @@ when you get an instance (with pod.pti) of shortClasse "Notes" and once you are 
 - [see sh.chat live example](https://scenaristeur.github.io/shighl/instances.html)
 when you get an instance (with pod.pti) of shortClasse "LongChat" and once you are logged with sh.session
 ```
-let chat = new sh.chat(instance)
+let chat = new sh.chat()
+chat.instance = instance
 let chat_details = await chat.init
 info.innerHTML = JSON.stringify(chat_details)
 let messages = await chat.messages

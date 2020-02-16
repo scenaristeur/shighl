@@ -11,9 +11,13 @@ class ShighlChat {
     this._folder = this._instance.url.substring(0,this._instance.url.lastIndexOf('/')+1)
     this._name = decodeURI(this._folder.slice(0, -1)).split("/").pop()
   }
-  
+
   get instance() {
     return this._instance
+  }
+
+  get lastPost() {
+    return this._lastPost
   }
 
   get init() {
@@ -162,45 +166,48 @@ class ShighlChat {
 }
 
 
-async send(mess){
-  console.log(mess)
-  try {
-    if (mess.content.length > 0){
-      var dateObj = new Date();
-      var messageId = "#Msg"+dateObj.getTime()
-      var month = ("0" + (dateObj.getUTCMonth() + 1)).slice(-2); //months from 1-12
-      var day = ("0" + dateObj.getUTCDate()).slice(-2);
-      var year = dateObj.getUTCFullYear();
-      var path = this._folder+[this._year, this._month, this._day, ""].join("/")
-      console.log(path)
+set message(mess){
+  return (async () => {
+    console.log(mess)
+    try {
+      if (mess.content.length > 0){
+        var dateObj = new Date();
+        var messageId = "#Msg"+dateObj.getTime()
+        var month = ("0" + (dateObj.getUTCMonth() + 1)).slice(-2); //months from 1-12
+        var day = ("0" + dateObj.getUTCDate()).slice(-2);
+        var year = dateObj.getUTCFullYear();
+        var path = this._folder+[this._year, this._month, this._day, ""].join("/")
+        console.log(path)
 
-      var url = path+"chat.ttl"+messageId
-      var date = dateObj.toISOString()
-      var index = this._folder+"index.ttl#this"
-      console.log(date)
-      console.log(url)
-      console.log(index)
-      await data[url].dct$created.add(date)
-      await data[url].sioc$content.add(mess.content)
-      await data[url].foaf$maker.add(namedNode(mess.webId))
-      await data.from(url)[index]['http://www.w3.org/2005/01/wf/flow#message'].add(namedNode(url))
-      //  var postType = this._shadowRoot.querySelector('input[name="inlineRadioOptions"]:checked').value
-      if (mess.postType != "InstantMessage"){
-        await data[url].rdfs$type.add(namedNode('http://rdfs.org/sioc/types#'+mess.postType))
+        var url = path+"chat.ttl"+messageId
+        this._lastPost = url
+        var date = dateObj.toISOString()
+        var index = this._folder+"index.ttl#this"
+        console.log(date)
+        console.log(url)
+        console.log(index)
+        await data[url].dct$created.add(date)
+        await data[url].sioc$content.add(mess.content)
+        await data[url].foaf$maker.add(namedNode(mess.webId))
+        await data.from(url)[index]['http://www.w3.org/2005/01/wf/flow#message'].add(namedNode(url))
+        //  var postType = this._shadowRoot.querySelector('input[name="inlineRadioOptions"]:checked').value
+        if (mess.postType != "InstantMessage"){
+          await data[url].rdfs$type.add(namedNode('http://rdfs.org/sioc/types#'+mess.postType))
+        }
+
+        if (mess.replyTo != null && mess.replyTo.length >0){
+          await data[url].rdfs$type.add(namedNode('https://schema.org/Comment'))
+          await data[url].schema$parentItem.add(namedNode(mess.replyTo)) // schema$parentItem plante le chat solid
+          await data[replyTo].schema$comment.add(namedNode(url))
+        }
       }
 
-      if (mess.replyTo != null && mess.replyTo.length >0){
-        await data[url].rdfs$type.add(namedNode('https://schema.org/Comment'))
-        await data[url].schema$parentItem.add(namedNode(mess.replyTo)) // schema$parentItem plante le chat solid
-        await data[replyTo].schema$comment.add(namedNode(url))
-      }
+      return "ok"
+    }catch(e){
+      alert(e)
+      return e
     }
-    return "ok"
-  }catch(e){
-    alert(e)
-    return e
-  }
-
+  })();
 }
 
 
