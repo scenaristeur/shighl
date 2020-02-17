@@ -10,11 +10,7 @@ const common = {
     libraryExport: 'default',
   },
   externals: {
-    '@solid/query-ldflex': {
-           root: ['solid', 'data'],
-           commonjs: '@solid/query-ldflex', // not used, but needed for config
-           commonjs2: '@solid/query-ldflex',  // not used, but needed for config
-         },
+    'solid-auth-cli': 'null',
   //  '@solid/query-ldflex': 'solid_query_ldflex'
   //  'solid-auth-cli': 'null',
     //  '@solid/query-ldflex': 'query-ldflex',

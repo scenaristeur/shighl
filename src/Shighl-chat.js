@@ -212,6 +212,14 @@ set message(mess){
 set subscribe(callback){
 let module = this
 module.callback = callback
+var myEfficientFn = this.debounce(function(data) {
+	// All the taxing stuff you do
+  //  console.log("Update",data)
+  callback(data)
+}, 1000); //250
+
+//window.addEventListener('resize', myEfficientFn);
+
   console.log("Websocket", this)
   let websocket = "wss://"+this._folder.split('/')[2];
   let url = this._folder+[this._year,this._month,this._day,"chat.ttl"].join('/')
@@ -220,13 +228,31 @@ module.callback = callback
     this.send('sub '+url);
   };
   this._socket.onmessage = function(msg) {
-    console.log(msg)
+  //  console.log(msg)
     if (msg.data && msg.data.slice(0, 3) === 'pub') {
       console.log("websocket timestamp",msg.timeStamp)
-      module.callback(msg.data)
+
+      myEfficientFn(msg.data)
+    //  module.callback(msg.data)
+
     }
   };
 }
+
+ debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
 
 
 localName(str){

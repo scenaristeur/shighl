@@ -1,5 +1,7 @@
 <html>
-<script src="./window/shighl.bundle.js"> </script>
+<script src="./vendor/solid-auth-client.bundle.js"></script>
+<script src="./vendor/solid-query-ldflex.bundle.js"></script>
+<script src="./window/shighl.bundle.js"></script>
 <body onload="init()">
   <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
   <br>
@@ -70,10 +72,7 @@
     }
   }
 
-  function on_new_message(changement){
-    console.log ("new Message arrived,  get it from Websocket", changement)
-    //initInstance(chat.instance)
-  }
+
 
   async function initInstance(instance){
     switch(instance.shortClasse) {
@@ -81,23 +80,9 @@
       chat = new sh.chat()
       chat.instance = instance
       let chat_details = await chat.init
-      chat.subscribe = on_new_message
       info.innerHTML = JSON.stringify(chat_details)
-      let messages = await chat.messages
-      messages_dump.innerHTML = JSON.stringify(messages)
-      messages_liste.innerHTML = ""
-      for(const message of messages){
-        //  console.log(message)
-        let li = document.createElement("LI")
-        li.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
-        messages_liste.append(li)
-        var btn = document.createElement("BUTTON")
-        btn.innerHTML = "reply"
-        btn.addEventListener('click', event => {
-          reply(message)
-        });
-        li.appendChild(btn)
-      }
+      chat.subscribe = on_new_message
+      chatUpdate()
       break;
       case "TextDigitalDocument":
       case "MediaObject":
@@ -109,6 +94,31 @@
       //  updateDefault(instance)
     }
   }
+
+  function on_new_message(changement){
+    console.log ("new Message arrived,  get it from Websocket", changement)
+    chatUpdate()
+  }
+
+  async function chatUpdate(){
+
+    let messages = await chat.messages
+    messages_dump.innerHTML = JSON.stringify(messages)
+    messages_liste.innerHTML = ""
+    for(const message of messages){
+      //  console.log(message)
+      let li = document.createElement("LI")
+      li.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
+      messages_liste.append(li)
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "reply"
+      btn.addEventListener('click', event => {
+        reply(message)
+      });
+      li.appendChild(btn)
+    }
+  }
+
 
   async function sendChatMessage(){
     var content = document.getElementById("message_content").value.trim()
