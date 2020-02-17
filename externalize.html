@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
   <title>Shighl</title>
   <script src="https://cdn.jsdelivr.net/npm/solid-auth-client@2.3.0/dist-lib/solid-auth-client.bundle.js"></script>
-  <script src="vendor/solid-query-ldflex.bundle.js"></script>
   <script>
   //let exports = {}
   document.addEventListener('DOMContentLoaded', async () => {
@@ -16,7 +15,9 @@ let data = solid.data
     alert(`Welcome, ${await user}!`);
   });
   </script>
-    <script src="window/shighl.bundle.js"> </script>
+  <script src="./vendor/solid-auth-client.bundle.js"></script>
+  <script src="./vendor/solid-query-ldflex.bundle.js"></script>
+  <script src="./window/shighl.bundle.js"></script>
 </head>
 <body>
 
