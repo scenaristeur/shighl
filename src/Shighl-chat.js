@@ -6,11 +6,30 @@ class ShighlChat {
   constructor () {
     console.log("Shighl CHAT loaded")
   }
+
   set instance(instance) {
     this._instance = instance
     this._folder = this._instance.url.substring(0,this._instance.url.lastIndexOf('/')+1)
     this._name = decodeURI(this._folder.slice(0, -1)).split("/").pop()
   }
+
+  get exist() {
+    return (async () => {
+      let result = await fetch(this._instance.url)
+      .then(this.handleErrors)
+      .then(response => {
+        return "true"
+      }).catch(error => {
+        return "false"
+      } );
+      return result
+    })();
+  }
+
+  set create(params){
+    console.log(params.path, params.discoverable)
+  }
+
 
   get instance() {
     return this._instance
@@ -210,15 +229,15 @@ set message(mess){
 }
 
 set subscribe(callback){
-let module = this
-module.callback = callback
-var myEfficientFn = this.debounce(function(data) {
-	// All the taxing stuff you do
-  //  console.log("Update",data)
-  callback(data)
-}, 1000); //250
+  let module = this
+  module.callback = callback
+  var myEfficientFn = this.debounce(function(data) {
+    // All the taxing stuff you do
+    //  console.log("Update",data)
+    callback(data)
+  }, 1000); //250
 
-//window.addEventListener('resize', myEfficientFn);
+  //window.addEventListener('resize', myEfficientFn);
 
   console.log("Websocket", this)
   let websocket = "wss://"+this._folder.split('/')[2];
@@ -228,37 +247,44 @@ var myEfficientFn = this.debounce(function(data) {
     this.send('sub '+url);
   };
   this._socket.onmessage = function(msg) {
-  //  console.log(msg)
+    //  console.log(msg)
     if (msg.data && msg.data.slice(0, 3) === 'pub') {
       console.log("websocket timestamp",msg.timeStamp)
 
       myEfficientFn(msg.data)
-    //  module.callback(msg.data)
+      //  module.callback(msg.data)
 
     }
   };
 }
 
- debounce(func, wait, immediate) {
-	var timeout;
-	return function() {
-		var context = this, args = arguments;
-		var later = function() {
-			timeout = null;
-			if (!immediate) func.apply(context, args);
-		};
-		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
-	};
+debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
 };
 
-
+/*
 localName(str){
-  var ln = str.substring(str.lastIndexOf('#')+1);
-  ln == str ? ln = str.substring(str.lastIndexOf('/')+1) : "";
-  return ln
+var ln = str.substring(str.lastIndexOf('#')+1);
+ln == str ? ln = str.substring(str.lastIndexOf('/')+1) : "";
+return ln
+}*/
+
+handleErrors(response) {
+  if (!response.ok) {
+    throw Error(response.statusText);
+  }
+  return response;
 }
 
 async test(){
