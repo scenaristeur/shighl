@@ -5,13 +5,13 @@
 <body onload="init()">
   <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
   <br>
-  LongChat Details : <span id="info"></span>
+  LongChat Details : <span id="info_chat"></span>
   <br>
   <br>
   <ul id="messages_liste"></ul>
   <br><br>
   You must open a LongChat instance & be logged to be able to post<br>
-  Session : <span id="info"></span>
+  Session : <span id="info_session"></span>
   <button id="login_btn" onclick="session.login()">Login</button>
   <button id="logout_btn" onclick="session.logout()">Logout</button>
   <br> <br>
@@ -19,10 +19,21 @@
   <input id="author" placeholder="author" value=""  size="100"/><br>
   <textarea id="message_content" row=10></textarea>
   <button onclick="sendChatMessage()">Send message</button>
+  <hr><hr>
+  Create a Chat or test if one exist
   <br><br>
-  <input id="chat_input" placeholder="Chat name"/>
-  <button  onclick="pti.create()">Create LongChat Instance (todo)</button>
+  Path where you want to create a Chat
+  <input id="chat_create_input" placeholder="https://myWebId.myProvider/public/AwesomeChatName" size="100"/>
+  <br>  <input type="checkbox" id="public_check" name="public_check" checked>
+  <label for="public_check">This Chat is discoverable by your publicTypeIndex</label>
+  <button  onclick="chat_create()">Create LongChat Instance (todo)</button>
   <br>
+  <hr>
+  <br><br>
+  <input id="chat_test_input" placeholder="Chat path" size="100"/>
+  <button  onclick="chat_test()">Verify if Longchat Exist</button>
+
+  <hr><hr>
   Messages dump : <span id="messages_dump"></span>
   <br>
   <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
@@ -32,19 +43,25 @@
   let sh = new Shighl()
   console.log(sh)
   let pod = new sh.pod()
-  pod.webId = "https://spoggy.solid.community/profile/card#me"
+  pod.webId = "https://solidarity.inrupt.net/profile/card#me"
   let session = new sh.session()
   let pti, chat, webId
 
-  function mycallback(_webId){
+  async function mycallback(_webId){
     webId = _webId
     console.log("WebId: ",webId)
     if (webId != null){
-      info.innerHTML = webId
+      info_session.innerHTML = webId
       login_btn.style.display = "none"
       logout_btn.style.display = "block"
+      let user_pod = new sh.pod()
+      user_pod.webId = webId
+      let user_storage = await user_pod.storage
+      console.log("Storage",user_storage)
+      chat_create_input.value = user_storage+"public/AwesomeChatName"
+      chat_test_input.value = user_storage+"public/NameToTest"
     }else{
-      info.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
+      info_session.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
       login_btn.style.display = "block"
       logout_btn.style.display = "none"
       session.login()
@@ -80,7 +97,7 @@
       chat = new sh.chat()
       chat.instance = instance
       let chat_details = await chat.init
-      info.innerHTML = JSON.stringify(chat_details)
+      info_chat.innerHTML = JSON.stringify(chat_details)
       chat.subscribe = on_new_message
       chatUpdate()
       break;
@@ -164,7 +181,34 @@
     document.getElementById("replyTo").value = message.url
     document.getElementById("author").value = message.maker
   }
+  ///////////////////////// chat create & test
+  function chat_create(){
+    console.log(chat_create_input.value, public_check.checked)
+    let params = {path: chat_create_input.value, discoverable: public_check.checked}
+    let new_chat = new sh.chat()
+    new_chat.create = params
+  }
 
+  async function  chat_test(){
+    //make sure the url has a instance.url format with index.ttl#this
+    let url = chat_test_input.value.trim()
+    if (!url.endsWith("index.ttl#this")){
+      if(url.endsWith("index.ttl")){
+        url += "#this"
+      }else if(url.endsWith("/")) {url += "index.ttl#this" }
+      else{
+        url += "/index.ttl#this"
+      }
+    }
+
+    let instance = {url: url}
+    let unknown_chat = new sh.chat()
+    unknown_chat.instance = instance
+    let exist = await unknown_chat.exist
+    //console.log("Exist ", `${exist}`)
+    let result = `${exist}`
+    result === "true" ? chat_test_input.style.backgroundColor = "green" : chat_test_input.style.backgroundColor = "red";
+  }
 
 
 </script>
