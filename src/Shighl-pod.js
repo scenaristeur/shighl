@@ -94,7 +94,7 @@ class ShighlPod {
                   s.url = `${url}`
                   s.classe = `${classe}`
                   //  s.path = `${instance}`.split("/")
-                  s.shortClasse = this.localName(s.classe)
+                  s.shortClass = this.localName(s.classe)
                 }
               }
               pti.instances.push(s)

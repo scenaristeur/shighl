@@ -118,7 +118,7 @@
     for (let indice = 0; indice<pti.length; indice++){
       let instance = pti[indice]
       var li = document.createElement("LI")
-      var text = [instance.shortClasse, instance.object,].join(' : ') //instance.subject, instance.predicate,  instance.classe,
+      var text = [instance.shortClass, instance.object,].join(' : ') //instance.subject, instance.predicate,  instance.classe,
       var t = document.createTextNode(text);
       li.appendChild(t);
       var btn = document.createElement("BUTTON")
@@ -138,7 +138,7 @@
     let instance = e.getAttribute(instance)
     console.log(instance)
     currentInstance = instance
-    switch(instance.shortClasse) {
+    switch(instance.shortClass) {
       case "LongChat":
       instance = await sh.getCalendar(instance)
       //  updateLongChat(instance)

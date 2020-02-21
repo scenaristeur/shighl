@@ -38,8 +38,95 @@ const sh = new Shighl()
 sh.test() // optional te verify that the lib is loaded
 ```
 then you must create Objects from Shighl submodules :
-## let pod = new sh.pod()
+## pod.name for getting the name of a pod
+
+- For example, to get the name of a pod, you need a basic Shighl object that you can get with above ``` const sh = new Shighl() ```.
+- When you have got that ```sh``` variable representing Shighl object, you can create a pod object with ```let pod = new sh.pod()```
+- You must then set the webId of the pod that you want to read the name with ```pod.webId = "https://[podname].[provider]/profile/card#me"```
+- And then to get the "name" property or attribute of the pod use
+
 ```
+let name = await pod.name;
+console.log(name)
+```
+- That must give you the name of the pod in 5 lines of code
+- You can now easily get the other properties/attributes of the pod with ```let photo = await pod.photo``` and same with pod.friends, pod.role, pod.storage, pod.pti
+- pod.pti is a particular object as it represent the publicTypeIndex of the pod with the instances declared in it
+- An instance is a resource that the pod owner wants you to be able to discover, so that he put a reference to it. A resource could be some text, some image, or any media that is stored on his pod, by him or by someone else. It could also be a resource that is stored on another pod.
+- You can get each of the instances with
+```
+for (const inst of pti.instances){
+  console.log(inst)
+}
+```
+- Created this way, each instance property/attribute can be obtained by the same way that we used for the pod. To get the instance url use inst.url and to get the instance short class ... inst.shortClass !!! Yeah, yo got it !!!
+- And that shortClass could be something like "TextDigitalDocument", "MediaObject", "Bookmark", "Meeting", or ... "LongChat" ...
+- A long chat is an interesting thing on a Solid pod, it allows you to create a chat, a space for discussions. You own it, host it on your pod, give it a name, and a path where you want to put it on your pod. You also can manage the right of access (read/write, person/group). This way can everyone "host" every discussion that he wants... I let you imagine what you can do with that functionnality...
+- If, with the above ```  console.log(inst) ``` you find some instance that have a shortClass property you can try to set that instance in a chat object that you first create from our starting "sh" variable. To create that chat object, do as above a ``` let chat = new sh.chat() ``` then set the instance property of the chat with that instance ```
+chat.instance = instance ``` and initialize the chat with ```
+let chat_details = await chat.init
+console.log(chat_details)
+```
+- Once the chat has been initialized with an instance, you can get the last messages of the last day someone posted something in that instance of chat
+```
+let messages = await chat.messages
+for(const message of messages){
+  console.log(message)
+}
+```
+- Then you can get the details of each message with ``` message.content, message.makername, message.makerimg, message.date ```
+- If you want to get older messages, or other properties of that instance of chat, you have to look closer at the chat_details object that we created above and that represent stable and mutable propertiesof the instance of chat. _instance, _folder, and _name should be quite stable, opposed to the other.
+```
+{"_instance":{
+  "instance":"https://solidarity.inrupt.net/settings/publicTypeIndex.ttl#id1581799359461",
+  "url":"https://solidarity.inrupt.net/public/Shighl/Shighl/index.ttl#this",
+  "classe":"http://www.w3.org/ns/pim/meeting#LongChat",
+  "shortClass":"LongChat"
+  },
+  "_folder":"https://solidarity.inrupt.net/public/Shighl/Shighl/",
+  "_name":"Shighl",
+  "_years":["2020"],
+  "_year":"2020",
+  "_months":["02"],
+  "_month":"02",
+  "_days":["15","16","17"],
+  "_day":"17"
+}
+```
+
+plural :
+
+-- _years is an array that gives you the years when someone posted in this instance
+-- _months an array that represent the months when someone posted in the last year of _years array
+-- _days an array of days that represent the days when someone posted in the last month of _months array.
+--
+
+singulier:
+_year, _month, _day represent the "cursor" where you want to get the messages.
+
+So the example above gives you the messages of the 02/17/2020 or 17/02/2020 in french.
+To get the message of the day before, just set the _day of the chat_details object to "16" with
+
+
+-  [optional] : you can subscribe to a chat instance with ```chat.subscribe = on_new_message ``` where on_new_message is the name of the callback function that is called when a new message arrive is posted in the chat.
+
+What a call back function could be :
+
+```
+function on_new_message(changement){
+  console.log ("new Message arrived,  get it from Websocket", changement)
+  chatUpdate()
+}
+```
+TODO : implement the way to change the date & retrieve the messages of that date (someting like the calendar in scenaristeur/solidarity)
+
+- [x] pod.pti (return publicTypeIndex & instances)
+- [x] pod.role
+- [x] pod.storage
+
+
+```
+const sh = new Shighl()
 let pod = new sh.pod()
 pod.webId = "https://spoggy.solid.community/profile/card#me" // set "https://spoggy.solid.community/profile/card#me" to pod.webId
 let name = await pod.name //get pod.name
@@ -110,7 +197,7 @@ then each pti instance has keys :
 ```
 classe: "http://www.w3.org/ns/pim/meeting#LongChat"
 ​​​instance: "https://spoggy.solid.community/settings/publicTypeIndex.ttl#id1579184973294"
-​​​shortClasse: "LongChat"
+​​​shortClass: "LongChat"
 ​​​url: "https://spoggy.solid.community/public/thirdChat/index.ttl#this"
 ```
 
@@ -163,7 +250,7 @@ function mycallback(webId){
 ```
 
 ## sh.note
-when you get an instance (with pod.pti) of shortClasse "Notes" and once you are logged with sh.session
+when you get an instance (with pod.pti) of shortClass "Notes" and once you are logged with sh.session
 
 - sh.notes.get(instance) return Array
 - (sh.notes.subjects.get(instance) return Array) ??
@@ -174,7 +261,7 @@ when you get an instance (with pod.pti) of shortClasse "Notes" and once you are 
 
 ## chat
 - [see sh.chat live example](https://scenaristeur.github.io/shighl/instances.html)
-when you get an instance (with pod.pti) of shortClasse "LongChat" and once you are logged with sh.session
+when you get an instance (with pod.pti) of shortClass "LongChat" and once you are logged with sh.session
 ```
 let chat = new sh.chat()
 chat.instance = instance
@@ -385,7 +472,7 @@ async function run(){
     - [ X ] getName(webId) return String
     - [ X ] getPhoto(webId) return String
     - [ X ] getFriends(webId) return Array of friends (String)
-    - [ X ] getPublicTypeIndex(webId) return String / Array of instances (Objects) with props subject, predicate, object, classe, shortClasse
+    - [ X ] getPublicTypeIndex(webId) return String / Array of instances (Objects) with props subject, predicate, object, classe, shortClass
     <a href="https://scenaristeur.github.io/shighl/profile.html" target="_blank">Profile</a>
 
     - publicTypeIndex
