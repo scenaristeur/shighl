@@ -120,7 +120,7 @@
     info2.innerHTML = pti.url
     pti.instances.forEach(function(i){
       var li = document.createElement("LI")
-      var text = [i.shortClasse, i.subject].join(' | ') //i.predicate, i.object, i.classe,
+      var text = [i.shortClass, i.subject].join(' | ') //i.predicate, i.object, i.classe,
       var t = document.createTextNode(text);
       li.appendChild(t);
       var btn = document.createElement("BUTTON")
@@ -137,7 +137,7 @@
   async function initInstance(instance){
     console.log(instance)
     currentInstance = instance
-    switch(instance.shortClasse) {
+    switch(instance.shortClass) {
       case "LongChat":
       instance = await sh.initLongChatInstance(instance)
       console.log(instance)

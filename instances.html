@@ -77,7 +77,7 @@
     for (const inst of pti.instances){
       //  console.log(inst)
       let li = document.createElement("LI")
-      li.innerHTML = inst.shortClasse+": "+inst.url
+      li.innerHTML = inst.shortClass+": "+inst.url
       instances_liste.appendChild(li)
       var btn = document.createElement("BUTTON")
       btn.innerHTML = "open"
@@ -92,9 +92,9 @@
 
 
   async function initInstance(instance){
-    switch(instance.shortClasse) {
+    switch(instance.shortClass) {
       case "LongChat":
-      chat = new sh.chat()
+      let chat = new sh.chat()
       chat.instance = instance
       let chat_details = await chat.init
       info_chat.innerHTML = JSON.stringify(chat_details)
@@ -186,7 +186,7 @@
     console.log(chat_create_input.value, public_check.checked)
     // or pod.pti = {type: "LongChat", label: "My AwesomeChat", path: "https://complete.path/public/theChat"}
 
-    let instance = {url: chat_create_input.value, discoverable: public_check.checked, shortClasse: "LongChat"}
+    let instance = {url: chat_create_input.value, discoverable: public_check.checked, shortClass: "LongChat"}
     user_pod.pti = instance
   }
 
