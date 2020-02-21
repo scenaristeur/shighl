@@ -45,7 +45,7 @@
   let pod = new sh.pod()
   pod.webId = "https://solidarity.inrupt.net/profile/card#me"
   let session = new sh.session()
-  let pti, chat, webId
+  let pti, chat, webId, user_pod
 
   async function mycallback(_webId){
     webId = _webId
@@ -54,7 +54,7 @@
       info_session.innerHTML = webId
       login_btn.style.display = "none"
       logout_btn.style.display = "block"
-      let user_pod = new sh.pod()
+      user_pod = new sh.pod()
       user_pod.webId = webId
       let user_storage = await user_pod.storage
       console.log("Storage",user_storage)
@@ -184,9 +184,10 @@
   ///////////////////////// chat create & test
   function chat_create(){
     console.log(chat_create_input.value, public_check.checked)
-    let params = {path: chat_create_input.value, discoverable: public_check.checked}
-    let new_chat = new sh.chat()
-    new_chat.create = params
+    // or pod.pti = {type: "LongChat", label: "My AwesomeChat", path: "https://complete.path/public/theChat"}
+
+    let instance = {url: chat_create_input.value, discoverable: public_check.checked, shortClasse: "LongChat"}
+    user_pod.pti = instance
   }
 
   async function  chat_test(){

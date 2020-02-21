@@ -26,11 +26,6 @@ class ShighlChat {
     })();
   }
 
-  set create(params){
-    console.log(params.path, params.discoverable)
-  }
-
-
   get instance() {
     return this._instance
   }

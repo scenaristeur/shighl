@@ -1,17 +1,14 @@
-///////////////////////////////////////////////////////////////////////////////
+////////////////////
 # What is a Shighl ?
 - Shighl, is for S-olid high L-evel
 - a tool that let you write simple html/js to interact with a Solid POD
 - Session, Profile, Inbox, Chat...
-- Source : https://github.com/scenaristeur/shighl/
 
 # Qu'est-ce que Shighl ?
 - Shighl, c'est pour S-olid high L-evel
 - un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
 - Session, Profil, Messagerie, Chat...
-- Source : https://github.com/scenaristeur/shighl/
-
-!!!
+////////////////////
 
 # Shighl
 ## Examples
@@ -60,7 +57,7 @@ checked function are implemented
 - [x] pod.name = "New name"
 - [x] pod.photo = "photo_url" (photo must be stored on your pod, todo copy photo to pod/profile)
 - [x] pod.role = "New Role"
-- [ ] pod.create for creating a new pti instance (bookmark, notes, longchat...)
+- [ ] pod.pti =  for creating a new pti instance (bookmark, notes, longchat...)
 
 - [see sh.pod live example](https://scenaristeur.github.io/shighl/pod.html)
 - [codepen version](https://codepen.io/spoggy/pen/eYNZNoO)
