@@ -122,6 +122,10 @@ function on_new_message(changement){
 ```
 TODO : implement the way to change the date & retrieve the messages of that date (someting like the calendar in scenaristeur/solidarity)
 
+[INSTANCE EXAMPLE](https://scenaristeur.github.io/shighl/instances.html)
+
+
+
 - [x] pod.pti (return publicTypeIndex & instances)
 - [x] pod.role
 - [x] pod.storage
