@@ -63,10 +63,13 @@ for (const inst of pti.instances){
 - And that shortClass could be something like "TextDigitalDocument", "MediaObject", "Bookmark", "Meeting", or ... "LongChat" ...
 - A "LongChat" is an interesting thing on a Solid pod, it allows you to create a chat, a space for discussions. You own it, host it on your pod, give it a name, and a path where you want to put it on your pod. You also can manage the right of access (read/write, person/group). This way everyone can "host" every discussion he wants... I let you imagine what you can do with such functionnality...
 - If, with the above ```  console.log(inst) ``` you find some instance that have a shortClass property you can try to set that instance in a chat object that you first create from our starting "sh" variable. To create that chat object, do as above a ``` let chat = new sh.chat() ``` then set the instance property of the chat with that instance ```
-chat.instance = instance ``` and initialize the chat with ```
+chat.instance = instance ``` and initialize the chat with
+
+```
 let chat_details = await chat.init
 console.log(chat_details)
 ```
+
 - Once the chat has been initialized with an instance, you can get the last messages of the last day someone posted something in that instance of chat
 ```
 let messages = await chat.messages
