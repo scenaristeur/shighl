@@ -61,7 +61,7 @@ for (const inst of pti.instances){
 ```
 - Created this way, each instance property/attribute can be obtained by the same way that we used for the pod. To get the instance url use inst.url and to get the instance short class ... inst.shortClass !!! Yeah, yo got it !!!
 - And that shortClass could be something like "TextDigitalDocument", "MediaObject", "Bookmark", "Meeting", or ... "LongChat" ...
-- A long chat is an interesting thing on a Solid pod, it allows you to create a chat, a space for discussions. You own it, host it on your pod, give it a name, and a path where you want to put it on your pod. You also can manage the right of access (read/write, person/group). This way can everyone "host" every discussion that he wants... I let you imagine what you can do with that functionnality...
+- A "LongChat" is an interesting thing on a Solid pod, it allows you to create a chat, a space for discussions. You own it, host it on your pod, give it a name, and a path where you want to put it on your pod. You also can manage the right of access (read/write, person/group). This way everyone can "host" every discussion he wants... I let you imagine what you can do with such functionnality...
 - If, with the above ```  console.log(inst) ``` you find some instance that have a shortClass property you can try to set that instance in a chat object that you first create from our starting "sh" variable. To create that chat object, do as above a ``` let chat = new sh.chat() ``` then set the instance property of the chat with that instance ```
 chat.instance = instance ``` and initialize the chat with ```
 let chat_details = await chat.init
@@ -501,6 +501,8 @@ async function run(){
     ```
     npm run build  
     git subtree push --prefix dist origin gh-pages
+
+
     ```
 
     https://blog.jakoblind.no/webpack-code-splitting-libraries-what-to-do-with-the-files/
