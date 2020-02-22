@@ -98,17 +98,16 @@ for(const message of messages){
 ```
 
 plural :
+- _years is an array that gives you the years when someone posted in this instance
+- _months an array that represent the months when someone posted in the last year of _years array
+- _days an array of days that represent the days when someone posted in the last month of _months array.
 
--- _years is an array that gives you the years when someone posted in this instance
--- _months an array that represent the months when someone posted in the last year of _years array
--- _days an array of days that represent the days when someone posted in the last month of _months array.
---
 
 singulier:
 _year, _month, _day represent the "cursor" where you want to get the messages.
 
 So the example above gives you the messages of the 02/17/2020 or 17/02/2020 in french.
-To get the message of the day before, just set the _day of the chat_details object to "16" with
+To get the message of the day before, just set the _day of the chat_details object to "16" with something like in sscenaristeur/solidarity
 
 
 -  [optional] : you can subscribe to a chat instance with ```chat.subscribe = on_new_message ``` where on_new_message is the name of the callback function that is called when a new message arrive is posted in the chat.
