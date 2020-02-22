@@ -8,11 +8,14 @@
 - Shighl, c'est pour S-olid high L-evel
 - un outil qui vous permet d'écrire du simple html/js pour interagir avec un POD Solid
 - Session, Profil, Messagerie, Chat...
+
 ////////////////////
 
 # Shighl
 ## Examples
-see /dist folder for examples or [https://scenaristeur.github.io/shighl/](https://scenaristeur.github.io/shighl/)
+- see /dist folder for examples or [https://scenaristeur.github.io/shighl/](https://scenaristeur.github.io/shighl/)
+- An example of this chat functionnalities is running on [show INSTANCE EXAMPLE](https://scenaristeur.github.io/shighl/instances.html)
+
 ## Usage
 ### Browser
 use cdn.jsdelivr.net
@@ -27,11 +30,15 @@ or shighl.bundle.js, solid-query-ldflex.bundle.js, solid-auth-client.bundle.js t
 <script src="./vendor/solid-query-ldflex.bundle.js"></script>
 <script src="./window/shighl.bundle.js"></script>
 ```
+
 ### Es6 module / nodejs
 install with ```npm install --save scenaristeur/shighl``` and import with
 ```
 import  Shighl  from 'shighl'
 ```
+### Login Popup
+You will probably also need to copy the dist/dist-popup folder that provides you the better way to connect to a Solid Pod
+
 ### Create a Shighl Object
 ```
 const sh = new Shighl()
@@ -52,6 +59,7 @@ console.log(name)
 - That must give you the name of the pod in 5 lines of code
 - You can now easily get the other properties/attributes of the pod with ```let photo = await pod.photo``` and same with pod.friends, pod.role, pod.storage, pod.pti
 - pod.pti is a particular object as it represent the publicTypeIndex of the pod with the instances declared in it
+
 - An instance is a resource that the pod owner wants you to be able to discover, so that he put a reference to it. A resource could be some text, some image, or any media that is stored on his pod, by him or by someone else. It could also be a resource that is stored on another pod.
 - You can get each of the instances with
 ```
@@ -107,8 +115,12 @@ singulier:
 _year, _month, _day represent the "cursor" where you want to get the messages.
 
 So the example above gives you the messages of the 02/17/2020 or 17/02/2020 in french.
-To get the message of the day before, just set the _day of the chat_details object to "16" with something like in sscenaristeur/solidarity
+To get the message of the day before, just set the _day of your chat object to "16" with something like this
 
+```
+chat._day = "16"
+```
+and get the messages of the day as we did before with chat.messages
 
 -  [optional] : you can subscribe to a chat instance with ```chat.subscribe = on_new_message ``` where on_new_message is the name of the callback function that is called when a new message arrive is posted in the chat.
 
@@ -120,9 +132,11 @@ function on_new_message(changement){
   chatUpdate()
 }
 ```
-TODO : implement the way to change the date & retrieve the messages of that date (someting like the calendar in scenaristeur/solidarity)
 
-[INSTANCE EXAMPLE](https://scenaristeur.github.io/shighl/instances.html)
+An example of this chat functionnalities is running on [show INSTANCE EXAMPLE](https://scenaristeur.github.io/shighl/instances.html)
+
+or [codepen](https://codepen.io/spoggy/pen/ExjNQJd) (can't log review how to add popuplogin)
+
 
 
 
@@ -498,6 +512,11 @@ async function run(){
 
     - Acl
     - [ ] getAcl(path) return Array
+
+    # chat calendar
+    show only days when there are messages
+    https://developer.mozilla.org/fr/docs/Web/HTML/Element/Input/date
+
 
     templates bootstrap https://bootsnipp.com/tags/chat
 

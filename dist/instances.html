@@ -3,10 +3,15 @@
 <script src="./vendor/solid-query-ldflex.bundle.js"></script>
 <script src="./window/shighl.bundle.js"></script>
 <body onload="init()">
+  <h3>First, open a chat instance</h3>
   <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
   <br>
   LongChat Details : <span id="info_chat"></span>
   <br>
+  <div>
+    <label for="calendar">See messages of another day :</label>
+    <input id="calendar" type="date" onchange="dateChanged(event);"  value="">
+  </div>
   <br>
   <ul id="messages_liste"></ul>
   <br><br>
@@ -94,7 +99,7 @@
   async function initInstance(instance){
     switch(instance.shortClass) {
       case "LongChat":
-      let chat = new sh.chat()
+      chat = new sh.chat()
       chat.instance = instance
       let chat_details = await chat.init
       info_chat.innerHTML = JSON.stringify(chat_details)
@@ -118,7 +123,7 @@
   }
 
   async function chatUpdate(){
-
+    updateCalendar()
     let messages = await chat.messages
     messages_dump.innerHTML = JSON.stringify(messages)
     messages_liste.innerHTML = ""
@@ -136,6 +141,18 @@
     }
   }
 
+  function updateCalendar(){
+    document.getElementById("calendar").value =   [chat._year, chat._month, chat._day].join("-")
+    console.log(document.getElementById("calendar").value)
+  }
+
+  function dateChanged(e){
+    let splitted_date = e.target.value.split("-")
+    chat._year = splitted_date[0]
+    chat._month = splitted_date[1]
+    chat._day = splitted_date[2]
+    chatUpdate()
+  }
 
   async function sendChatMessage(){
     var content = document.getElementById("message_content").value.trim()
