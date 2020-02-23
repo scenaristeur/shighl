@@ -200,11 +200,9 @@
   }
   ///////////////////////// chat create & test
   function chat_create(){
-    console.log(chat_create_input.value, public_check.checked)
-    // or pod.pti = {type: "LongChat", label: "My AwesomeChat", path: "https://complete.path/public/theChat"}
-
-    let instance = {url: chat_create_input.value, discoverable: public_check.checked, shortClass: "LongChat"}
-    user_pod.pti = instance
+    let params = {user_pod: user_pod , url: chat_create_input.value, discoverable: public_check.checked, shortClass: "LongChat"}
+  console.log(params)
+    user_pod.pti_new = params
   }
 
   async function  chat_test(){
