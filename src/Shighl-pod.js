@@ -63,9 +63,112 @@ class ShighlPod {
     })();
   }
 
-  set pti(instance){
+  set pti_new(params){
     return (async () => {
-      console.log("Instance ", instance)
+      let now = new Date()
+      //console.log("Params ", params)
+      let webId = params.user_pod.webId
+      //index
+      let path = params.url
+      path = !path.endsWith("/") ? path+"/" : "";
+      let index = path+"index.ttl"
+      let date = now.toISOString()
+      let id = index+"#id"+Date.parse(now)
+      let i_this = index+"#this"
+      //console.log(now, webId, date, index, i_this, id)
+
+      //pti
+      let pti = await user_pod.pti
+      let pti_url = `${pti.url}`
+      let pti_id = pti_url+"#id"+Date.parse(now)
+      //console.log(`${pti}`, pti_id)
+
+      // chat
+      // first ldflex-query must be add to create the file, next we can use set
+      await data[id].ic$dtstart.add(date)
+      await data[id].flow$participant.set(namedNode(webId))
+      await data[id].ui$backgroundColor.set("#e9dce4")
+      await data[i_this].type.set(namedNode('http://www.w3.org/ns/pim/meeting#LongChat'))
+      await data[i_this]['http://purl.org/dc/elements/1.1/author'].set(namedNode(webId))
+      await data[i_this]['http://purl.org/dc/elements/1.1/created'].set(date)
+      await data[i_this]['http://purl.org/dc/elements/1.1/title'].set("Chat channel")
+      await data[i_this].flow$participation.set(namedNode(id))
+      await data[i_this].ui$sharedPreferences.set(namedNode(path+":SharedPreferences"))
+
+      //pti
+      await data[pti_id].solid$forClass.set(namedNode('http://www.w3.org/ns/pim/meeting#LongChat'))
+      await data[pti_id].solid$instance.set(namedNode(i_this))
+      // chat.ttl & welcome message
+      var messageId = "#Msg"+now.getTime()
+      var month = ("0" + (now.getUTCMonth() + 1)).slice(-2); //months from 1-12
+      var day = ("0" + now.getUTCDate()).slice(-2);
+      var year = now.getUTCFullYear();
+      var path_chat = path+[year, month, day, ""].join("/")
+    //  console.log(path_chat)
+
+      let content = "Welcome to "+index+"! You must grant Everyone to Poster in the shareTool of "+path
+      var m_id = path_chat+"chat.ttl"+messageId
+    //  console.log(date)
+      //console.log(m_id)
+      await data[m_id].dct$created.add(date)
+      await data[m_id].sioc$content.add(content)
+      await data[m_id].foaf$maker.add(namedNode(webId))
+      await data.from(m_id)[i_this]['http://www.w3.org/2005/01/wf/flow#message'].add(namedNode(m_id))
+      alert ("You must grant Everyone to Poster in the shareTool of "+path)
+
+
+
+      /*
+      @prefix : <#>.
+      @prefix terms: <http://purl.org/dc/terms/>.
+      @prefix XML: <http://www.w3.org/2001/XMLSchema#>.
+      @prefix n: <http://rdfs.org/sioc/ns#>.
+      @prefix n0: <http://xmlns.com/foaf/0.1/>.
+      @prefix c: </profile/card#>.
+      @prefix ind: <../../../index.ttl#>.
+      @prefix flow: <http://www.w3.org/2005/01/wf/flow#>.
+
+      :Msg1582422363863
+      terms:created "2020-02-23T01:46:03Z"^^XML:dateTime;
+      n:content "Welcome !";
+      n0:maker c:me.
+      ind:this flow:message :Msg1582422363863 .*/
+
+
+      /* must do the same as
+
+      @prefix : <#>.
+      @prefix mee: <http://www.w3.org/ns/pim/meeting#>.
+      @prefix ic: <http://www.w3.org/2002/12/cal/ical#>.
+      @prefix XML: <http://www.w3.org/2001/XMLSchema#>.
+      @prefix flow: <http://www.w3.org/2005/01/wf/flow#>.
+      @prefix c: </profile/card#>.
+      @prefix ui: <http://www.w3.org/ns/ui#>.
+      @prefix n0: <http://purl.org/dc/elements/1.1/>.
+      @prefix c0: <https://smag0.solid.community/profile/card#>.
+
+      :id1582414878663
+      ic:dtstart "2020-02-22T23:41:18Z"^^XML:dateTime;
+      flow:participant c:me;
+      ui:backgroundColor "#e9dce4".
+      :this
+      a mee:LongChat;
+      n0:author c0:me;
+      n0:created "2020-02-22T23:41:09Z"^^XML:dateTime;
+      n0:title "Chat channel";
+      flow:participation :id1582414878663;
+      ui:sharedPreferences :SharedPreferences.
+
+      */
+
+      // pti
+      //:id1579018946975 terms:forClass mee:LongChat; terms:instance ind:this.
+      /* utilisation de terms ou solid ? https au lieu de http ?
+      @prefix solid: <https://www.w3.org/ns/solid/terms#>.
+      @prefix terms: <http://www.w3.org/ns/solid/terms#>.*/
+
+
+
       return "instance created"
     })();
   }
@@ -104,7 +207,7 @@ class ShighlPod {
       }catch(e){
         console.log(e)
       }
-      //console.log(pti)
+      console.log(pti)
       return pti
     })();
   }

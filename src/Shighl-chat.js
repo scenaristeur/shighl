@@ -190,7 +190,7 @@ set message(mess){
         var month = ("0" + (dateObj.getUTCMonth() + 1)).slice(-2); //months from 1-12
         var day = ("0" + dateObj.getUTCDate()).slice(-2);
         var year = dateObj.getUTCFullYear();
-        var path = this._folder+[this._year, this._month, this._day, ""].join("/")
+        var path = this._folder+[year, month, day, ""].join("/")
         console.log(path)
 
         var url = path+"chat.ttl"+messageId
