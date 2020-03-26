@@ -1,6 +1,12 @@
 import * as auth from 'solid-auth-client';
 import data from "@solid/query-ldflex";
+//import data from "@solid/query-ldflex/lib/exports/rdflib.js";
 import { namedNode } from '@rdfjs/data-model';
+
+/*
+import { fetchDocument } from 'tripledoc';
+import { foaf, rdfs, terms, solid } from 'rdf-namespaces';*/
+
 
 
 class ShighlPod {
@@ -104,11 +110,11 @@ class ShighlPod {
       var day = ("0" + now.getUTCDate()).slice(-2);
       var year = now.getUTCFullYear();
       var path_chat = path+[year, month, day, ""].join("/")
-    //  console.log(path_chat)
+      //  console.log(path_chat)
 
       let content = "Welcome to "+index+"! You must grant Everyone to Poster in the shareTool of "+path
       var m_id = path_chat+"chat.ttl"+messageId
-    //  console.log(date)
+      //  console.log(date)
       //console.log(m_id)
       await data[m_id].dct$created.add(date)
       await data[m_id].sioc$content.add(content)
@@ -172,6 +178,7 @@ class ShighlPod {
       return "instance created"
     })();
   }
+
 
   get pti() {
     return (async () => {

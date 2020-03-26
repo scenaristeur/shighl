@@ -1,3 +1,4 @@
+
 ////////////////////
 # What is a Shighl ?
 - Shighl, is for S-olid high L-evel
@@ -131,7 +132,7 @@ let params = {user_pod: user_pod , // a pod object of the user that you created 
   console.log(params)
   user_pod.pti_new = params
   ```
-  
+
 
 
 
@@ -548,3 +549,6 @@ let params = {user_pod: user_pod , // a pod object of the user that you created 
       - build ldflex-query
       https://gist.github.com/bellbind/24d9a5851397d45e4fa83fa8ec30449c
       https://git.happy-dev.fr/startinblox/framework/sib-store/blob/master/package.json
+
+
+TODO infinite scroll : https://www.youtube.com/watch?v=hSsdhUG9rBI

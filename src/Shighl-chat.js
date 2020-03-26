@@ -71,6 +71,16 @@ class ShighlChat {
     })();
   }
 
+
+urlExist(url, callback) {
+    fetch(url, { method: 'head' })
+    .then(function(status) {
+      callback(status.ok)
+    });
+  }
+
+
+
   get messages(){
     return (async () => {
       var path = this._folder+[this._year, this._month, this._day,""].join('/')
@@ -78,7 +88,17 @@ class ShighlChat {
       this._documents = []
       //console.log("Clear")
 
-      try{
+    let exist =   await   fetch(path, { method: 'head' })
+      .then(function(status) {
+        return status.ok
+      });
+
+      console.log("Exist",exist)
+
+
+
+
+    if (exist){
         let chatfile = await data[path]['ldp$contains'];
         console.log("ChatFile",`${chatfile}`);
         //  let documents = []
@@ -98,14 +118,10 @@ class ShighlChat {
         }
         this._documents = docs
         //  return instance
-      }catch(e){
-        console.log(e)
-        console.log("impossible to get messgaes")
-        this._error = "No Chat message in "+path
-        //  return instance
+        await this.detail()
+        console.log("termine")
       }
-      await this.detail()
-      console.log("termine")
+
       return this._documents
     })();
 
