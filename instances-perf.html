@@ -1,0 +1,534 @@
+<html>
+<script src="./vendor/solid-auth-client.bundle.js"></script>
+<script src="./vendor/solid-query-ldflex.bundle.js"></script>
+<script src="./window/shighl.bundle.js"></script>
+
+<style>
+#container{
+    height: 400px;
+    overflow: auto;
+}
+.cat-list {
+  overflow: scroll;
+  list-style-type: none;
+  padding: 0;
+}
+
+.cat-tile {
+  background-color: grey;
+  margin: 10px 0;
+  height: 150px;
+  width: 100%;
+}
+</style>
+
+<body onload="init()">
+  <h3>First, open a chat instance</h3>
+  <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
+  <br>
+  LongChat Details : <span id="info_chat"></span>
+  <br>
+  <div>
+    <label for="calendar">See messages of another day :</label>
+    <input id="calendar" type="date" onchange="dateChanged(event);"  value="">
+  </div>
+  <br>
+
+<!-- SCROLL -->
+<input id="input1" placeholder="# of items in DB"/>
+<input id="input2" placeholder="# of DOM els (min 20)"/>
+
+<button id="start-btn" onclick="start()">
+  Start Infinite Scroll
+</button>
+
+<div id="container">
+  <ul class="cat-list" stle="top-padding: 0px; bottom-padding: 0px">
+  </ul>
+</div>
+
+<!-- FIN SCROLL -->
+
+
+  <ul id="messages_liste"></ul>
+  <br><br>
+  You must open a LongChat instance & be logged to be able to post<br>
+  Session : <span id="info_session"></span>
+  <button id="login_btn" onclick="session.login()">Login</button>
+  <button id="logout_btn" onclick="session.logout()">Logout</button>
+  <br> <br>
+  <input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
+  <input id="author" placeholder="author" value=""  size="100"/><br>
+  <textarea id="message_content" row=10></textarea>
+  <button onclick="sendChatMessage()">Send message</button>
+  <hr><hr>
+  Create a Chat or test if one exist
+  <br><br>
+  Path where you want to create a Chat
+  <input id="chat_create_input" placeholder="https://myWebId.myProvider/public/AwesomeChatName" size="100"/>
+  <br>  <input type="checkbox" id="public_check" name="public_check" checked>
+  <label for="public_check">This Chat is discoverable by your publicTypeIndex</label>
+  <button  onclick="chat_create()">Create LongChat Instance (todo)</button>
+  <br>
+  <hr>
+  <br><br>
+  <input id="chat_test_input" placeholder="Chat path" size="100"/>
+  <button  onclick="chat_test()">Verify if Longchat Exist</button>
+
+  <hr><hr>
+  Messages dump : <span id="messages_dump"></span>
+  <br>
+  <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+  <br>
+  <a href="index.html">Back to index</a>
+
+<script> // Scroller https://medium.com/walmartlabs/infinite-scrolling-the-right-way-11b098a08815
+const _getCatImg = () => {
+  const randomNum = () => {
+    return Math.floor(Math.random() * 100000);
+  };
+  const url = "https://source.unsplash.com/collection/139386/100x100/?sig=";
+  return url + randomNum();
+};
+
+let topSentinelPreviousY = 0;
+let topSentinelPreviousRatio = 0;
+let bottomSentinelPreviousY = 0;
+let bottomSentinelPreviousRatio = 0;
+
+let listSize = 20;
+let DBSize = 200;
+
+const initDB = num => {
+	const db = [];
+  for (let i = 0; i < num; i++) {
+  	db.push({
+    	catCounter: i,
+      title: `cat image number ${i}`,
+      imgSrc: _getCatImg()
+    })
+  }
+  return db;
+}
+
+let DB = [];
+
+let currentIndex = 0;
+
+const initList = num => {
+	const container = document.querySelector(".cat-list");
+
+  for (let i = 0; i < num; i++) {
+  	const tile = document.createElement("LI");
+    tile.setAttribute("class", "cat-tile");
+    tile.setAttribute("id", "cat-tile-" + i);
+    const title = document.createElement("H3");
+    const t = document.createTextNode(DB[i].title);
+    title.appendChild(t);
+    tile.appendChild(title);
+    const img = document.createElement("IMG");
+    img.setAttribute("src", DB[i].imgSrc);
+    tile.appendChild(img);
+  	container.appendChild(tile);
+  }
+
+}
+
+const getSlidingWindow = isScrollDown => {
+	const increment = listSize / 2;
+	let firstIndex;
+
+  if (isScrollDown) {
+  	firstIndex = currentIndex + increment;
+  } else {
+    firstIndex = currentIndex - increment - listSize;
+  }
+
+  if (firstIndex < 0) {
+  	firstIndex = 0;
+  }
+
+  return firstIndex;
+}
+
+const recycleDOM = firstIndex => {
+	for (let i = 0; i < listSize; i++) {
+  	const tile = document.querySelector("#cat-tile-" + i);
+    tile.firstElementChild.innerText = DB[i + firstIndex].title;
+    tile.lastChild.setAttribute("src", DB[i + firstIndex].imgSrc);
+  }
+}
+
+const getNumFromStyle = numStr => Number(numStr.substring(0, numStr.length - 2));
+
+const adjustPaddings = isScrollDown => {
+	const container = document.querySelector(".cat-list");
+  const currentPaddingTop = getNumFromStyle(container.style.paddingTop);
+  const currentPaddingBottom = getNumFromStyle(container.style.paddingBottom);
+  const remPaddingsVal = 170 * (listSize / 2);
+	if (isScrollDown) {
+  	container.style.paddingTop = currentPaddingTop + remPaddingsVal + "px";
+    container.style.paddingBottom = currentPaddingBottom === 0 ? "0px" : currentPaddingBottom - remPaddingsVal + "px";
+  } else {
+  	container.style.paddingBottom = currentPaddingBottom + remPaddingsVal + "px";
+    container.style.paddingTop = currentPaddingTop === 0 ? "0px" : currentPaddingTop - remPaddingsVal + "px";
+
+  }
+}
+
+const topSentCallback = entry => {
+  console.log("TOP")
+	if (currentIndex === 0) {
+		const container = document.querySelector(".cat-list");
+  	container.style.paddingTop = "0px";
+  	container.style.paddingBottom = "0px";
+  }
+
+  const currentY = entry.boundingClientRect.top;
+  const currentRatio = entry.intersectionRatio;
+  const isIntersecting = entry.isIntersecting;
+
+  // conditional check for Scrolling up
+  if (
+    currentY > topSentinelPreviousY &&
+    isIntersecting &&
+    currentRatio >= topSentinelPreviousRatio &&
+    currentIndex !== 0
+  ) {
+    const firstIndex = getSlidingWindow(false);
+    adjustPaddings(false);
+  //  recycleDOM(firstIndex);
+    currentIndex = firstIndex;
+  }
+
+  topSentinelPreviousY = currentY;
+  topSentinelPreviousRatio = currentRatio;
+}
+
+const botSentCallback = entry => {
+  console.log("Bottom")
+
+	if (currentIndex === DBSize - listSize) {
+    console.log(currentIndex)
+  	return;
+  }
+
+  const currentY = entry.boundingClientRect.top;
+  const currentRatio = entry.intersectionRatio;
+  const isIntersecting = entry.isIntersecting;
+
+  // conditional check for Scrolling down
+  if (
+    currentY < bottomSentinelPreviousY &&
+    currentRatio > bottomSentinelPreviousRatio &&
+    isIntersecting
+  ) {
+    const firstIndex = getSlidingWindow(true);
+    adjustPaddings(true);
+    //(firstIndex);
+    currentIndex = firstIndex;
+    console.log("scroll down")
+        chatUpdate()
+  }
+
+  bottomSentinelPreviousY = currentY;
+  bottomSentinelPreviousRatio = currentRatio;
+}
+
+const initIntersectionObserver = () => {
+  const options = {
+  	/* root: document.querySelector(".cat-list") */
+  }
+
+  const callback = entries => {
+    entries.forEach(entry => {
+      console.log(entry)
+      if (entry.target.id === 'cat-tile-0') {
+        topSentCallback(entry);
+      } else if (entry.target.id === `cat-tile-${listSize - 1}`) {
+        botSentCallback(entry);
+      }
+    });
+  }
+
+  var observer = new IntersectionObserver(callback, options);
+  observer.observe(document.querySelector("#cat-tile-0"));
+  observer.observe(document.querySelector(`#cat-tile-${listSize - 1}`));
+}
+/*
+const start = () => {
+	const input1 = document.querySelector("#input1");
+  const input2 = document.querySelector("#input2");
+  if (!input1.value) {
+  	DBSize = 200;
+    input1.value = DBSize;
+  } else {
+  	DBSize = input1.value;
+  }
+
+  if (input2.value < 20) {
+  	listSize = 20;
+    input2.value = 20;
+  } else {
+  	listSize = input2.value;
+  }
+  DB = initDB(DBSize);
+	initList(listSize);
+	initIntersectionObserver();
+
+  input1.style.display = "none";
+  input2.style.display = "none";
+  document.querySelector("#start-btn").style.display = "none";
+}*/
+
+
+
+</script>
+
+
+  <script>
+  let sh = new Shighl()
+  console.log(sh)
+  let pod = new sh.pod()
+  pod.webId = "https://solidarity.inrupt.net/profile/card#me"
+  let session = new sh.session()
+  let pti, chat, webId, user_pod
+
+  async function mycallback(_webId){
+    webId = _webId
+    console.log("WebId: ",webId)
+    if (webId != null){
+      info_session.innerHTML = webId
+      login_btn.style.display = "none"
+      logout_btn.style.display = "block"
+      user_pod = new sh.pod()
+      user_pod.webId = webId
+      let user_storage = await user_pod.storage
+      console.log("Storage",user_storage)
+      chat_create_input.value = user_storage+"public/AwesomeChatName"
+      chat_test_input.value = user_storage+"public/NameToTest"
+    }else{
+      info_session.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
+      login_btn.style.display = "block"
+      logout_btn.style.display = "none"
+      session.login()
+    }
+  }
+
+  async function init(){
+    await session.track(mycallback)
+    pti = await pod.pti
+    console.log("publicTypeIndex & instances: ",pti)
+    instances_liste.innerHTML = ""
+    messages_liste.innerHTML = ""
+    for (const inst of pti.instances){
+      //  console.log(inst)
+      let li = document.createElement("LI")
+      li.innerHTML = inst.shortClass+": "+inst.url
+      instances_liste.appendChild(li)
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "open"
+      btn.value = inst.url
+      btn.addEventListener('click', event => {
+        initInstance(inst)
+      });
+      li.appendChild(btn)
+    }
+  //  initScroller()
+  //start()
+  }
+
+  function initScroller(){
+
+  }
+
+
+
+  async function initInstance(instance){
+    switch(instance.shortClass) {
+      case "LongChat":
+      chat = new sh.chat()
+      chat.instance = instance
+      let chat_details = await chat.init
+      info_chat.innerHTML = JSON.stringify(chat_details)
+      chat.subscribe = on_new_message
+      await chatUpdate()
+
+      break;
+      case "TextDigitalDocument":
+      case "MediaObject":
+      case "Bookmark":
+      case "Meeting":
+      default:
+      alert("For the moment , only LongChat")
+      //  instance = await sh.initInstance(instance)
+      //  updateDefault(instance)
+    }
+  }
+
+  function on_new_message(changement){
+    console.log ("new Message arrived,  get it from Websocket", changement)
+    chatUpdate()
+  }
+
+
+async function dayBefore(){
+
+}
+
+  async function chatUpdate(){
+    updateCalendar()
+
+    let messages = await chat.messages
+let counter = 10
+console.log(`${messages}`.length)
+while (messages.length < listSize && counter > 0){
+  counter--
+  console.log("day",chat._day)
+/*  [chat._year, chat._month, chat._day]*/
+let d = new Date(chat._year,chat._month,chat._day-1)
+console.log(d)
+chat._day = addZ(d.getDate())
+chat._month = addZ(d.getMonth());
+chat._year = d.getFullYear();
+console.log(chat)
+let lazymessages = await chat.messages
+messages = messages.concat(lazymessages)
+console.log(messages.length, counter)
+
+
+}
+
+
+    messages_dump.innerHTML = JSON.stringify(messages)
+    messages_liste.innerHTML = ""
+    let i = 0
+    for(const message of messages){
+      //  console.log(message)
+      let li = document.createElement("LI")
+      li.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
+      messages_liste.append(li)
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "reply"
+      btn.addEventListener('click', event => {
+        reply(message)
+      });
+      li.appendChild(btn)
+
+// infinite scroll
+const container = document.querySelector(".cat-list");
+
+
+  const tile = document.createElement("LI");
+  tile.setAttribute("class", "cat-tile");
+  tile.setAttribute("id", "cat-tile-" + i);
+  const title = document.createElement("H3");
+  const t = document.createTextNode(message.makername);
+  title.appendChild(t);
+  tile.appendChild(title);
+  const div = document.createElement("DIV")
+  div.innerHTML = message.makername+" WROTE "+message.content+" AT "+message.date
+  tile.append(div)
+/*  const img = document.createElement("IMG");
+  img.setAttribute("src", DB[i].imgSrc);
+  tile.appendChild(img);*/
+  container.appendChild(tile);
+
+i++
+    }
+      initIntersectionObserver();
+  }
+
+function addZ(n){return n<10? '0'+n:''+n;}
+
+
+  function updateCalendar(){
+    document.getElementById("calendar").value =   [chat._year, chat._month, chat._day].join("-")
+    console.log(document.getElementById("calendar").value)
+  }
+
+  function dateChanged(e){
+    let splitted_date = e.target.value.split("-")
+    chat._year = splitted_date[0]
+    chat._month = splitted_date[1]
+    chat._day = splitted_date[2]
+    chatUpdate()
+  }
+
+  async function sendChatMessage(){
+    var content = document.getElementById("message_content").value.trim()
+    var replyTo = document.getElementById("replyTo").value.trim()
+    var author = document.getElementById("author").value.trim()
+    var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
+    //  console.log(webId)
+    if (webId == null ){
+      webId = await session.login()
+    }
+    if (chat == null ){
+      alert ("you must first open a LongChat instance ")
+    }else{
+      let mess = {content: content, webId: webId, postType: postType, replyTo: replyTo}
+      console.log(mess)
+      chat.message = mess
+
+      if( author.length > 0){
+        console.log("author", author)
+        let lastPost = chat.lastPost
+        let recipient_pod = new sh.pod()
+        console.log("pod",recipient_pod)
+        recipient_pod.webId = author
+        console.log("pod",recipient_pod)
+        let recipient_inbox = new sh.inbox()
+        recipient_inbox.inbox = await recipient_pod.inbox
+        console.log("ib",recipient_inbox)
+        let notif = {sender: webId, title:"solidarity reply", url:lastPost, content: lastPost+" is a "+postType+" reply to' "+replyTo,
+        replyTo: replyTo}
+        recipient_inbox.message = notif
+      }
+      document.getElementById("message_content").value = ""
+      document.getElementById("replyTo").value = ""
+      document.getElementById("author").value = ""
+      //initInstance(chat.instance)
+      console.log("A virer une fois les websockets en place")
+    }
+
+  }
+
+  async function reply(message){
+    console.log(message)
+    document.getElementById("replyTo").value = message.url
+    document.getElementById("author").value = message.maker
+  }
+  ///////////////////////// chat create & test
+  function chat_create(){
+    let params = {user_pod: user_pod , url: chat_create_input.value, discoverable: public_check.checked, shortClass: "LongChat"}
+  console.log(params)
+    user_pod.pti_new = params
+  }
+
+  async function  chat_test(){
+    //make sure the url has a instance.url format with index.ttl#this
+    let url = chat_test_input.value.trim()
+    if (!url.endsWith("index.ttl#this")){
+      if(url.endsWith("index.ttl")){
+        url += "#this"
+      }else if(url.endsWith("/")) {url += "index.ttl#this" }
+      else{
+        url += "/index.ttl#this"
+      }
+    }
+
+    let instance = {url: url}
+    let unknown_chat = new sh.chat()
+    unknown_chat.instance = instance
+    let exist = await unknown_chat.exist
+    //console.log("Exist ", `${exist}`)
+    let result = `${exist}`
+    result === "true" ? chat_test_input.style.backgroundColor = "green" : chat_test_input.style.backgroundColor = "red";
+  }
+
+
+</script>
+</body>
+
+</html>
