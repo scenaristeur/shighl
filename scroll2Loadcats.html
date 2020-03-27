@@ -28,7 +28,6 @@
   <body>
     <div id="scroller">
       <div id="sentinel">Loading more</div>
-      <!--<div id="bottom_init"></div>-->
     </div>
 
 
@@ -38,9 +37,7 @@
   /* global IntersectionObserver */
   var scroller = document.querySelector('#scroller');
   var sentinel = document.querySelector('#sentinel');
-  var counter = 0;
-  let minimum_load = 6
-  let date = new Date()
+  var counter = 1;
 
   const _getCatImg = () => {
     const randomNum = () => {
@@ -52,55 +49,51 @@
 
 
   function loadItems(n) {
-    console.log(date)
     for (var i = 0; i < n; i++) {
-      counter++
       var newItem = document.createElement('div');
       newItem.classList.add('item');
-      newItem.textContent = 'Item ' + counter+ date;
+      newItem.textContent = 'Item ' + counter++;
       //  scroller.appendChild(newItem);
       const img = document.createElement("IMG");
-      img.setAttribute("src", _getCatImg());
-      newItem.appendChild(img);
+   img.setAttribute("src", _getCatImg());
+   newItem.appendChild(img);
       scroller.insertBefore(newItem, scroller.firstChild);
-      //console.log(scroller)
+      console.log(scroller)
     }
-    date.setDate(date.getDate() - 1);
   }
 
   let options = {
     root: scroller,
     rootMargin: '100px',
-    threshold: [0.1, 0.2, 0.3, 0.4, 0.5,  0.6, 0.7, 0.8, 0.9, 1]
+    threshold: [0.25, 0.5, 0.75, 1.00]
   }
 
 
 
   var intersectionObserver = new IntersectionObserver(entries => {
-    //console.log(options)
+    console.log(options)
     // If intersectionRatio is 0, the sentinel is out of view
     // and we do not need to do anything.
-    //console.log(entries[0].intersectionRatio)
-    /*  if (entries[0].intersectionRatio <= 0) {
-    return;
-  }*/
-  if (entries[0].intersectionRatio > 0) {
-    loadItems(5);
+    console.log(entries[0].intersectionRatio)
+  /*  if (entries[0].intersectionRatio <= 0) {
+      return;
+    }*/
+    if (entries[0].intersectionRatio > 0) {
+    loadItems(1);
     // appendChild will move the existing element, so there is no need to
     // remove it first.
     //scroller.appendChild(sentinel);
     scroller.insertBefore(sentinel, scroller.firstChild);
-    //  loadItems(5);
-    while(scroller.childElementCount < minimum_load){
+    loadItems(1);
+    while(scroller.childElementCount < 10){
       console.log("add")
-      scroller.insertBefore(sentinel, scroller.firstChild);
-      loadItems(5)
-      //  document.getElementById("bottom_init").focus()
+        scroller.insertBefore(sentinel, scroller.firstChild);
+      loadItems(1)
     }
   }
-  //  ChromeSamples.setStatus('Loaded up to item ' + counter);
-}, options);
-intersectionObserver.observe(sentinel);
+    //  ChromeSamples.setStatus('Loaded up to item ' + counter);
+  }, options);
+  intersectionObserver.observe(sentinel);
 
 
 </script>
