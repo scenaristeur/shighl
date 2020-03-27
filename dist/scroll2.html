@@ -1,0 +1,89 @@
+<html>
+
+<head>
+  <style>
+  .item {
+    background: #FFF;
+    border: 1px solid #666;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #sentinel {
+    width: 1px;
+    height: 1px;
+  }
+
+  #scroller {
+    height: 400px;
+    overflow-y: scroll;
+  }
+
+
+</style>
+<head>
+
+  <body>
+    <div id="scroller">
+      <div id="sentinel">Loading more</div>
+    </div>
+
+
+  </body>
+
+  <script>
+  /* global IntersectionObserver */
+  var scroller = document.querySelector('#scroller');
+  var sentinel = document.querySelector('#sentinel');
+  var counter = 1;
+
+  function loadItems(n) {
+    for (var i = 0; i < n; i++) {
+      var newItem = document.createElement('div');
+      newItem.classList.add('item');
+      newItem.textContent = 'Item ' + counter++;
+      //  scroller.appendChild(newItem);
+      scroller.insertBefore(newItem, scroller.firstChild);
+      console.log(scroller)
+    }
+  }
+
+  let options = {
+    root: scroller,
+    rootMargin: '100px',
+    threshold: [0.25, 0.5, 0.75, 1.00]
+  }
+
+
+
+  var intersectionObserver = new IntersectionObserver(entries => {
+    console.log(options)
+    // If intersectionRatio is 0, the sentinel is out of view
+    // and we do not need to do anything.
+    console.log(entries[0].intersectionRatio)
+  /*  if (entries[0].intersectionRatio <= 0) {
+      return;
+    }*/
+    if (entries[0].intersectionRatio > 0) {
+    loadItems(1);
+    // appendChild will move the existing element, so there is no need to
+    // remove it first.
+    //scroller.appendChild(sentinel);
+    scroller.insertBefore(sentinel, scroller.firstChild);
+    loadItems(1);
+    while(scroller.childElementCount <  8){
+      console.log("add")
+        scroller.insertBefore(sentinel, scroller.firstChild);
+      loadItems(1)
+    }
+  }
+    //  ChromeSamples.setStatus('Loaded up to item ' + counter);
+  }, options);
+  intersectionObserver.observe(sentinel);
+
+
+</script>
+
+</html>
