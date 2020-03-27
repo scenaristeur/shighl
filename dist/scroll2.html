@@ -12,8 +12,9 @@
   }
 
   #sentinel {
-    width: 1px;
-    height: 1px;
+  /*  width: 1px;*/
+    height: 100px;
+    margin: 200px;
   }
 
   #scroller {
@@ -27,8 +28,11 @@
 
   <body>
     <div id="scroller">
-      <div id="sentinel">Loading more</div>
-      <!--<div id="bottom_init"></div>-->
+      <div id="sentinel">Oups, i'm trying to load more message...<br>
+        But if i appear you've scrolled too fast.<br>
+        Please scrolldown & come back a little slowly...<br>
+        Or there are no older messages on this channel...</div>
+      <div id="bottom_init">bottom</div>
     </div>
 
 
@@ -39,7 +43,7 @@
   var scroller = document.querySelector('#scroller');
   var sentinel = document.querySelector('#sentinel');
   var counter = 0;
-  let minimum_load = 6
+  let minimum_load = 10
   let date = new Date()
 
   const _getCatImg = () => {
@@ -61,6 +65,7 @@
       //  scroller.appendChild(newItem);
       const img = document.createElement("IMG");
       img.setAttribute("src", _getCatImg());
+      img.setAttribute("title", "Loading image...")
       newItem.appendChild(img);
       scroller.insertBefore(newItem, scroller.firstChild);
       //console.log(scroller)
@@ -70,7 +75,7 @@
 
   let options = {
     root: scroller,
-    rootMargin: '100px',
+    rootMargin: '30px',
     threshold: [0.1, 0.2, 0.3, 0.4, 0.5,  0.6, 0.7, 0.8, 0.9, 1]
   }
 
@@ -84,8 +89,9 @@
     /*  if (entries[0].intersectionRatio <= 0) {
     return;
   }*/
+  console.log(entries[0].intersectionRatio)
   if (entries[0].intersectionRatio > 0) {
-    loadItems(5);
+    loadItems(3);
     // appendChild will move the existing element, so there is no need to
     // remove it first.
     //scroller.appendChild(sentinel);
@@ -94,9 +100,11 @@
     while(scroller.childElementCount < minimum_load){
       console.log("add")
       scroller.insertBefore(sentinel, scroller.firstChild);
-      loadItems(5)
-      //  document.getElementById("bottom_init").focus()
+      loadItems(1)
+      console.log("scrolle")
+       document.getElementById("bottom_init").scrollIntoView()
     }
+
   }
   //  ChromeSamples.setStatus('Loaded up to item ' + counter);
 }, options);
