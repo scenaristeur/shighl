@@ -3,13 +3,15 @@ import data from "@solid/query-ldflex";
 import { namedNode } from '@rdfjs/data-model';
 
 class ShighlInbox {
-  constructor () {
+  constructor (inbox) {
     console.log("Shighl INBOX loaded")
     this.webId = null
+    this.inbox = inbox
   }
 
 
   set message(m){
+  //  this.inbox = m.inbox
     //  {inbox: inbox, webId: webId, content: content, postType: postType, replyTo: replyTo}
     console.log(m)
     console.log(this.inbox)
@@ -50,6 +52,7 @@ class ShighlInbox {
 
 async getMessages(inbox){
   this.messages = []
+    await data.clearCache()
   try{
     for await (const mess of data[inbox]['ldp$contains']){
       //  console.log(`${mess}`)
@@ -79,7 +82,23 @@ async getMessages(inbox){
   }
 }
 
+async delete(url){
+//https://github.com/inrupt/generator-solid-react/blob/1902a0483754f6b2df4d3eb040c9991cc2c92663/generators/app/templates/src/utils/ldflex-helper.js#L20
+  try {
+    try{
+      var id = url.split("/").pop().split('.')[0]
+      console.log(this.messages.log, id)
+      var path = this.messages.log+"#"+id
+      await data.from(this.messages.log)[path]['schema:message'].delete(namedNode(url))
+    }catch (e) {
+      throw e;
+    }
+    return await auth.fetch(url, { method: 'DELETE' });
+  } catch (e) {
+    throw e;
+  }
 
+}
 
 }
 
