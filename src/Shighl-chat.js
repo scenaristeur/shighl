@@ -5,6 +5,7 @@ import { namedNode } from '@rdfjs/data-model';
 class ShighlChat {
   constructor () {
     console.log("Shighl CHAT loaded")
+    this.makers = {}
   }
 
   set instance(instance) {
@@ -72,7 +73,7 @@ class ShighlChat {
   }
 
 
-urlExist(url, callback) {
+  urlExist(url, callback) {
     fetch(url, { method: 'head' })
     .then(function(status) {
       callback(status.ok)
@@ -84,23 +85,23 @@ urlExist(url, callback) {
   get messages(){
     return (async () => {
       var path = this._folder+[this._year, this._month, this._day,""].join('/')
-      console.log(path)
+    //  console.log(path)
       this._documents = []
       //console.log("Clear")
 
-    let exist =   await   fetch(path, { method: 'head' })
+      let exist =   await   fetch(path, { method: 'head' })
       .then(function(status) {
         return status.ok
       });
 
-      console.log("Exist",exist)
+      //console.log("Exist",exist)
 
 
 
 
-    if (exist){
+      if (exist){
         let chatfile = await data[path]['ldp$contains'];
-        console.log("ChatFile",`${chatfile}`);
+        //console.log("ChatFile",`${chatfile}`);
         //  let documents = []
         var docs = []
         var other = []
@@ -121,7 +122,7 @@ urlExist(url, callback) {
         await this.detail()
         console.log("termine")
       }
-
+//console.log("DOCS",this._documents)
       return this._documents
     })();
 
@@ -129,70 +130,84 @@ urlExist(url, callback) {
 
   async detail(){
     console.log ("DETAIL")
+    let module = this
     for (const d of this._documents){
-      d.maker = "boo"
-      d.types = []
-      d.comments = []
-      d.statements = []
-      var values = []
+      d.maker = "unknown"
+    //  d.types = []
+    //  d.comments = []
+    //  d.statements = []
+    //  var values = []
       for await (const property of data[d.url].properties) {
         //  console.log("Prop",`${property}`)
         switch(`${property}`) {
           case "http://xmlns.com/foaf/0.1/maker":
           let maker = await data[d.url][`${property}`]
           //  console.log(`${maker}`)
-          let makername = await data[`${maker}`].vcard$fn
+          d.maker = `${maker}`
+          let m = d.maker
+      //    console.log("Makers",module.makers)
+          if (module.makers[m] != undefined){
+            d.makername = module.makers[m].makername
+            d.makerimg = module.makers[m].makerimg
+          }else
+
+          {  let makername = await data[`${maker}`].vcard$fn
           //  console.log(`${makername}`)
           let makerimg = await data[`${maker}`].vcard$hasPhoto
           //  console.log(`${makerimg}`)
-          d.maker = `${maker}`
+
           d.makername = `${makername}`
           d.makerimg = `${makerimg}`
-          break;
-          case "http://purl.org/dc/terms/created":
-          let date = await data[d.url][`${property}`]
-          d.date = `${date}`
-          break;
-          case "http://rdfs.org/sioc/ns#content":
-          let content = await data[d.url][`${property}`]
-          d.content = `${content}`
-          break;
-          case "http://www.w3.org/2000/01/rdf-schema#type":
-          for await (const type of data[d.url][`${property}`]){
-            let ty = `${type}`
-            d.types = [... d.types, ty]
-          }
-          break;
-          case "http://schema.org/parentItem":
-          case "http://schema.org/target":
-          let parentItem = await data[d.url][`${property}`]
-          d.parentItem = `${parentItem}`
-          break;
-          case "http://schema.org/comment":
-          for await (const comment of data[d.url][`${property}`]){
-            let co = `${comment}`
-            d.comments = [... d.comments, co]
-          }
-          break;
-
-          default:
-          //  console.log("default", this._url)
-
-          for await (const val of data[d.url][`${property}`])
-          {
-            /*if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
-            d.likeAction = true
-          }*/
-          let  va = `${val}`
-          values.push(va)
-          //  console.log(values)
+          module.makers[m] = {}
+          module.makers[m].makername = d.makername
+          module.makers[m].makerimg = d.makerimg
+        //  console.log(module.makers)
         }
+        break;
+        case "http://purl.org/dc/terms/created":
+        let date = await data[d.url][`${property}`]
+        d.date = `${date}`
+        break;
+        case "http://rdfs.org/sioc/ns#content":
+        let content = await data[d.url][`${property}`]
+        d.content = `${content}`
+        break;
+    /*    case "http://www.w3.org/2000/01/rdf-schema#type":
+        for await (const type of data[d.url][`${property}`]){
+          let ty = `${type}`
+          d.types = [... d.types, ty]
+        }
+        break;
+        case "http://schema.org/parentItem":
+        case "http://schema.org/target":
+        let parentItem = await data[d.url][`${property}`]
+        d.parentItem = `${parentItem}`
+        break;
+        case "http://schema.org/comment":
+        for await (const comment of data[d.url][`${property}`]){
+          let co = `${comment}`
+          d.comments = [... d.comments, co]
+        }
+        break;*/
 
-        d.statements = [... d.statements, {property: `${property}` , values: values}]
+        default:
+        //  console.log("default", this._url)
+/*
+        for await (const val of data[d.url][`${property}`])
+        {
+          //if(`${val}` == "http:/schema.org/AgreeAction" || `${val}` == "http:/schema.org/DisagreeAction"){
+        //  d.likeAction = true
+        //}
+        let  va = `${val}`
+        values.push(va)
+        //  console.log(values)
       }
+
+      d.statements = [... d.statements, {property: `${property}` , values: values}]*/
     }
   }
-  return this._documents
+}
+return this._documents
 }
 
 

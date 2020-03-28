@@ -552,3 +552,4 @@ let params = {user_pod: user_pod , // a pod object of the user that you created 
 
 
 TODO infinite scroll : https://www.youtube.com/watch?v=hSsdhUG9rBI
+https://googlechrome.github.io/samples/intersectionobserver/

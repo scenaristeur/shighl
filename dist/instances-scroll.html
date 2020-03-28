@@ -1,0 +1,325 @@
+<html>
+
+<head>
+  <script src="./vendor/solid-auth-client.bundle.js"></script>
+  <script src="./vendor/solid-query-ldflex.bundle.js"></script>
+  <script src="./window/shighl.bundle.js"></script>
+  <style>
+  .item {
+    background: #FFF;
+    border: 1px solid #666;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+
+  .item_cont{
+    background: #DDD;
+    border: 1px solid #00FF00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #sentinel {
+    width: 1px;
+    height: 1px;
+    /* margin :  0px*/
+  }
+
+  #scroller {
+    height: 400px;
+    overflow-y: scroll;
+  }
+
+
+</style>
+<head>
+
+  <body onload="init()">
+
+    <h3>First, open a chat instance</h3>
+    <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
+    <br>
+    LongChat Details : <span id="info_chat"></span>
+    <br>
+
+    <hr>
+    <div id="scroller">
+      <div id="sentinel">Loading </div>
+      <div id="bottom_init"></div>
+    </div>
+    <hr>
+
+    <br><br>
+    You must open a LongChat instance & be logged to be able to post<br>
+    Session : <span id="info_session"></span>
+    <button id="login_btn" onclick="session.login()">Login</button>
+    <button id="logout_btn" onclick="session.logout()">Logout</button>
+    <br> <br>
+    <input id="replyTo" placeholder="ReplyTo" value=""  size="100"/><br>
+    <input id="author" placeholder="author" value=""  size="100"/><br>
+    <textarea id="message_content" row=10></textarea>
+    <button onclick="sendChatMessage()">Send message</button>
+    <hr><hr>
+    Create a Chat or test if one exist
+    <br><br>
+    Path where you want to create a Chat
+    <input id="chat_create_input" placeholder="https://myWebId.myProvider/public/AwesomeChatName" size="100"/>
+    <br>  <input type="checkbox" id="public_check" name="public_check" checked>
+    <label for="public_check">This Chat is discoverable by your publicTypeIndex</label>
+    <button  onclick="chat_create()">Create LongChat Instance (todo)</button>
+    <br>
+    <hr>
+    <br><br>
+    <input id="chat_test_input" placeholder="Chat path" size="100"/>
+    <button  onclick="chat_test()">Verify if Longchat Exist</button>
+
+    <hr><hr>
+    Messages dump : <span id="messages_dump"></span>
+    <br>
+    <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+    <br>
+    <a href="index.html">Back to index</a>
+
+  </body>
+
+  <script>
+  /* global IntersectionObserver */
+  var scroller = document.querySelector('#scroller');
+  var sentinel = document.querySelector('#sentinel');
+  var counter = 0;
+  let minimum_load = 5
+  let loaded = 0
+  let firstLoad = true
+  //let date = new Date()
+
+
+  let options = {
+    root: scroller,
+    rootMargin: '20px',
+    threshold: [0, 0.1, 1]
+  }
+
+  var intersectionObserver = new IntersectionObserver(async function(entries) {
+    console.log(entries[0].intersectionRatio)
+    if (entries[0].intersectionRatio > 0) {
+      await loadItems()
+      scroller.insertBefore(sentinel, scroller.firstChild);
+      await loadItems()
+    }
+  }, options);
+
+  function loadItemsBottom(){
+    console.log("Load bottom")
+  }
+
+  async function loadItems(){
+    let messages = await chat.messages
+
+    for(const message of messages.reverse()){
+      loaded ++
+      let newItem = document.createElement('div');
+      newItem.classList.add('item');
+      let divname = document.createElement('div');
+      divname.innerHTML = message.makername
+      divname.classList.add('item_cont');
+      newItem.appendChild(divname)
+
+      let divcontent = document.createElement('div');
+      divcontent.innerHTML = message.content
+      divcontent.classList.add('item_cont');
+      newItem.appendChild(divcontent)
+
+      let divdate = document.createElement('div');
+      divdate.innerHTML = message.date
+      divdate.classList.add('item_cont');
+      newItem.appendChild(divdate)
+
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "reply"
+      btn.addEventListener('click', event => {
+        reply(message)
+      });
+      newItem.appendChild(btn)
+      scroller.insertBefore(newItem, scroller.firstChild);
+    }
+    let d = new Date(chat._year,chat._month,chat._day-1)
+    chat._day = addZ(d.getDate())
+    chat._month = addZ(d.getMonth());
+    chat._year = d.getFullYear();
+
+    if (loaded < minimum_load){
+      console.log(loaded)
+      await  loadItems()
+    //  scroller.insertBefore(sentinel, scroller.firstChild);
+    //  await  loadItems()
+    }else{
+      loaded = 0
+      if (firstLoad == true){
+        document.getElementById("bottom_init").scrollIntoView()
+        firstLoad = false
+      }
+    }
+  }
+
+  function addZ(n){return n<10? '0'+n:''+n;}
+
+
+  // CHAT
+
+  let sh = new Shighl()
+  let pod = new sh.pod()
+  pod.webId = "https://solidarity.inrupt.net/profile/card#me"
+  let session = new sh.session()
+  let pti, chat, webId, user_pod
+
+  async function mycallback(_webId){
+    webId = _webId
+    if (webId != null){
+      info_session.innerHTML = webId
+      login_btn.style.display = "none"
+      logout_btn.style.display = "block"
+      user_pod = new sh.pod()
+      user_pod.webId = webId
+      let user_storage = await user_pod.storage
+      console.log("Storage",user_storage)
+      chat_create_input.value = user_storage+"public/AwesomeChatName"
+      chat_test_input.value = user_storage+"public/NameToTest"
+    }else{
+      info_session.innerHTML = "No session look at https://solid.inrupt.com/get-a-solid-pod"
+      login_btn.style.display = "block"
+      logout_btn.style.display = "none"
+      session.login()
+    }
+  }
+
+  async function init(){
+    await session.track(mycallback)
+    pti = await pod.pti
+    console.log("publicTypeIndex & instances: ",pti)
+    instances_liste.innerHTML = ""
+    for (const inst of pti.instances){
+      let li = document.createElement("LI")
+      li.innerHTML = inst.shortClass+": "+inst.url
+      instances_liste.appendChild(li)
+      var btn = document.createElement("BUTTON")
+      btn.innerHTML = "open"
+      btn.value = inst.url
+      btn.addEventListener('click', event => {
+        initInstance(inst)
+      });
+      li.appendChild(btn)
+    }
+  }
+
+
+
+  async function initInstance(instance){
+    switch(instance.shortClass) {
+      case "LongChat":
+      chat = new sh.chat()
+      chat.instance = instance
+      let chat_details = await chat.init
+      info_chat.innerHTML = JSON.stringify(chat_details)
+      chat.subscribe = on_new_message
+      //chatUpdate()
+      intersectionObserver.observe(sentinel);
+      await  loadItems()
+      break;
+      case "TextDigitalDocument":
+      case "MediaObject":
+      case "Bookmark":
+      case "Meeting":
+      default:
+      alert("For the moment , only LongChat")
+      //  instance = await sh.initInstance(instance)
+      //  updateDefault(instance)
+    }
+
+  }
+
+  async function on_new_message(changement){
+    console.log ("new Message arrived,  get it from Websocket", changement)
+    //  chatUpdate()
+    await loadItemsBottom()
+  }
+
+  async function sendChatMessage(){
+    var content = document.getElementById("message_content").value.trim()
+    var replyTo = document.getElementById("replyTo").value.trim()
+    var author = document.getElementById("author").value.trim()
+    var postType = "InstantMessage" //"Question" // "InstantMessage" Poll...
+    //  console.log(webId)
+    if (webId == null ){
+      webId = await session.login()
+    }
+    if (chat == null ){
+      alert ("you must first open a LongChat instance ")
+    }else{
+      let mess = {content: content, webId: webId, postType: postType, replyTo: replyTo}
+      console.log(mess)
+      chat.message = mess
+
+      if( author.length > 0){
+        console.log("author", author)
+        let lastPost = chat.lastPost
+        let recipient_pod = new sh.pod()
+        console.log("pod",recipient_pod)
+        recipient_pod.webId = author
+        console.log("pod",recipient_pod)
+        let recipient_inbox = new sh.inbox()
+        recipient_inbox.inbox = await recipient_pod.inbox
+        console.log("ib",recipient_inbox)
+        let notif = {sender: webId, title:"solidarity reply", url:lastPost, content: lastPost+" is a "+postType+" reply to' "+replyTo,
+        replyTo: replyTo}
+        recipient_inbox.message = notif
+      }
+      document.getElementById("message_content").value = ""
+      document.getElementById("replyTo").value = ""
+      document.getElementById("author").value = ""
+      //initInstance(chat.instance)
+      console.log("A virer une fois les websockets en place")
+    }
+
+  }
+
+  async function reply(message){
+    console.log(message)
+    document.getElementById("replyTo").value = message.url
+    document.getElementById("author").value = message.maker
+  }
+  ///////////////////////// chat create & test
+  function chat_create(){
+    let params = {user_pod: user_pod , url: chat_create_input.value, discoverable: public_check.checked, shortClass: "LongChat"}
+    console.log(params)
+    user_pod.pti_new = params
+  }
+
+  async function  chat_test(){
+    //make sure the url has a instance.url format with index.ttl#this
+    let url = chat_test_input.value.trim()
+    if (!url.endsWith("index.ttl#this")){
+      if(url.endsWith("index.ttl")){
+        url += "#this"
+      }else if(url.endsWith("/")) {url += "index.ttl#this" }
+      else{
+        url += "/index.ttl#this"
+      }
+    }
+
+    let instance = {url: url}
+    let unknown_chat = new sh.chat()
+    unknown_chat.instance = instance
+    let exist = await unknown_chat.exist
+    //console.log("Exist ", `${exist}`)
+    let result = `${exist}`
+    result === "true" ? chat_test_input.style.backgroundColor = "green" : chat_test_input.style.backgroundColor = "red";
+  }
+
+
+</script>
+
+</html>
