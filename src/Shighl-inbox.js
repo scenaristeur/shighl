@@ -11,7 +11,7 @@ class ShighlInbox {
 
 
   set message(m){
-  //  this.inbox = m.inbox
+    //  this.inbox = m.inbox
     //  {inbox: inbox, webId: webId, content: content, postType: postType, replyTo: replyTo}
     console.log(m)
     console.log(this.inbox)
@@ -27,6 +27,9 @@ class ShighlInbox {
         await data[url].schema$dateSent.add(d.toISOString())
         await data[url].rdf$type.add(namedNode('https://schema.org/Message'))
         await data[url].schema$sender.add(namedNode(m.sender))
+        if(m.parentItem != undefined ){
+          await data[url].schema$parentItem.add(namedNode(m.parentItem))
+        }
         let notif = this.inbox+"log.ttl#"+id
         console.log(notif)
         await data[notif].schema$message.add(namedNode(url))
@@ -52,7 +55,7 @@ class ShighlInbox {
 
 async getMessages(inbox){
   this.messages = []
-    await data.clearCache()
+  await data.clearCache()
   try{
     for await (const mess of data[inbox]['ldp$contains']){
       //  console.log(`${mess}`)
@@ -65,7 +68,9 @@ async getMessages(inbox){
           m.label = await data[m.url].rdfs$label
           m.sender = await data[m.url].schema$sender
           m.text = await data[m.url].schema$text
-          m.senderName = await data[m.sender].vcard$fn;
+          m.parentItem = await data[m.url].schema$parentItem;
+          m.senderName = await data[m.sender].vcard$fn || `${m.sender}`.split("/")[2].split('.')[0];
+          m.senderImg = await data[m.sender].vcard$hasPhoto || ""
           this.messages = [... this.messages, m]
         }catch(e){
           console.log(e, `${mess}`)
@@ -83,7 +88,7 @@ async getMessages(inbox){
 }
 
 async delete(url){
-//https://github.com/inrupt/generator-solid-react/blob/1902a0483754f6b2df4d3eb040c9991cc2c92663/generators/app/templates/src/utils/ldflex-helper.js#L20
+  //https://github.com/inrupt/generator-solid-react/blob/1902a0483754f6b2df4d3eb040c9991cc2c92663/generators/app/templates/src/utils/ldflex-helper.js#L20
   try {
     try{
       var id = url.split("/").pop().split('.')[0]

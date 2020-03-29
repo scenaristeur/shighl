@@ -14,6 +14,9 @@
     display:none;
     padding: 20px;
   }
+  #parentItem{
+    display:none;
+  }
   #writePan input, #writePan textarea{
     padding: 5px;
     margin: 5px;
@@ -57,6 +60,7 @@
   <div id="writePan">
 
     <input id="to" placeholder="Recipient" size="51"></input><br>
+    <input id="parentItem" placeholder="Reply To" size="51"></input><br>
     <input id="title" placeholder="Title" size="51"></input><br>
     <textarea id="messageContent" rows="4" cols="50" placeholder="Content"></textarea><br>
     <button onclick=send()>Send</send>
@@ -121,17 +125,26 @@
       console.log(messages)
       messages_ul.innerHTML = ""
       messages.forEach(function(m){
+        console.log(m)
         var li = document.createElement("LI")
-        var text = [m.url, m.label, m.creator, m.dateSent, m.text].join(' || ')
+        var text = [ m.senderName, m.senderImg, m.sender, m.label, m.dateSent, m.text,  m.url, m.parentItem].join(' || ')
         var t = document.createTextNode(text);
         li.appendChild(t);
 
-        var btn = document.createElement("BUTTON")
-        btn.innerHTML = "Delete"
-        btn.addEventListener('click', event => {
+        var btnDel = document.createElement("BUTTON")
+        btnDel.innerHTML = "Delete"
+        btnDel.addEventListener('click', event => {
           del(event,m.url)
         });
-        li.appendChild(btn)
+        li.appendChild(btnDel)
+
+        var btnRep = document.createElement("BUTTON")
+        btnRep.innerHTML = "Reply"
+        btnRep.addEventListener('click', event => {
+          reply(m)
+        });
+        li.appendChild(btnRep)
+
 
         messages_ul.appendChild(li)
       })
@@ -145,6 +158,23 @@
       await user_inbox.delete(m_url)
       console.log("deleted")
     }
+
+    async function reply(m){
+      console.log(m.sender)
+      document.getElementById("writePan").style.display = "block"
+      document.getElementById("parentItem").style.display = "block"
+      document.getElementById("parentItem").value = m.url
+
+      let r_pod = new sh.pod()
+      r_pod.webId = m.sender
+      const inbox = await r_pod.inbox
+      document.getElementById("to").value = `${inbox}`
+    }
+
+
+
+
+
 
     async function getFriends(){
       let friends = await pod.friends
@@ -190,6 +220,9 @@
       m.content = document.getElementById("messageContent").value
       m.title = document.getElementById("title").value
       m.sender = pod.webId
+      if (document.getElementById("parentItem").value.length > 0){
+        m.parentItem = document.getElementById("parentItem").value
+      }
       console.log(m)
       let w =   document.getElementById("writePan").getAttribute("webId")
       console.log("W", w)
@@ -199,7 +232,9 @@
       p_inbox.message = m
       document.getElementById("messageContent").value = ""
       document.getElementById("title").value = ""
-
+      document.getElementById("parentItem").value = ""
+      document.getElementById("to").value = ""
+      document.getElementById("writePan").style.display = "none"
     }
 
 
