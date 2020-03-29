@@ -24,7 +24,7 @@ class ShighlPod {
 
   get name() {
     return (async () => {
-      var n = await data[this._webId].vcard$fn;
+      var n = await data[this._webId].vcard$fn || this._webId.split("/")[2].split('.')[0];
       return `${n}`
     })();
   }
@@ -229,15 +229,29 @@ class ShighlPod {
 
   get role() {
     return (async () => {
-      var s = await data[this._webId].vcard$role;
-      return `${s}`
+      var r = await data[this._webId].vcard$role;
+      return `${r}`
     })();
   }
 
   set role(role) {
     return (async () => {
-      var s = await data[this._webId].vcard$role.set(role);
-      return `${s}`
+      var r = await data[this._webId].vcard$role.set(role);
+      return `${r}`
+    })();
+  }
+
+  get organization() {
+    return (async () => {
+      var o = await data[this._webId]["http://www.w3.org/2006/vcard/ns#organization-name"];
+      return `${o}`
+    })();
+  }
+
+  set organization(organization) {
+    return (async () => {
+      var o = await data[this._webId]["http://www.w3.org/2006/vcard/ns#organization-name"].set(organization);
+      return `${o}`
     })();
   }
 

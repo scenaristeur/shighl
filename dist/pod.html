@@ -2,26 +2,43 @@
 <script src="./vendor/solid-auth-client.bundle.js"></script>
 <script src="./vendor/solid-query-ldflex.bundle.js"></script>
 <script src="./window/shighl.bundle.js"></script><script>
-  async function init(){
-    let sh = new Shighl()
-    console.log(sh)
-    let pod = new sh.pod()
-    pod.webId = "https://spoggy.solid.community/profile/card#me"
+async function init(){
+  let sh = new Shighl()
+  console.log(sh)
+  let pod = new sh.pod()
+  pod.webId = "https://spoggy.solid.community/profile/card#me"
 
-    let name = await pod.name
-    let photo = await pod.photo
-    let friends = await pod.friends
-    let pti = await pod.pti
-    let role = await pod.role
-    let storage = await pod.storage
+  let name = await pod.name
+  let photo = await pod.photo
+  let role = await pod.role
+  let organization = await pod.organization
+  let friends = await pod.friends
+  let pti = await pod.pti
+  let storage = await pod.storage
 
-    console.log("Name: ",name)
-    console.log("Photo: ",photo)
-    console.log("Friends: ",friends)
-    console.log("publicTypeIndex & instances: ",pti)
-    console.log("Role:",role)
-    console.log("Storage: ",storage)
-  }
+  console.log("Name: ", name)
+  console.log("Photo: ", photo)
+  console.log("Role:", role)
+  console.log("Organization:", organization)
+  console.log("Friends: ", friends)
+  console.log("publicTypeIndex & instances: ", pti)
+  console.log("Storage: ", storage)
+
+//Loop through friends
+  friends.forEach(async function(f, i) {
+    console.log(f.webId)
+    let f_pod = new sh.pod()
+    f_pod.webId = f.webId
+    let f_name = await f_pod.name
+    let f_role = await f_pod.role
+    let f_organization = await f_pod.organization
+    console.log("--"+f_name+" has role "+f_role+" in "+f_organization)
+  });
+
+
+
+
+}
 
 </script>
 

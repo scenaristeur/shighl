@@ -13,11 +13,15 @@
 ////////////////////
 
 # Shighl
+Why High Level ? Because Shighl is based on other libs like solid-auth-client, mostly @solid/query-ldflex, (solid-file-client, tripledoc in the next future)... to give you the most common used functionnalities to deal with session, pod, chat, inbox... using the [Solid Project](https://solid.inrupt.com/community). If you have any question, feel free to ask on the [Solid Community Forum](https://forum.solidproject.org/)
+
 ## Examples
 - see /dist folder for examples or [https://scenaristeur.github.io/shighl/](https://scenaristeur.github.io/shighl/)
 - An example of this chat functionnalities is running on [show INSTANCE EXAMPLE](https://scenaristeur.github.io/shighl/instances.html)
 
 ## Usage
+Shighl can be integrated in any [gh-page](https://scenaristeur.github.io/scenaristeur), [POD](https://solidarity.inrupt.net/public/App/) or static WebPage !
+
 ### Browser
 use cdn.jsdelivr.net
 ```
@@ -37,15 +41,92 @@ install with ```npm install --save scenaristeur/shighl``` and import with
 ```
 import  Shighl  from 'shighl'
 ```
+### Node server
+not tested yet, but there is a node version in the dist folder
+
 ### Login Popup
 You will probably also need to copy the dist/dist-popup folder that provides you the better way to connect to a Solid Pod
 
 ### Create a Shighl Object
 ```
 const sh = new Shighl()
-sh.test() // optional te verify that the lib is loaded
+sh.test() // optional to verify that the lib is loaded
 ```
 then you must create Objects from Shighl submodules :
+
+
+
+
+
+### ShighlSession
+Often, you will need to login to your POD. Shighl.session is a simple way to connect to a POD, but you can use the basic solid-auth-client too if you prefer.
+
+[Shighl.session example](https://scenaristeur.github.io/shighl/session.html)
+
+```
+const sh = new Shighl()
+let session = new sh.session()
+
+function mycallback(webId){
+  console.log("WebId: ",webId)
+  if (webId != null){
+    console.log("logged with ",webId)
+  }else{
+  console.log("not logged")
+  session.login()
+  }
+}
+
+await session.track(mycallback)
+
+```
+
+### ShighlPod
+Shighl.pod allows you to simply read pods informations.
+
+[Shighl.pod example](https://scenaristeur.github.io/shighl/pod.html)
+
+```
+let sh = new Shighl()
+let pod = new sh.pod()
+pod.webId = "https://spoggy.solid.community/profile/card#me" // set the webId of the pod you want to read
+let name = await pod.name
+let photo = await pod.photo
+let role = await pod.role
+let organization = await pod.organization
+let friends = await pod.friends
+let pti = await pod.pti
+let storage = await pod.storage
+
+console.log("Name: ", name)
+console.log("Photo: ", photo)
+console.log("Role:", role)
+console.log("Organization:", organization)
+console.log("Friends: ", friends)
+console.log("publicTypeIndex & instances: ", pti)
+console.log("Storage: ", storage)
+
+//Loop through friends
+friends.forEach(async function(f, i) {
+  console.log(f.webId)
+  let f_pod = new sh.pod()
+  f_pod.webId = f.webId
+  let f_name = await f_pod.name
+  let f_role = await f_pod.role
+  let f_organization = await f_pod.organization
+  console.log("--"+f_name+" has role "+f_role+" in "+f_organization)
+});
+
+```
+
+### ShighlChat
+
+
+### ShighlInbox
+
+
+
+
 ## pod.name for getting the name of a pod
 
 - For example, to get the name of a pod, you need a basic Shighl object that you can get with above ``` const sh = new Shighl() ```.
@@ -54,6 +135,9 @@ then you must create Objects from Shighl submodules :
 - And then to get the "name" property or attribute of the pod use
 
 ```
+const sh = new Shighl()
+let pod = new sh.pod()
+pod.webId = "https://[podname].[provider]/profile/card#me"
 let name = await pod.name;
 console.log(name)
 ```
@@ -71,10 +155,13 @@ for (const inst of pti.instances){
 - Created this way, each instance property/attribute can be obtained by the same way that we used for the pod. To get the instance url use inst.url and to get the instance short class ... inst.shortClass !!! Yeah, yo got it !!!
 - And that shortClass could be something like "TextDigitalDocument", "MediaObject", "Bookmark", "Meeting", or ... "LongChat" ...
 - A "LongChat" is an interesting thing on a Solid pod, it allows you to create a chat, a space for discussions. You own it, host it on your pod, give it a name, and a path where you want to put it on your pod. You also can manage the right of access (read/write, person/group). This way everyone can "host" every discussion he wants... I let you imagine what you can do with such functionnality...
+- For example [Solidarity](https://scenaristeur.github.io/solidarity/) is an UI coded by [Julian-Cole](https://github.com/Julian-Cole) and use Shighl to deal with data stored on  https://solidarity.inrupt.net/public/Solidarity/ and on https://solidarity.inrupt.net/public/Shighl/ and there is a way to add other Channel that you want...
 - If, with the above ```  console.log(inst) ``` you find some instance that have a shortClass property you can try to set that instance in a chat object that you first create from our starting "sh" variable. To create that chat object, do as above a ``` let chat = new sh.chat() ``` then set the instance property of the chat with that instance ```
 chat.instance = instance ``` and initialize the chat with
 
 ```
+let chat = new sh.chat()
+chat.instance = [instance]
 let chat_details = await chat.init
 console.log(chat_details)
 ```
