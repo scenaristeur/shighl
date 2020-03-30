@@ -92,7 +92,6 @@
         document.getElementById("webId").value = webId
         getInbox()
         getFriends()
-
       }else{
         document.getElementById("webId").value = "You must be connected, see Session part."
       }
@@ -126,12 +125,12 @@
       messages_ul.innerHTML = ""
       messages.forEach(function(m){
         console.log(m)
-        var li = document.createElement("LI")
-        var text = [ m.senderName, m.senderImg, m.sender, m.label, m.dateSent, m.text,  m.url, m.parentItem].join(' || ')
-        var t = document.createTextNode(text);
+        let li = document.createElement("LI")
+        let text = [ m.senderName, m.senderImg, m.sender, m.label, m.dateSent, m.text,  m.url, m.parentItem].join(' || ')
+        let t = document.createTextNode(text);
         li.appendChild(t);
 
-        var btnDel = document.createElement("BUTTON")
+        let btnDel = document.createElement("BUTTON")
         btnDel.innerHTML = "Delete"
         btnDel.addEventListener('click', event => {
           del(event,m.url)
@@ -170,11 +169,6 @@
       const inbox = await r_pod.inbox
       document.getElementById("to").value = `${inbox}`
     }
-
-
-
-
-
 
     async function getFriends(){
       let friends = await pod.friends

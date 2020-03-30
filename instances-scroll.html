@@ -43,9 +43,7 @@
     <h3>First, open a chat instance</h3>
     <ul id="instances_liste"> Please Wait a moment while loading publicTypeIndex instances</ul>
     <br>
-    LongChat Details : <span id="info_chat"></span>
-    <br>
-
+  
     <hr>
     <div id="scroller">
       <div id="sentinel">Loading </div>
@@ -95,7 +93,6 @@
   let loaded = 0
   let firstLoad = true
   //let date = new Date()
-
 
   let options = {
     root: scroller,
@@ -169,12 +166,12 @@
 
 
   // CHAT
-
+  let pti, chat, webId, user_pod
   let sh = new Shighl()
   let pod = new sh.pod()
   pod.webId = "https://solidarity.inrupt.net/profile/card#me"
   let session = new sh.session()
-  let pti, chat, webId, user_pod
+
 
   async function mycallback(_webId){
     webId = _webId
@@ -222,8 +219,7 @@
       case "LongChat":
       chat = new sh.chat()
       chat.instance = instance
-      let chat_details = await chat.init
-      info_chat.innerHTML = JSON.stringify(chat_details)
+      await chat.init
       chat.subscribe = on_new_message
       //chatUpdate()
       intersectionObserver.observe(sentinel);
