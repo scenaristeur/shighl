@@ -54,10 +54,6 @@ sh.test() // optional to verify that the lib is loaded
 ```
 then you must create Objects from Shighl submodules :
 
-
-
-
-
 ### ShighlSession
 Often, you will need to login to your POD. Shighl.session is a simple way to connect to a POD, but you can use the basic solid-auth-client too if you prefer.
 
@@ -121,10 +117,124 @@ friends.forEach(async function(f, i) {
 
 ### ShighlChat
 
+[Shighl.chat Calendar example](https://scenaristeur.github.io/shighl/instances.html)
+[Shighl.chat Infinite Scroll example](https://scenaristeur.github.io/shighl/instances-scroll.html)
+
+```
+let pti, chat, webId, user_pod
+let sh = new Shighl()
+
+//chat instances
+let pod = new sh.pod()
+pod.webId = "https://solidarity.inrupt.net/profile/card#me" // set the webId of the POD you want to retrieve the chat channels
+pti = await pod.pti // get the publicTypeIndex of that pod
+console.log(pti.instances)
+
+// select the first instance with shortClass="LongChat" available in the publictypeIndex
+let instance = pti.instances[0]
+
+// create a chat object & initialize it
+    chat = new sh.chat()
+    chat.instance = instance
+    await chat.init
+    chat.subscribe = on_new_message // subscribe to chat change that launch on_new_message() callback function
+
+ // get chat messages of the last day.
+
+
+ let messages = await chat.messages
+
+ /* get each message properties and you are free to display them as you want.
+ use a calendar or a infinite scroll
+ to display older messages
+ (see examples above)
+*/
+
+ for(const message of messages){
+    console.log(message.makername+" WROTE "+message.content+" AT "+message.date)
+ }
+
+// Then to interact you will need to connect
+let session = new sh.session()
+  await session.track(mycallback)
+  async function mycallback(_webId){
+    webId = _webId
+    if (webId != null){
+      user_pod = new sh.pod()
+      user_pod.webId = webId
+      }else{
+      session.login()
+    }
+  }
+
+// ... //
+
+//so you can easily send a chat message to the chat previously initialised by
+let mess = {content: content, webId: webId, postType: postType, replyTo: replyTo}
+chat.message = mess
+// and eventually notiy user inbox of a reply/comment on his post (see examples)
+
+
+// you can create a new channel with
+let params = {user_pod: user_pod , url: chat_create_input.value, discoverable: public_check.checked, shortClass: "LongChat"}
+console.log(params)
+user_pod.pti_new = params
+
+
+```
+
 
 ### ShighlInbox
 
+[Shighl.inbox example](https://scenaristeur.github.io/shighl/inbox.html)
 
+ to be able to receive message, you must grant "Authenticated Agent" to "Submitter"
+
+![Authenticated Agent Inbox Submitter](https://scenaristeur.github.io/shighl/doc/user_inbox.png)
+
+```
+const sh = new Shighl()
+let pod = new sh.pod()
+let session = new sh.session() // retrieve webId as above
+
+let user_inbox = {}
+let inbox = ""
+
+pod.webId = webId // obtained by session callback (see example)
+inbox = await pod.inbox
+
+user_inbox = new sh.inbox()
+//
+inbox_url = inbox // set & get document.getElementById("inbox_input").value in example
+
+let messages  = await user_inbox.getMessages(inbox_url)
+
+messages.forEach(function(m){
+  let text = [ m.senderName, m.senderImg, m.sender, m.label, m.dateSent, m.text,  m.url, m.parentItem].join(' || ')
+  console.log (text)
+})
+
+// then you can delete a message with
+await user_inbox.delete(m_url)
+...
+// or send a message to a friend's inbox
+async function send(){
+  let m = {}
+  m.content = document.getElementById("messageContent").value
+  m.title = document.getElementById("title").value
+  m.sender = pod.webId
+  if (document.getElementById("parentItem").value.length > 0){
+    m.parentItem = document.getElementById("parentItem").value
+  }
+  let w =   document.getElementById("writePan").getAttribute("webId")
+  let p = new sh.pod()
+  p.webId = w
+  p_inbox = new sh.inbox(document.getElementById("to").value)
+  p_inbox.message = m
+
+}
+
+```
 
 
 ## pod.name for getting the name of a pod
