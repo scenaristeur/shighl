@@ -1,0 +1,98 @@
+<html>
+<script src="./vendor/solid-auth-client.bundle.js"></script>
+<script src="./vendor/solid-query-ldflex.bundle.js"></script>
+<script src="./window/shighl.bundle.js"></script>
+
+<script>
+
+let sh, pod, session,  activity, name, friends, inbox, storage
+sh = new Shighl()
+session = new sh.session()
+
+async function mycallback(webId){
+  console.log("WebId: ",webId)
+  if (webId != null){
+    logged(webId)
+  }else{
+    session.login()
+  }
+}
+
+async function init(){
+  pod = new sh.pod()
+  activity = new sh.activity()
+  console.log(activity)
+  await session.track(mycallback)
+}
+
+async function logged(webId){
+  pod.webId = webId
+  name = await pod.name
+  console.log("POD", pod)
+  friends = await pod.friends
+  inbox = await pod.inbox
+  storage = await pod.storage
+  console.log(pod.webId)
+  console.log("Name: ", name)
+  console.log("Friends: ", friends)
+  console.log("Inbox: ", inbox)
+  console.log("Storage: ", storage)
+
+}
+
+function sendNote(){
+  /*  let example_activity = {
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "summary": "Sally created a note",
+  "type": "Create",
+  "actor": {
+  "type": "Person",
+  "name": "Sally"
+},
+"object": {
+"type": "Note",
+"name": "A Simple Note",
+"content": "This is a simple note"
+}
+}*/
+
+let test_activity = {
+  "@context": "https://www.w3.org/ns/activitystreams",
+  "summary": name+" created a note",
+  "type": "Create",
+  "actor": {
+    "type": "Person",
+    "name": name,
+    "id": pod.webId
+  },
+  "object": {
+    "type": "Note",
+    "name": document.getElementById("note-title").value.trim(),
+    "content": document.getElementById("note-content").value.trim()
+  }
+}
+activity.create = test_activity
+document.getElementById("note-title").value=""
+document.getElementById("note-content").value=""
+//activity.create = example_activity
+
+}
+
+
+</script>
+
+<body onload="init()">
+
+  <fieldset>
+    <legend>Send a note</legend>
+    <input id="note-title" placeholder="Title"></input><br>
+    <textarea id="note-content"placeholder="Content"></textarea><br>
+    <button onclick="sendNote()">Send a Note</button>
+  </fieldset>
+  Look the web console to see more (Ctrl+Maj+i)<br><br>
+  <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+  <br>
+  <a href="index.html">Back to index</a>
+</body>
+
+</html>
