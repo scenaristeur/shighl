@@ -37,7 +37,7 @@ async function logged(webId){
   console.log("Friends: ", friends)
   console.log("Inbox: ", inbox)
   console.log("Storage: ", storage)
-
+activity.testacl(pod.webId, storage+"public/test_acl6/")
 }
 
 function sendNote(){
@@ -71,6 +71,7 @@ let test_activity = {
     "content": document.getElementById("note-content").value.trim()
   }
 }
+
 activity.create = test_activity
 document.getElementById("note-title").value=""
 document.getElementById("note-content").value=""
