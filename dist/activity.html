@@ -37,8 +37,26 @@ async function logged(webId){
   console.log("Friends: ", friends)
   console.log("Inbox: ", inbox)
   console.log("Storage: ", storage)
-  document.getElementById("root-folder").value = storage+"public/acl_ok/"
+  document.getElementById("root-folder").value = storage+"public/shighl_test/"
   rootFolderInput()
+
+
+  document.getElementById("radio-everyone").checked = true
+  document.getElementById("recipient-input").value = "Everyone"
+
+  let friends_ul = document.getElementById("friends-liste")
+  friends.forEach((f, i) => {
+    console.log(f)
+    let x = document.createElement("OPTION")
+    x.setAttribute("value", f.webId);
+    var t = document.createTextNode(f.webId);
+    x.appendChild(t);
+    friends_ul.appendChild(x);
+  });
+
+
+
+
 }
 
 async function createFolders(){
@@ -51,6 +69,22 @@ async function createFolders(){
 }
 
 function sendNote(){
+  var radios = document.getElementsByName('to-radio');
+  var valeur;
+  for(var i = 0; i < radios.length; i++){
+    if(radios[i].checked){
+      valeur = radios[i].value;
+    }
+  }
+  console.log(valeur)
+  let recipient = ""
+  if (valeur == "friends"){
+    recipient = document.getElementById("friends-liste").value.trim()
+  }else{
+    recipient = document.getElementById("recipient-input").value.trim()
+  }
+  console.log("RECIPIENT", recipient)
+
   /*  let example_activity = {
   "@context": "https://www.w3.org/ns/activitystreams",
   "summary": "Sally created a note",
@@ -70,6 +104,12 @@ let test_activity = {
   "@context": "https://www.w3.org/ns/activitystreams",
   "summary": name+" created a note",
   "type": "Create",
+  "target": recipient,
+  /*
+  "target": {
+  "type": "Person",
+  "name": "John"
+}*/
   "actor": {
     "type": "Person",
     "name": name,
@@ -82,9 +122,13 @@ let test_activity = {
   }
 }
 
+if (recipient.length > 0){
 activity.create = test_activity
 document.getElementById("note-title").value=""
 document.getElementById("note-content").value=""
+}else{
+  alert ("You must define a Recipient to your Note !")
+}
 //activity.create = example_activity
 
 }
@@ -95,6 +139,28 @@ function rootFolderInput(){
   console.log(rf)
   document.getElementById("inbox-folder").innerHTML = rf+"inbox/"
   document.getElementById("outbox-folder").innerHTML = rf+"outbox/"
+}
+
+function check(e){
+  let checked = e.getAttribute("id")
+  console.log(checked)
+  if (checked == "radio-everyone"){
+    document.getElementById("recipient-input").value = "Everyone"
+    document.getElementById("friends-liste").style.display= "none"
+    document.getElementById("recipient-input").style.display = "block"
+  }else if(checked == "radio-friend"){
+    document.getElementById("recipient-input").style.display = "none"
+    document.getElementById("friends-liste").style.display= "block"
+  }
+  else{
+    document.getElementById("recipient-input").value = ""
+    document.getElementById("friends-liste").style.display= "none"
+    document.getElementById("recipient-input").style.display = "block"
+
+  }
+
+
+  //console.log(e.target.getAttribute("id"))
 }
 
 </script>
@@ -120,6 +186,28 @@ function rootFolderInput(){
 
   <fieldset>
     <legend>Send a note</legend>
+
+    <fieldset>
+      <legend>To</legend>
+      <div class="some-class">
+        <input type="radio"
+        onchange="check(this)" class="radio" name="to-radio" value="everyone" id="radio-everyone" />
+        <label for="radio-everyone">Everyone Public / on Agora POD</label>
+        <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="friends" id="radio-friend" />
+        <label for="radio-friend">A friend</label>
+        <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="other" id="radio-other" />
+        <label for="radio-other">Another WebId</label>
+      </div>
+
+
+    </fieldset>
+
+    <br>
+    <label for="recipient-input">Recipient</label>
+    <input type="text" value="Everyone" id="recipient-input" />
+    <select id="friends-liste" style="display:none"></select>
+    <br>
+
     <input id="note-title" placeholder="Title" size="100"></input><br>
     <textarea id="note-content"placeholder="Content" cols="76" rows="7"></textarea><br>
     <button onclick="sendNote()">Send a Note</button>
