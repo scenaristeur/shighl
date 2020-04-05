@@ -22,7 +22,8 @@ class ShighlActivity {
     //  this.testacl()
   }
 
-  async testacl(webId, root){
+  async testacl(pod, root){
+    let webId = pod.webId
     //  console.log(webid)
     let module = this
 
@@ -72,6 +73,23 @@ class ShighlActivity {
     console.log([...agentsInbox.groups])
     console.log(agentsInbox.hasPublic())
     console.log(agentsInbox.hasAuthenticated()) // Authenticated means everyone who is logged in
+
+    // create pti entry
+    //console.log()
+    let pti = await pod.pti
+    let pti_url = pti.url
+  //  var dateObj = new Date();
+  //  let id = "#Sh"+dateObj.getTime()
+  let id = "#Shighl"
+    let inst_uri = pti_url+id
+    let inst_index = root+'index.ttl#this'
+    console.log("inst uri",inst_uri)
+    await data[inst_uri].solid$forClass.add(namedNode('https://www.w3.org/ns/activitystreams#Collection'))
+    await data[inst_uri].solid$instance.add(namedNode(inst_index))
+  //  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
+    await data[inst_index].solid$inbox.add(namedNode(inbox))
+    await data[inst_index].solid$outbox.add(namedNode(outbox))
+
 
   }
 
