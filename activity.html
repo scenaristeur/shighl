@@ -37,7 +37,17 @@ async function logged(webId){
   console.log("Friends: ", friends)
   console.log("Inbox: ", inbox)
   console.log("Storage: ", storage)
-activity.testacl(pod.webId, storage+"public/test_acl6/")
+  document.getElementById("root-folder").value = storage+"public/acl_ok/"
+  rootFolderInput()
+}
+
+async function createFolders(){
+  let rf = document.getElementById("root-folder").value.trim()
+  rf = rf.endsWith("/") ? rf : rf+"/";
+  console.log(rf)
+  activity.testacl(pod.webId, rf)
+  document.getElementById("link-folder").href = rf
+  document.getElementById("link-folder").innerHTML = rf
 }
 
 function sendNote(){
@@ -79,15 +89,39 @@ document.getElementById("note-content").value=""
 
 }
 
+function rootFolderInput(){
+  let rf = document.getElementById("root-folder").value.trim()
+  rf = rf.endsWith("/") ? rf : rf+"/";
+  console.log(rf)
+  document.getElementById("inbox-folder").innerHTML = rf+"inbox/"
+  document.getElementById("outbox-folder").innerHTML = rf+"outbox/"
+}
 
 </script>
 
 <body onload="init()">
 
+  if your are not logged, use <a href="./session.html"> Shighl-Session</a> first.
+
+  <fieldset>
+    <legend>App folder create</legend>
+    <input id="root-folder" oninput="rootFolderInput()" size="100"></input>
+    <ul>
+      <li>Inbox Folder : <span id="inbox-folder"></span> | <span id="indox-auth">AUTHENTICATED Agent Append (to receive notifications)</span></li>
+      <li>Outbox Folder :<span id="outbox-folder"></span> | <span id="outbox-auth">AUTHENTICATED Agent Read (so other can see your activities)</span></li>
+    </ul>
+
+    <button onclick="createFolders()">Use those folders</button>
+    <a href="" id="link-folder" target="_blank"></a>
+
+  </fieldset>
+
+
+
   <fieldset>
     <legend>Send a note</legend>
-    <input id="note-title" placeholder="Title"></input><br>
-    <textarea id="note-content"placeholder="Content"></textarea><br>
+    <input id="note-title" placeholder="Title" size="100"></input><br>
+    <textarea id="note-content"placeholder="Content" cols="76" rows="7"></textarea><br>
     <button onclick="sendNote()">Send a Note</button>
   </fieldset>
   Look the web console to see more (Ctrl+Maj+i)<br><br>
