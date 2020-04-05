@@ -78,18 +78,17 @@ class ShighlActivity {
     //console.log()
     let pti = await pod.pti
     let pti_url = pti.url
-  //  var dateObj = new Date();
-  //  let id = "#Sh"+dateObj.getTime()
-  let id = "#Shighl"
+    //  var dateObj = new Date();
+    //  let id = "#Sh"+dateObj.getTime()
+    let id = "#Shighl"
     let inst_uri = pti_url+id
     let inst_index = root+'index.ttl#this'
     console.log("inst uri",inst_uri)
     await data[inst_uri].solid$forClass.add(namedNode('https://www.w3.org/ns/activitystreams#Collection'))
-    await data[inst_uri].solid$instance.add(namedNode(inst_index))
-  //  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
+    await data[inst_uri].solid$instance.set(namedNode(inst_index))
+    //  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
     await data[inst_index].solid$inbox.add(namedNode(inbox))
-    await data[inst_index].solid$outbox.add(namedNode(outbox))
-
+    await data[inst_index].solid$outbox.set(namedNode(outbox))
 
   }
 

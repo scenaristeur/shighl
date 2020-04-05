@@ -5,7 +5,7 @@
 
 <script>
 
-let sh, pod, session,  activity, name, friends, inbox, storage, pti
+let sh, pod, session,  activity, name, friends, inbox, storage, pti, instance, path
 sh = new Shighl()
 session = new sh.session()
 
@@ -39,7 +39,27 @@ async function logged(webId){
   console.log("Inbox: ", inbox)
   console.log("Storage: ", storage)
   console.log("PTI: ", pti)
-  document.getElementById("root-folder").value = storage+"public/shighl_test/"
+
+pti.instances.forEach((inst, i) => {
+  console.log(inst)
+  if (inst.instance.endsWith("#Shighl") && (inst.classe == "https://www.w3.org/ns/activitystreams#Collection") ){
+    instance = inst
+    console.log("INST url",instance.url)
+
+path = inst.url.substr(0, inst.url.lastIndexOf('/') + 1);
+
+    console.log("PATH", path)
+  }
+});
+
+  console.log("PATH", path)
+if (path == undefined){
+  path = storage+"public/shighl_test/"
+}
+
+  console.log("PATH", path)
+
+  document.getElementById("root-folder").value = path
   rootFolderInput()
 
 
