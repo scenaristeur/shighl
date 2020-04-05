@@ -40,11 +40,10 @@ class ShighlActivity {
     // Passing it the fetch from solid-auth-client
     const fetch = auth.fetch.bind(auth)
 
-    const aclApi_outbox = new AclApi(fetch, { autoSave: true })
-    const aclApi_inbox = new AclApi(fetch, { autoSave: true })
+    const aclApi = new AclApi(fetch, { autoSave: true })
 
-    const acl_outbox = await aclApi_outbox.loadFromFileUrl(outbox)
-    const acl_inbox = await aclApi_inbox.loadFromFileUrl(inbox)
+    const acl_outbox = await aclApi.loadFromFileUrl(outbox)
+    const acl_inbox = await aclApi.loadFromFileUrl(inbox)
 
 
     // Note: Workaround, because currently no default permissions are copied when a new acl file is created. Not doing this could result in having no CONTROL permissions after the first acl.addRule call
@@ -56,9 +55,9 @@ class ShighlActivity {
       await acl_inbox.addRule(Permissions.ALL, webId)
     }
 
-    await acl_outbox.addRule(READ, Agents.AUTHENTICATED)
+  //  await acl_outbox.addRule(APPEND, Agents.AUTHENTICATED)
     await acl_outbox.deleteRule(READ, Agents.PUBLIC)
-    const agentsOutbox = acl_outbox.getAgentsWith(READ)
+    const agentsOutbox = acl_outbox.getAgentsWith(APPEND)
     console.log([...agentsOutbox.webIds]) // array containing all webIds which have write access
     console.log([...agentsOutbox.groups])
     console.log(agentsOutbox.hasPublic())
@@ -66,7 +65,6 @@ class ShighlActivity {
 
     await acl_inbox.addRule(APPEND, Agents.AUTHENTICATED)
     await acl_inbox.deleteRule(READ, Agents.PUBLIC)
-
     const agentsInbox = acl_inbox.getAgentsWith(APPEND)
     console.log([...agentsInbox.webIds]) // array containing all webIds which have write access
     console.log([...agentsInbox.groups])
