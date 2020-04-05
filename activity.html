@@ -5,7 +5,7 @@
 
 <script>
 
-let sh, pod, session,  activity, name, friends, inbox, storage
+let sh, pod, session,  activity, name, friends, inbox, storage, pti
 sh = new Shighl()
 session = new sh.session()
 
@@ -32,11 +32,13 @@ async function logged(webId){
   friends = await pod.friends
   inbox = await pod.inbox
   storage = await pod.storage
+  pti = await pod.pti
   console.log(pod.webId)
   console.log("Name: ", name)
   console.log("Friends: ", friends)
   console.log("Inbox: ", inbox)
   console.log("Storage: ", storage)
+  console.log("PTI: ", pti)
   document.getElementById("root-folder").value = storage+"public/shighl_test/"
   rootFolderInput()
 
@@ -45,8 +47,15 @@ async function logged(webId){
   document.getElementById("recipient-input").value = "Everyone"
 
   let friends_ul = document.getElementById("friends-liste")
+
+  let x = document.createElement("OPTION")
+  x.setAttribute("value","");
+  var t = document.createTextNode("Select a friend");
+  x.appendChild(t);
+  friends_ul.appendChild(x);
+
+
   friends.forEach((f, i) => {
-    console.log(f)
     let x = document.createElement("OPTION")
     x.setAttribute("value", f.webId);
     var t = document.createTextNode(f.webId);
@@ -55,15 +64,12 @@ async function logged(webId){
   });
 
 
-
-
 }
 
 async function createFolders(){
   let rf = document.getElementById("root-folder").value.trim()
   rf = rf.endsWith("/") ? rf : rf+"/";
-  console.log(rf)
-  activity.testacl(pod.webId, rf)
+  activity.testacl(pod, rf)
   document.getElementById("link-folder").href = rf
   document.getElementById("link-folder").innerHTML = rf
 }
@@ -110,22 +116,22 @@ let test_activity = {
   "type": "Person",
   "name": "John"
 }*/
-  "actor": {
-    "type": "Person",
-    "name": name,
-    "id": pod.webId
-  },
-  "object": {
-    "type": "Note",
-    "name": document.getElementById("note-title").value.trim(),
-    "content": document.getElementById("note-content").value.trim()
-  }
+"actor": {
+  "type": "Person",
+  "name": name,
+  "id": pod.webId
+},
+"object": {
+  "type": "Note",
+  "name": document.getElementById("note-title").value.trim(),
+  "content": document.getElementById("note-content").value.trim()
+}
 }
 
 if (recipient.length > 0){
-activity.create = test_activity
-document.getElementById("note-title").value=""
-document.getElementById("note-content").value=""
+  activity.create = test_activity
+  document.getElementById("note-title").value=""
+  document.getElementById("note-content").value=""
 }else{
   alert ("You must define a Recipient to your Note !")
 }
@@ -161,6 +167,21 @@ function check(e){
 
 
   //console.log(e.target.getAttribute("id"))
+}
+
+async function friendTest(e){
+  let f_webId = e.value
+  console.log(f_webId)
+  if (e.value.length == 0){ return}
+  console.log("Check inbox of ",f_webId)
+  let f_pod = new sh.pod()
+  f_pod.webId = f_webId
+  let f_inbox = await f_pod.inbox
+  let f_storage = await f_pod.storage
+  let f_pti = await f_pod.pti
+  console.log(f_inbox,f_storage,f_pti)
+
+
 }
 
 </script>
@@ -205,7 +226,7 @@ function check(e){
     <br>
     <label for="recipient-input">Recipient</label>
     <input type="text" value="Everyone" id="recipient-input" />
-    <select id="friends-liste" style="display:none"></select>
+    <select id="friends-liste" style="display:none" onchange="friendTest(this)"></select>
     <br>
 
     <input id="note-title" placeholder="Title" size="100"></input><br>
