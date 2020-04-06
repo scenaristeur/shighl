@@ -40,24 +40,9 @@ async function logged(webId){
   console.log("Storage: ", storage)
   console.log("PTI: ", pti)
 
-pti.instances.forEach((inst, i) => {
-  console.log(inst)
-  if (inst.instance.endsWith("#Shighl") && (inst.classe == "https://www.w3.org/ns/activitystreams#Collection") ){
-    instance = inst
-    console.log("INST url",instance.url)
+  path = await activity.getPath(pod)
 
-path = inst.url.substr(0, inst.url.lastIndexOf('/') + 1);
-
-    console.log("PATH", path)
-  }
-});
-
-  console.log("PATH", path)
-if (path == undefined){
-  path = storage+"public/shighl_test/"
-}
-
-  console.log("PATH", path)
+  console.log("PATH 4", path)
 
   document.getElementById("root-folder").value = path
   rootFolderInput()
@@ -85,6 +70,26 @@ if (path == undefined){
 
 
 }
+/*
+async function activityPath(pod){
+  let path, pti;
+  pti = await `${pod}`.pti
+  `${pti}`.instances.forEach((inst, i) => {
+    console.log(inst)
+    if (inst.instance.endsWith("#Shighl") && (inst.classe == "https://www.w3.org/ns/activitystreams#Collection") ){
+      instance = inst
+      console.log("INST url",instance.url)
+      path = inst.url.substr(0, inst.url.lastIndexOf('/') + 1);
+      console.log("PATH 1", path)
+    }
+  });
+  console.log("PATH 2", path)
+  if (path == undefined){
+    path = pod.storage+"public/shighl_test/"
+  }
+  console.log("PATH 3", path)
+  return path
+}*/
 
 async function createFolders(){
   let rf = document.getElementById("root-folder").value.trim()
@@ -198,8 +203,8 @@ async function friendTest(e){
   f_pod.webId = f_webId
   let f_inbox = await f_pod.inbox
   let f_storage = await f_pod.storage
-  let f_pti = await f_pod.pti
-  console.log(f_inbox,f_storage,f_pti)
+  let f_acitvityPath = await activity.getPath(f_pod)
+  console.log(f_inbox,f_storage,f_acitvityPath)
 
 
 }
