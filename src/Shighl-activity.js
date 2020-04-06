@@ -147,16 +147,59 @@ class ShighlActivity {
   */
 
 
+  getPath(pod){
+    return (async () => {
+      let path
+      let pti = await pod.pti
+      pti.instances.forEach((inst, i) => {
+        console.log(inst)
+        if (inst.instance.endsWith("#Shighl") && (inst.classe == "https://www.w3.org/ns/activitystreams#Collection") ){
+          instance = inst
+          console.log("INST url",instance.url)
+          path = inst.url.substr(0, inst.url.lastIndexOf('/') + 1);
+          console.log("PATH 1", path)
+        }
+      });
+      console.log("PATH 2", path)
+      if (path == undefined){
+        path = await pod.storage+"public/shighl_test/"
+      }
+      console.log("PATH 3", path)
+      return path
+    })();
+
+  }
+
 
   set create(act){
     // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-create
     return (async () => {
       console.log("CREATE", act)
+      console.log("OUTBOX")
+      // target : webId
+  let actorId = act.actor.id
+      if (typeof actorId  == "string"){
+        console.log(actorId)
+        let sh = new Shighl()
+        let pod = new sh.pod()
+        pod.webId = actorId
+        console.log(pod)
+
+        let path = this.getPath(pod)
+
+        console.log(path)
+
+        console.log( "Must get OUTBOX")
+
+      }else{
+        //target : { Person}
+        console.log("todo : target{Person}")
+      }
 
 
 
-
-
+      console.log("INBOX or agora", act.target)
+    console.log(typeof act.target )
 
 
     })();

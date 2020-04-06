@@ -195,7 +195,7 @@ class ShighlPod {
               const s = {instance: `${subject}`}
               for await (const property of subject.properties)
               {
-                if (`${property}` == "http://www.w3.org/ns/solid/terms#instance")    {
+                if (`${property}` == "http://www.w3.org/ns/solid/terms#instance"){
                   //  console.log( "--",`${property}`);
                   const url = await data[subject][`${property}`]
                   const classe = await data[subject].solid$forClass
