@@ -48,8 +48,8 @@ async function logged(webId){
   rootFolderInput()
 
 
-  document.getElementById("radio-everyone").checked = true
-  document.getElementById("recipient-input").value = "Everyone"
+  document.getElementById("radio-public").checked = true
+  document.getElementById("recipient-input").value = "Public"
 
   let friends_ul = document.getElementById("friends-liste")
 
@@ -72,23 +72,23 @@ async function logged(webId){
 }
 /*
 async function activityPath(pod){
-  let path, pti;
-  pti = await `${pod}`.pti
-  `${pti}`.instances.forEach((inst, i) => {
-    console.log(inst)
-    if (inst.instance.endsWith("#Shighl") && (inst.classe == "https://www.w3.org/ns/activitystreams#Collection") ){
-      instance = inst
-      console.log("INST url",instance.url)
-      path = inst.url.substr(0, inst.url.lastIndexOf('/') + 1);
-      console.log("PATH 1", path)
-    }
-  });
-  console.log("PATH 2", path)
-  if (path == undefined){
-    path = pod.storage+"public/shighl_test/"
-  }
-  console.log("PATH 3", path)
-  return path
+let path, pti;
+pti = await `${pod}`.pti
+`${pti}`.instances.forEach((inst, i) => {
+console.log(inst)
+if (inst.instance.endsWith("#Shighl") && (inst.classe == "https://www.w3.org/ns/activitystreams#Collection") ){
+instance = inst
+console.log("INST url",instance.url)
+path = inst.url.substr(0, inst.url.lastIndexOf('/') + 1);
+console.log("PATH 1", path)
+}
+});
+console.log("PATH 2", path)
+if (path == undefined){
+path = pod.storage+"public/shighl_test/"
+}
+console.log("PATH 3", path)
+return path
 }*/
 
 async function createFolders(){
@@ -135,7 +135,6 @@ let test_activity = {
   "@context": "https://www.w3.org/ns/activitystreams",
   "summary": name+" created a note",
   "type": "Create",
-  "target": recipient,
   /*
   "target": {
   "type": "Person",
@@ -149,7 +148,8 @@ let test_activity = {
 "object": {
   "type": "Note",
   "name": document.getElementById("note-title").value.trim(),
-  "content": document.getElementById("note-content").value.trim()
+  "content": document.getElementById("note-content").value.trim(),
+  "target": recipient
 }
 }
 
@@ -175,8 +175,8 @@ function rootFolderInput(){
 function check(e){
   let checked = e.getAttribute("id")
   console.log(checked)
-  if (checked == "radio-everyone"){
-    document.getElementById("recipient-input").value = "Everyone"
+  if (checked == "radio-public"){
+    document.getElementById("recipient-input").value = "Public"
     document.getElementById("friends-liste").style.display= "none"
     document.getElementById("recipient-input").style.display = "block"
   }else if(checked == "radio-friend"){
@@ -237,8 +237,8 @@ async function friendTest(e){
       <legend>To</legend>
       <div class="some-class">
         <input type="radio"
-        onchange="check(this)" class="radio" name="to-radio" value="everyone" id="radio-everyone" />
-        <label for="radio-everyone">Everyone Public / on Agora POD</label>
+        onchange="check(this)" class="radio" name="to-radio" value="public" id="radio-public" />
+        <label for="radio-public">Public / on Agora POD</label>
         <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="friends" id="radio-friend" />
         <label for="radio-friend">A friend</label>
         <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="other" id="radio-other" />
@@ -250,7 +250,7 @@ async function friendTest(e){
 
     <br>
     <label for="recipient-input">Recipient</label>
-    <input type="text" value="Everyone" id="recipient-input" />
+    <input type="text" value="Public" id="recipient-input" />
     <select id="friends-liste" style="display:none" onchange="friendTest(this)"></select>
     <br>
 
