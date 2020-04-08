@@ -59,40 +59,89 @@ class ShighlActivity {
     /*if (!acl_outbox.hasRule(Permissions.ALL, webId)) {
     await acl_outbox.addRule(Permissions.ALL, webId)
   }*/
-/*
+  /*
   if (!acl_inbox.hasRule(Permissions.ALL, webId)) {
-    await acl_inbox.addRule(Permissions.ALL, webId)
-  }
-
-  await acl_inbox.deleteRule(READ, Agents.PUBLIC)
-  await acl_inbox.addRule(APPEND, Agents.AUTHENTICATED)
+  await acl_inbox.addRule(Permissions.ALL, webId)
+}
 */
+//INBOX RULES
+//owner
+if (!  await acl_inbox.hasRule(CONTROL, webId)) {
+  await acl_inbox.addRule(CONTROL, webId)
+}
+if (!  await acl_inbox.hasRule(WRITE, webId)) {
+  await acl_inbox.addRule(WRITE, webId)
+}
+if (!  await acl_inbox.hasRule(READ, webId)) {
+  await acl_inbox.addRule(READ, webId)
+}
+await acl_inbox.deleteRule(APPEND, webId)
 
-  const agentsInboxA = acl_inbox.getAgentsWith(APPEND)
-  console.log(agentsInboxA.hasPublic())
-  console.log(agentsInboxA.hasAuthenticated()) // Authenticated means everyone who is logged in
+//authenticated as Submitter
+if (!  await acl_inbox.hasRule(APPEND, Agents.AUTHENTICATED)) {
+  await acl_inbox.addRule(APPEND, Agents.AUTHENTICATED)
+}
+await acl_inbox.deleteRule(READ, Agents.AUTHENTICATED)
+await acl_inbox.deleteRule(WRITE, Agents.AUTHENTICATED)
+await acl_inbox.deleteRule(CONTROL, Agents.AUTHENTICATED)
 
-  const agentsInboxR = acl_inbox.getAgentsWith(READ)
-  console.log(agentsInboxR.hasPublic())
-  console.log(agentsInboxR.hasAuthenticated()) // Authenticated means everyone who is logged in
+//public none
+await acl_inbox.deleteRule(READ, Agents.PUBLIC)
+await acl_inbox.deleteRule(APPEND, Agents.PUBLIC)
+await acl_inbox.deleteRule(WRITE, Agents.PUBLIC)
+await acl_inbox.deleteRule(CONTROL, Agents.PUBLIC)
+
+// TODO : ajouter l'appli
+/*
+@prefix : <#>.
+@prefix n0: <http://www.w3.org/ns/auth/acl#>.
+@prefix inbox: <./>.
+@prefix c: </profile/card#>.
+
+:Append
+    a n0:Authorization;
+    n0:accessTo inbox:;
+    n0:agentClass n0:AuthenticatedAgent;
+    n0:mode n0:Append.
+:AppendDefault
+    a n0:Authorization;
+    n0:agentClass n0:AuthenticatedAgent;
+    n0:default inbox:;
+    n0:mode n0:Append;
+    n0:origin <http://localhost:9000>.
+:ControlReadWrite
+    a n0:Authorization;
+    n0:accessTo inbox:;
+    n0:agent c:me;
+    n0:mode n0:Control, n0:Read, n0:Write.
+    */
+
+
+const agentsInboxA = acl_inbox.getAgentsWith(APPEND)
+console.log(agentsInboxA.hasPublic())
+console.log(agentsInboxA.hasAuthenticated()) // Authenticated means everyone who is logged in
+
+const agentsInboxR = acl_inbox.getAgentsWith(READ)
+console.log(agentsInboxR.hasPublic())
+console.log(agentsInboxR.hasAuthenticated()) // Authenticated means everyone who is logged in
 
 
 
-  // create pti entry
-  //console.log()
-  let pti = await pod.pti
-  let pti_url = pti.url
-  //  var dateObj = new Date();
-  //  let id = "#Sh"+dateObj.getTime()
-  let id = "#Shighl"
-  let inst_uri = pti_url+id
-  let inst_index = root+'index.ttl#this'
-  console.log("inst uri",inst_uri)
-  await data[inst_uri].solid$forClass.add(namedNode('https://www.w3.org/ns/activitystreams#Collection'))
-  await data[inst_uri].solid$instance.set(namedNode(inst_index))
-  //  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
-  await data[inst_index].solid$inbox.add(namedNode(inbox))
-  await data[inst_index].solid$outbox.set(namedNode(outbox))
+// create pti entry
+//console.log()
+let pti = await pod.pti
+let pti_url = pti.url
+//  var dateObj = new Date();
+//  let id = "#Sh"+dateObj.getTime()
+let id = "#Shighl"
+let inst_uri = pti_url+id
+let inst_index = root+'index.ttl#this'
+console.log("inst uri",inst_uri)
+await data[inst_uri].solid$forClass.add(namedNode('https://www.w3.org/ns/activitystreams#Collection'))
+await data[inst_uri].solid$instance.set(namedNode(inst_index))
+//  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
+await data[inst_index].solid$inbox.add(namedNode(inbox))
+await data[inst_index].solid$outbox.set(namedNode(outbox))
 
 }
 
