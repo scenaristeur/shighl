@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 // https://github.com/Otto-AA/solid-acl-utils
 
 import * as SolidAclUtils from 'solid-acl-utils/dist/browser/solid-acl-utils.bundle.js'
-console.log(SolidAclUtils)
+//console.log(SolidAclUtils)
 import * as SolidFileClient from 'solid-file-client/dist/window/solid-file-client.bundle.js'
 
 // You could also use SolidAclUtils.Permissions.READ instead of following
@@ -44,58 +44,55 @@ class ShighlActivity {
     if( !(await module.fc.itemExists(outbox+"activities/")) ) {
       await module.fc.createFolder(outbox+"activities/") // only create if it doesn't already exist
     }
-    /*
+
     // Passing it the fetch from solid-auth-client
     const fetch = auth.fetch.bind(auth)
 
-    const aclApi_outbox = new AclApi(fetch, { autoSave: true })
+    //  const aclApi_outbox = new AclApi(fetch, { autoSave: true })
     const aclApi_inbox = new AclApi(fetch, { autoSave: true })
 
-    const acl_outbox = await aclApi_outbox.loadFromFileUrl(outbox)
+    //  const acl_outbox = await aclApi_outbox.loadFromFileUrl(outbox)
     const acl_inbox = await aclApi_inbox.loadFromFileUrl(inbox)
 
 
     // Note: Workaround, because currently no default permissions are copied when a new acl file is created. Not doing this could result in having no CONTROL permissions after the first acl.addRule call
-    if (!acl_outbox.hasRule(Permissions.ALL, webId)) {
+    /*if (!acl_outbox.hasRule(Permissions.ALL, webId)) {
     await acl_outbox.addRule(Permissions.ALL, webId)
+  }*/
+/*
+  if (!acl_inbox.hasRule(Permissions.ALL, webId)) {
+    await acl_inbox.addRule(Permissions.ALL, webId)
   }
 
-  if (!acl_inbox.hasRule(Permissions.ALL, webId)) {
-  await acl_inbox.addRule(Permissions.ALL, webId)
-}
-
-await acl_outbox.addRule(READ, Agents.AUTHENTICATED)
-await acl_outbox.deleteRule(READ, Agents.PUBLIC)
-const agentsOutbox = acl_outbox.getAgentsWith(READ)
-console.log([...agentsOutbox.webIds]) // array containing all webIds which have write access
-console.log([...agentsOutbox.groups])
-console.log(agentsOutbox.hasPublic())
-console.log(agentsOutbox.hasAuthenticated()) // Authenticated means everyone who is logged in
-
-await acl_inbox.addRule(APPEND, Agents.AUTHENTICATED)
-await acl_inbox.deleteRule(READ, Agents.PUBLIC)
-
-const agentsInbox = acl_inbox.getAgentsWith(APPEND)
-console.log([...agentsInbox.webIds]) // array containing all webIds which have write access
-console.log([...agentsInbox.groups])
-console.log(agentsInbox.hasPublic())
-console.log(agentsInbox.hasAuthenticated()) // Authenticated means everyone who is logged in
+  await acl_inbox.deleteRule(READ, Agents.PUBLIC)
+  await acl_inbox.addRule(APPEND, Agents.AUTHENTICATED)
 */
-// create pti entry
-//console.log()
-let pti = await pod.pti
-let pti_url = pti.url
-//  var dateObj = new Date();
-//  let id = "#Sh"+dateObj.getTime()
-let id = "#Shighl"
-let inst_uri = pti_url+id
-let inst_index = root+'index.ttl#this'
-console.log("inst uri",inst_uri)
-await data[inst_uri].solid$forClass.add(namedNode('https://www.w3.org/ns/activitystreams#Collection'))
-await data[inst_uri].solid$instance.set(namedNode(inst_index))
-//  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
-await data[inst_index].solid$inbox.add(namedNode(inbox))
-await data[inst_index].solid$outbox.set(namedNode(outbox))
+
+  const agentsInboxA = acl_inbox.getAgentsWith(APPEND)
+  console.log(agentsInboxA.hasPublic())
+  console.log(agentsInboxA.hasAuthenticated()) // Authenticated means everyone who is logged in
+
+  const agentsInboxR = acl_inbox.getAgentsWith(READ)
+  console.log(agentsInboxR.hasPublic())
+  console.log(agentsInboxR.hasAuthenticated()) // Authenticated means everyone who is logged in
+
+
+
+  // create pti entry
+  //console.log()
+  let pti = await pod.pti
+  let pti_url = pti.url
+  //  var dateObj = new Date();
+  //  let id = "#Sh"+dateObj.getTime()
+  let id = "#Shighl"
+  let inst_uri = pti_url+id
+  let inst_index = root+'index.ttl#this'
+  console.log("inst uri",inst_uri)
+  await data[inst_uri].solid$forClass.add(namedNode('https://www.w3.org/ns/activitystreams#Collection'))
+  await data[inst_uri].solid$instance.set(namedNode(inst_index))
+  //  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
+  await data[inst_index].solid$inbox.add(namedNode(inbox))
+  await data[inst_index].solid$outbox.set(namedNode(outbox))
 
 }
 
@@ -150,6 +147,7 @@ set create(act){
       let date = dateObj.toISOString()
       let to = act.object.target == "Public" ? "https://www.w3.org/ns/activitystreams#Public" : act.object.target;
 
+      //object create
       let object_Id = uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
       let object_uri = outbox+"objects/"+object_Id+"/index.ttl#this"
       await data[object_uri]['https://www.w3.org/ns/activitystreams#type'].add(namedNode('https://www.w3.org/ns/activitystreams#'+act.object.type))
@@ -160,6 +158,7 @@ set create(act){
       await data[object_uri]['https://www.w3.org/ns/activitystreams#attributedTo'].add(namedNode(act.actor.id))
       // inReplyTo ?
 
+      //activity create
       let activity_Id = uuidv4();
       let activity_uri = outbox+"activities/"+activity_Id+"/index.ttl#this"
       await data[activity_uri]['https://www.w3.org/ns/activitystreams#type'].add(namedNode('https://www.w3.org/ns/activitystreams#'+act.type))
@@ -167,6 +166,31 @@ set create(act){
       await data[activity_uri]['https://www.w3.org/ns/activitystreams#summary'].add(act.summary)
       await data[activity_uri]['https://www.w3.org/ns/activitystreams#object'].add(namedNode(object_uri))
       await data[activity_uri]['https://www.w3.org/ns/activitystreams#published'].add(date)
+
+      // recipient notification
+      let notification_Id = uuidv4();
+      if (to == "https://www.w3.org/ns/activitystreams#Public"){
+        console.log("Send to Agora")
+      }else{
+        let pod_recip = new sh.pod()
+        pod_recip.webId = to
+        //        console.log(pod)
+        let path_recip = await this.getPath(pod_recip)
+        //        console.log(path)
+        let recip_inbox = await data[path_recip+"index.ttl#this"].solid$inbox
+        let notification_uri = recip_inbox+notification_Id+"/index.ttl#this"
+        console.log(notification_uri)
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#type'].add(namedNode('https://www.w3.org/ns/activitystreams#'+act.type))
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#attributedTo'].add(namedNode(act.actor.id))
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#summary'].add(act.summary)
+        await data[notification_uri].rdfs$label.add(act.summary)
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#published'].add(date)
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#link'].add(namedNode(activity_uri))
+
+      }
+
+
+
 
       /* https://gitlab.com/openengiadina/cpub/-/blob/develop/docs/example.org
       <http://localhost:4000/activities/e4ad4f99-e1ab-44e7-ba68-2c8af87cb021>
