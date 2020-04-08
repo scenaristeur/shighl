@@ -219,49 +219,51 @@ async function friendTest(e){
     <legend>App folder create</legend>
     <input id="root-folder" oninput="rootFolderInput()" size="100"></input>
     <ul>
-      <li>Inbox Folder : <span id="inbox-folder"></span> | <span id="indox-auth">AUTHENTICATED Agent Append (to receive notifications)</span></li>
-      <li>Outbox Folder :<span id="outbox-folder"></span> | <span id="outbox-auth">AUTHENTICATED Agent Read (so other can see your activities)</span></li>
-    </ul>
+      <li>Inbox Folder : <b><span id="inbox-folder"></span></b> <br>
+        <span id="indox-auth">OWNER with Full Access & AUTHENTICATED Agent As Submitter  (to receive notifications)</span></li>
+        <li>Outbox Folder : <b><span id="outbox-folder"></span></b> <br>
+          <span id="outbox-auth">OWNER with Full Access & AUTHENTICATED Agent Read (so other can retrieve notified activities)</span></li>
+        </ul>
 
-    <button onclick="createFolders()">Use those folders</button>
-    <a href="" id="link-folder" target="_blank"></a>
+        <button onclick="createFolders()">Use this folders & create Rules</button>
+        <a href="" id="link-folder" target="_blank"></a>
 
-  </fieldset>
-
-
-
-  <fieldset>
-    <legend>Send a note</legend>
-
-    <fieldset>
-      <legend>To</legend>
-      <div class="some-class">
-        <input type="radio"
-        onchange="check(this)" class="radio" name="to-radio" value="public" id="radio-public" />
-        <label for="radio-public">Public / on Agora POD</label>
-        <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="friends" id="radio-friend" />
-        <label for="radio-friend">A friend</label>
-        <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="other" id="radio-other" />
-        <label for="radio-other">Another WebId</label>
-      </div>
+      </fieldset>
 
 
-    </fieldset>
 
-    <br>
-    <label for="recipient-input">Recipient</label>
-    <input type="text" value="Public" id="recipient-input" />
-    <select id="friends-liste" style="display:none" onchange="friendTest(this)"></select>
-    <br>
+      <fieldset>
+        <legend>Send a note</legend>
 
-    <input id="note-title" placeholder="Title" size="100"></input><br>
-    <textarea id="note-content"placeholder="Content" cols="76" rows="7"></textarea><br>
-    <button onclick="sendNote()">Send a Note</button>
-  </fieldset>
-  Look the web console to see more (Ctrl+Maj+i)<br><br>
-  <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
-  <br>
-  <a href="index.html">Back to index</a>
-</body>
+        <fieldset>
+          <legend>To</legend>
+          <div class="some-class">
+            <input type="radio"
+            onchange="check(this)" class="radio" name="to-radio" value="public" id="radio-public" />
+            <label for="radio-public">Public / on Agora POD</label>
+            <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="friends" id="radio-friend" />
+            <label for="radio-friend">A friend</label>
+            <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="other" id="radio-other" />
+            <label for="radio-other">Another WebId</label>
+          </div>
 
-</html>
+
+        </fieldset>
+
+        <br>
+        <label for="recipient-input">Recipient</label>
+        <input type="text" value="Public" id="recipient-input" />
+        <select id="friends-liste" style="display:none" onchange="friendTest(this)"></select>
+        <br>
+
+        <input id="note-title" placeholder="Title" size="100"></input><br>
+        <textarea id="note-content"placeholder="Content" cols="76" rows="7"></textarea><br>
+        <button onclick="sendNote()">Send a Note</button>
+      </fieldset>
+      Look the web console to see more (Ctrl+Maj+i)<br><br>
+      <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+      <br>
+      <a href="index.html">Back to index</a>
+    </body>
+
+    </html>
