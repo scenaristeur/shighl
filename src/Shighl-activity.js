@@ -62,9 +62,9 @@ class ShighlActivity {
 
     let file = root+"inbox/.acl"
     await module.fc.createFile (file, aclInboxContent, "text/turtle") .then (success => {
-      console.log (`Created $ {file} .`)
+      console.log (`Created ${file} .`)
     }, err => console.log (err));
-    
+
     if( !(await module.fc.itemExists(outbox)) ) {
       await module.fc.createFolder(outbox) // only create if it doesn't already exist
     }
@@ -75,6 +75,8 @@ class ShighlActivity {
     if( !(await module.fc.itemExists(outbox+"activities/")) ) {
       await module.fc.createFolder(outbox+"activities/") // only create if it doesn't already exist
     }
+
+
 
 
 
@@ -120,6 +122,7 @@ class ShighlActivity {
 
 
   set create(act){
+    let module = this
     //    https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tutorial.txt
     // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-create
     //https://blog.joinmastodon.org/2018/06/how-to-implement-a-basic-activitypub-server/
@@ -147,10 +150,15 @@ class ShighlActivity {
         let date = dateObj.toISOString()
         let to = act.object.target == "Public" ? "https://www.w3.org/ns/activitystreams#Public" : act.object.target;
 
+
+
+
         //object create
         let object_Id = uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
         //    let object_uri = outbox+"objects/"+object_Id+"/index.ttl#this"
-        let object_uri = outbox+"objects/"+object_Id+".ttl#this"
+        let object_file = outbox+"objects/"+object_Id+".ttl"
+
+        let object_uri = object_file+"#this"
 
         await data[object_uri]['https://www.w3.org/ns/activitystreams#type'].add(namedNode('https://www.w3.org/ns/activitystreams#'+act.object.type))
         await data[object_uri]['https://www.w3.org/ns/activitystreams#name'].add(act.object.name)
@@ -163,7 +171,8 @@ class ShighlActivity {
         //activity create
         let activity_Id = uuidv4();
         //      let activity_uri = outbox+"activities/"+activity_Id+"/index.ttl#this"
-        let activity_uri = outbox+"activities/"+activity_Id+".ttl#this"
+        let activity_file = outbox+"activities/"+activity_Id+".ttl"
+        let activity_uri = activity_file+"#this"
 
         await data[activity_uri]['https://www.w3.org/ns/activitystreams#type'].add(namedNode('https://www.w3.org/ns/activitystreams#'+act.type))
         await data[activity_uri]['https://www.w3.org/ns/activitystreams#target'].add(namedNode(to))
@@ -171,6 +180,50 @@ class ShighlActivity {
         await data[activity_uri]['https://www.w3.org/ns/activitystreams#object'].add(namedNode(object_uri))
         await data[activity_uri]['https://www.w3.org/ns/activitystreams#published'].add(date)
         await data[activity_uri].rdfs$label.add(act.summary)
+
+
+        let aclOutboxObject = `@prefix : <#>.
+        @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+        @prefix c: </profile/card#>.
+
+        :ControlReadWrite
+        a acl:Authorization;
+        acl:accessTo <${object_file}>;
+        acl:agent c:me;
+        acl:mode acl:Control, acl:Read, acl:Write.
+        :Read
+        a acl:Authorization;
+        acl:accessTo <${object_file}>;
+        acl:agent <${to}>;
+        acl:mode acl:Read.`
+
+        let aclObjectFile = object_file+".acl"
+        await module.fc.createFile (aclObjectFile, aclOutboxObject, "text/turtle") .then (success => {
+          console.log (`Created ${aclObjectFile} .`)
+        }, err => console.log (err));
+
+        let aclOutboxActivity = `@prefix : <#>.
+        @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+        @prefix c: </profile/card#>.
+
+        :ControlReadWrite
+        a acl:Authorization;
+        acl:accessTo <${activity_file}>;
+        acl:agent c:me;
+        acl:mode acl:Control, acl:Read, acl:Write.
+        :Read
+        a acl:Authorization;
+        acl:accessTo <${activity_file}>;
+        acl:agent <${to}>;
+        acl:mode acl:Read.`
+        
+        let aclActivityFile = activity_file+".acl"
+        await module.fc.createFile (aclActivityFile, aclOutboxActivity, "text/turtle") .then (success => {
+          console.log (`Created ${aclActivityFile} .`)
+        }, err => console.log (err));
+
+
+
 
         // recipient notification
         let notification_Id = uuidv4();

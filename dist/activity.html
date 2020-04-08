@@ -48,8 +48,10 @@ async function logged(webId){
   rootFolderInput()
 
 
-  document.getElementById("radio-public").checked = true
-  document.getElementById("recipient-input").value = "Public"
+  document.getElementById("radio-friend").checked = true
+  document.getElementById("recipient-input").style.display = "none"
+  document.getElementById("friends-liste").style.display= "block"
+  
 
   let friends_ul = document.getElementById("friends-liste")
 
@@ -238,11 +240,11 @@ async function friendTest(e){
         <fieldset>
           <legend>To</legend>
           <div class="some-class">
+            <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="friends" id="radio-friend" />
+            <label for="radio-friend">A friend</label>
             <input type="radio"
             onchange="check(this)" class="radio" name="to-radio" value="public" id="radio-public" />
             <label for="radio-public">Public / on Agora POD</label>
-            <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="friends" id="radio-friend" />
-            <label for="radio-friend">A friend</label>
             <input type="radio" onchange="check(this)" class="radio" name="to-radio" value="other" id="radio-other" />
             <label for="radio-other">Another WebId</label>
           </div>
@@ -260,6 +262,17 @@ async function friendTest(e){
         <textarea id="note-content"placeholder="Content" cols="76" rows="7"></textarea><br>
         <button onclick="sendNote()">Send a Note</button>
       </fieldset>
+
+
+      <fieldset>
+        <legend>Inbox</legend>
+
+
+
+
+      </fieldset>
+
+
       Look the web console to see more (Ctrl+Maj+i)<br><br>
       <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
       <br>
