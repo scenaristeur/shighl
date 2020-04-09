@@ -136,13 +136,15 @@ class ShighlActivity {
       let messUrl = url+"#this"
       let message = {}
       let type = await data[messUrl]['https://www.w3.org/ns/activitystreams#type']
-      message.attributedTo = await data[messUrl]['https://www.w3.org/ns/activitystreams#attributedTo']
+      let attributedTo = await data[messUrl]['https://www.w3.org/ns/activitystreams#attributedTo']
+      message.attributedTo = attributedTo
       message.label = await data[messUrl].rdfs$label
       message.link = await data[messUrl].as$link
       let published = new Date(await data[messUrl].as$published)
       message.published = published.toLocaleString(navigator.language)
+      message.timestamp = published.getTime()
       message.summary = await data[messUrl].as$summary
-      message.senderName = await data[message.attributedTo].vcard$fn || `${m.sender}`.split("/")[2].split('.')[0];
+      message.senderName = await data[message.attributedTo].vcard$fn || `${message.attributedTo}`.split("/")[2].split('.')[0];
       message.senderPhoto = await data[message.attributedTo].vcard$hasPhoto || ""
       message.type = `${type}`
       //  console.log("ME", message)

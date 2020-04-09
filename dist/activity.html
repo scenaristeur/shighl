@@ -43,13 +43,13 @@
   background-color: #4CAF50;
   color: white;
 }
-
+/*
 #messages thead {
-  display:block;
-}
+display:block;
+}*/
 #messages tbody {
   display:block;
-  height: 200px;
+  height: 400px;
   overflow-y: scroll;
 }
 </style>
@@ -282,15 +282,13 @@ async function getMessages(){
   //  console.log("Messages", messages)
   for (var i = 0; i < messages.length; i++) {
     let url = messages[i]
-    let message = await activity.getInboxMessageDetail(messages[i])
-    console.log("MESS",message)
-
-
-    /*  <tr><td colspan="4">Inbox Loading... (messages[i])</td></tr>*/
-    let myHtmlContent = "<td><h3><a href="+message.attributedTo+" target='_blank'>"+message.senderName+"</h3></td><td>"+message.summary+"</td><td><a href="+message.link+" target='_blank'>"+message.link+"</a></td><td>"+message.published+"</td>"
 
     let newRow = tableRef.insertRow(tableRef.rows.length);
-    newRow.innerHTML = myHtmlContent;
+    newRow.classList.add('item')
+    newRow.setAttribute("id",messages[i])
+    newRow.innerHTML = messages[i]
+
+    //  newRow.innerHTML = myHtmlContent;
 
     /*  var newItem = document.createElement('div');
     newItem.classList.add('item');
@@ -303,7 +301,72 @@ async function getMessages(){
     scroller.appendChild(newItem);
   }*/
 }
+
+let rows = document.querySelectorAll(".item")
+await rows.forEach(async function(item, i) {
+  let message = await activity.getInboxMessageDetail(item.getAttribute("id"))
+  console.log("MESS",message)
+  let myHtmlContent =
+  `<td><h3><a href="${message.attributedTo}" target='_blank'>${message.senderName}</h3></td>
+  <td>${message.summary}</td>
+  <td><a href="${message.link}" target='_blank'>${message.link}</a></td>
+  <td>${message.published})</td>
+  `
+  item.setAttribute("timestamp",message.timestamp)
+  //  "<td><h3><a href="+message.attributedTo+" target='_blank'>"+message.senderName+"</h3></td><td>"+message.summary+"</td><td><a href="+message.link+" target='_blank'>"+message.link+"</a></td><td>"+message.published+"</td>"
+  item.innerHTML = myHtmlContent;
+
+  if(i>0){
+    let x = rows[i-1].getAttribute("timestamp");
+    //check if the two rows should switch place:
+    console.log(x<message.timestamp)
+  }
+});
+console.log("OK")
+//sortTable()
+
+
 }
+
+
+function sortTable() {
+  var table, rows, switching, i, x, y, shouldSwitch;
+  table = document.getElementById("messages");
+  switching = true;
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.rows;
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 1; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getAttribute("timestamp");
+      y = rows[i + 1].getAttribute("timestamp");
+      //check if the two rows should switch place:
+      console.log(x,y)
+      if (x > y) {
+        //if so, mark as a switch and break the loop:
+        shouldSwitch = true;
+        break;
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+    }
+  }
+}
+
+
+
 
 function loadItems(n) {
   for (var i = 0; i < n; i++) {
