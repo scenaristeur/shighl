@@ -3,11 +3,67 @@
 <script src="./vendor/solid-query-ldflex.bundle.js"></script>
 <script src="./window/shighl.bundle.js"></script>
 
+
+<style>
+.item {
+  background: #FFF;
+  border: 1px solid #666;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#sentinel {
+  width: 10px;
+  height: 10px;
+  background: #FF0000;
+}
+
+#scroller {
+  height: 400px;
+  overflow-y: scroll;
+}
+
+#messages {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+#messages td, #messages th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+#messages tr:nth-child(even){background-color: #f2f2f2;}
+#messages tr:hover {background-color: #ddd;}
+#messages th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+#messages thead {
+  display:block;
+}
+#messages tbody {
+  display:block;
+  height: 200px;
+  overflow-y: scroll;
+}
+</style>
+
+
 <script>
 
 let sh, pod, session,  activity, name, friends, inbox, storage, pti, instance, path
 sh = new Shighl()
 session = new sh.session()
+
+/* global IntersectionObserver */
+let scroller, sentinel;
+var counter = 1;
 
 async function mycallback(webId){
   console.log("WebId: ",webId)
@@ -19,6 +75,9 @@ async function mycallback(webId){
 }
 
 async function init(){
+  scroller = document.querySelector('#scroller');
+  sentinel = document.querySelector('#sentinel');
+  intersectionObserver.observe(sentinel);
   pod = new sh.pod()
   activity = new sh.activity()
   console.log(activity)
@@ -51,7 +110,7 @@ async function logged(webId){
   document.getElementById("radio-friend").checked = true
   document.getElementById("recipient-input").style.display = "none"
   document.getElementById("friends-liste").style.display= "block"
-  
+
 
   let friends_ul = document.getElementById("friends-liste")
 
@@ -96,10 +155,13 @@ return path
 async function createFolders(){
   let rf = document.getElementById("root-folder").value.trim()
   rf = rf.endsWith("/") ? rf : rf+"/";
-  activity.testacl(pod, rf)
+  await activity.testacl(pod, rf)
   document.getElementById("link-folder").href = rf
   document.getElementById("link-folder").innerHTML = rf
+
 }
+
+
 
 function sendNote(){
   var radios = document.getElementsByName('to-radio');
@@ -211,6 +273,64 @@ async function friendTest(e){
 
 }
 
+////// SCROLLER
+
+async function getMessages(){
+  let messages = await activity.messages
+  let  tableRef = document.getElementById("messages").getElementsByTagName('tbody')[0];
+  tableRef.innerHTML = ""
+  //  console.log("Messages", messages)
+  for (var i = 0; i < messages.length; i++) {
+    let url = messages[i]
+    let message = await activity.getInboxMessageDetail(messages[i])
+    console.log("MESS",message)
+
+
+    /*  <tr><td colspan="4">Inbox Loading... (messages[i])</td></tr>*/
+    let myHtmlContent = "<td><h3><a href="+message.attributedTo+" target='_blank'>"+message.senderName+"</h3></td><td>"+message.summary+"</td><td><a href="+message.link+" target='_blank'>"+message.link+"</a></td><td>"+message.published+"</td>"
+
+    let newRow = tableRef.insertRow(tableRef.rows.length);
+    newRow.innerHTML = myHtmlContent;
+
+    /*  var newItem = document.createElement('div');
+    newItem.classList.add('item');
+    newItem.textContent = 'Item ' + url+ message.type + " "+message.attributedTo+" "+message.label+" "+message.link+" "+message.summary+" "+message.published;
+
+    scroller.appendChild(newItem);
+    counter++
+    if (i < messages.length - 2){
+    console.log("add sentinel")
+    scroller.appendChild(newItem);
+  }*/
+}
+}
+
+function loadItems(n) {
+  for (var i = 0; i < n; i++) {
+    var newItem = document.createElement('div');
+    newItem.classList.add('item');
+    newItem.textContent = 'Item ' + counter++;
+    scroller.appendChild(newItem);
+  }
+}
+
+var intersectionObserver = new IntersectionObserver(entries => {
+  // If the browser is busy while scrolling happens, multiple entries can
+  // accumulate between invocations of this callback. As long as any one
+  // of the notifications reports the sentinel within the scrolling viewport,
+  // we add more content.
+  if (entries.some(entry => entry.intersectionRatio > 0)) {
+    //  loadItems(10);
+    console.log("load 10")
+    // appendChild will move the existing element, so there is no need to
+    // remove it first.
+    scroller.appendChild(sentinel);
+    //  loadItems(5);
+    console.log("load 5")
+    //  document.querySelector('#count').innerHTML = 'Loaded up to item ' + counter;
+  }
+});
+
 </script>
 
 <body onload="init()">
@@ -266,17 +386,38 @@ async function friendTest(e){
 
       <fieldset>
         <legend>Inbox</legend>
+        <button onclick="getMessages()">Get Messages</button>
+
+        <table id="messages">
+          <thead>
+            <tr>
+              <th>Sender</th>
+              <th>Title</th>
+              <th>Content</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
 
 
+        <hr>
+        <div id="count"></counter>
+          <div id="scroller">
+            <div id="sentinel"></div>
+          </div>
+          <hr>
 
 
-      </fieldset>
+        </fieldset>
 
 
-      Look the web console to see more (Ctrl+Maj+i)<br><br>
-      <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
-      <br>
-      <a href="index.html">Back to index</a>
-    </body>
+        Look the web console to see more (Ctrl+Maj+i)<br><br>
+        <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+        <br>
+        <a href="index.html">Back to index</a>
+      </body>
 
-    </html>
+
+      </html>
