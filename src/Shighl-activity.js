@@ -29,6 +29,8 @@ class ShighlActivity {
 
     let inbox = root+'inbox/'
     let outbox = root+'outbox/'
+    module.inbox = inbox
+    module.outbox = outbox
     // create folders
     if( !(await module.fc.itemExists(inbox)) ) {
       await module.fc.createFolder(inbox) // only create if it doesn't already exist
@@ -120,6 +122,34 @@ class ShighlActivity {
     })();
   }
 
+  get messages(){
+    return (async () => {
+      console.log("ACTIVITY",this)
+      let folder = await this.fc.readFolder(this.inbox)
+      let messages = folder.files.map(f => f.url);
+      return messages
+    })();
+  }
+
+  getInboxMessageDetail(url){
+    return (async () => {
+      let messUrl = url+"#this"
+      let message = {}
+      let type = await data[messUrl]['https://www.w3.org/ns/activitystreams#type']
+      message.attributedTo = await data[messUrl]['https://www.w3.org/ns/activitystreams#attributedTo']
+      message.label = await data[messUrl].rdfs$label
+      message.link = await data[messUrl].as$link
+      let published = new Date(await data[messUrl].as$published)
+      message.published = published.toLocaleString(navigator.language)
+      message.summary = await data[messUrl].as$summary
+      message.senderName = await data[message.attributedTo].vcard$fn || `${m.sender}`.split("/")[2].split('.')[0];
+      message.senderPhoto = await data[message.attributedTo].vcard$hasPhoto || ""
+      message.type = `${type}`
+      //  console.log("ME", message)
+      return message
+    })();
+  }
+
 
   set create(act){
     let module = this
@@ -149,9 +179,6 @@ class ShighlActivity {
         let dateObj = new Date();
         let date = dateObj.toISOString()
         let to = act.object.target == "Public" ? "https://www.w3.org/ns/activitystreams#Public" : act.object.target;
-
-
-
 
         //object create
         let object_Id = uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
@@ -216,7 +243,7 @@ class ShighlActivity {
         acl:accessTo <${activity_file}>;
         acl:agent <${to}>;
         acl:mode acl:Read.`
-        
+
         let aclActivityFile = activity_file+".acl"
         await module.fc.createFile (aclActivityFile, aclOutboxActivity, "text/turtle") .then (success => {
           console.log (`Created ${aclActivityFile} .`)
