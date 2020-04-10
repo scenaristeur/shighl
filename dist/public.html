@@ -1,0 +1,78 @@
+
+<html>
+<script src="./vendor/solid-auth-client.bundle.js"> </script>
+<script src="./vendor/solid-query-ldflex.bundle.js"> </script>
+<script src="./window/shighl.bundle.js"> </script>
+
+
+<body onload=init()>
+  Test to read ActivityPUB stores in public/shighl_test/inbox/
+
+  <ul id="messageList">
+
+
+  </ul>
+
+</body>
+
+<script>
+  let sh, pod
+  let  messages = []
+
+  async function init(){
+    sh = new Shighl()
+    pod = new sh.pod()
+
+    pod.webId = "https://agora.solid.community/profile/card#me"
+    activity = new sh.activity()
+    console.log(activity)
+
+    path = await activity.getPath(pod)
+
+    console.log("PATH 4", path)
+
+    let ib = await solid.data[path+'index.ttl#this'].solid$inbox
+    console.log(`${ib}`)
+    let inbox = `${ib}`
+    console.log (inbox)
+    messages = []
+    let messageList = document.getElementById("messageList")
+    for await (const file of solid.data[inbox].ldp$contains){
+      console.log(`  - ${file} is a file`);
+      let m = {}
+      m.file = file
+      let url= file+"#this"
+      m.url = url
+      let attributedTo =  await solid.data[url].as$attributedTo
+      let link = await solid.data[url].as$link
+      let published = await solid.data[url].as$published
+      let summary	= await solid.data[url].as$summary
+      let type = await solid.data[url].as$type
+      m.attributedTo = attributedTo
+      m.link = link
+      m.published = published
+      m.summary = summary
+      m.type = type
+      messages.push(m)
+
+      let x =document.createElement("LI");
+
+      var t = document.createTextNode(m.attributedTo+" "+m.summary+" "+m.link+" at "+m.published);
+      x.appendChild(t);
+      messageList.appendChild(x)
+
+
+
+    }
+
+    console.log(messages)
+
+
+
+
+  }
+
+</script>
+
+
+</html

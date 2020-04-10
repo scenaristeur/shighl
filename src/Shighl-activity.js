@@ -107,7 +107,7 @@ class ShighlActivity {
       pti.instances.forEach((inst, i) => {
         //  console.log(inst)
         if (inst.instance.endsWith("#Shighl") && (inst.classe == "https://www.w3.org/ns/activitystreams#Collection") ){
-          instance = inst
+          //instance = inst
           //  console.log("INST url",instance.url)
           path = inst.url.substr(0, inst.url.lastIndexOf('/') + 1);
           //console.log("PATH 1", path)
