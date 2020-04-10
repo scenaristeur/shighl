@@ -226,10 +226,41 @@ class ShighlActivity {
         acl:agent <${to}>;
         acl:mode acl:Read.`
 
+        let aclOutboxObjectPublic = `
+        @prefix : <#>.
+        @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+        @prefix c: </profile/card#>.
+        @prefix n1: <http://xmlns.com/foaf/0.1/>.
+
+        :ControlReadWrite
+        a acl:Authorization;
+        acl:accessTo <${object_file}>;
+        acl:agent c:me;
+        acl:mode acl:Control, acl:Read, acl:Write.
+        :Read
+        a acl:Authorization;
+        acl:accessTo <${object_file}>;
+        acl:agentClass n1:Agent;
+        acl:mode acl:Read.
+        `
+
+
+
         let aclObjectFile = object_file+".acl"
-        await module.fc.createFile (aclObjectFile, aclOutboxObject, "text/turtle") .then (success => {
-          console.log (`Created ${aclObjectFile} .`)
-        }, err => console.log (err));
+
+  if (act.object.target == "Public"){
+    await module.fc.createFile (aclObjectFile, aclOutboxObjectPublic, "text/turtle") .then (success => {
+      console.log (`Created ${aclObjectFile} .`)
+    }, err => console.log (err));
+  }else{
+    await module.fc.createFile (aclObjectFile, aclOutboxObjectPublic, "text/turtle") .then (success => {
+      console.log (`Created ${aclObjectFile} .`)
+    }, err => console.log (err));
+  }
+
+
+
+
 
         let aclOutboxActivity = `@prefix : <#>.
         @prefix acl: <http://www.w3.org/ns/auth/acl#>.
@@ -246,10 +277,39 @@ class ShighlActivity {
         acl:agent <${to}>;
         acl:mode acl:Read.`
 
+
+        let aclOutboxActivityPublic = `
+        @prefix : <#>.
+        @prefix acl: <http://www.w3.org/ns/auth/acl#>.
+        @prefix c: </profile/card#>.
+        @prefix n1: <http://xmlns.com/foaf/0.1/>.
+
+        :ControlReadWrite
+        a acl:Authorization;
+        acl:accessTo <${activity_file}>;
+        acl:agent c:me;
+        acl:mode acl:Control, acl:Read, acl:Write.
+        :Read
+        a acl:Authorization;
+        acl:accessTo <${activity_file}>;
+        acl:agentClass n1:Agent;
+        acl:mode acl:Read.
+        `
+
+
+
         let aclActivityFile = activity_file+".acl"
-        await module.fc.createFile (aclActivityFile, aclOutboxActivity, "text/turtle") .then (success => {
-          console.log (`Created ${aclActivityFile} .`)
-        }, err => console.log (err));
+        if (act.object.target == "Public"){
+          await module.fc.createFile (aclActivityFile, aclOutboxActivityPublic, "text/turtle") .then (success => {
+            console.log (`Created ${aclActivityFile} .`)
+          }, err => console.log (err));
+        }else{
+          await module.fc.createFile (aclActivityFile, aclOutboxActivity, "text/turtle") .then (success => {
+            console.log (`Created ${aclActivityFile} .`)
+          }, err => console.log (err));
+        }
+
+
 
 
 
@@ -258,7 +318,8 @@ class ShighlActivity {
         let notification_Id = uuidv4();
         if (to == "https://www.w3.org/ns/activitystreams#Public"){
           console.log("Send to Agora")
-        }else{
+          to = "https://agora.solid.community/profile/card#me"
+        }
           let pod_recip = new sh.pod()
           pod_recip.webId = to
           //        console.log(pod)
@@ -276,7 +337,7 @@ class ShighlActivity {
           await data[notification_uri]['https://www.w3.org/ns/activitystreams#published'].add(date)
           await data[notification_uri]['https://www.w3.org/ns/activitystreams#link'].add(namedNode(activity_uri))
 
-        }
+
 
 
 
