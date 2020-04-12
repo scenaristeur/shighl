@@ -95,8 +95,8 @@ class ShighlActivity {
     await data[inst_uri].solid$forClass.add(namedNode('https://www.w3.org/ns/activitystreams#Collection'))
     await data[inst_uri].solid$instance.set(namedNode(inst_index))
     //  await data[inst_uri].rdfs$label.add("Activity Streams Collection")
-    await data[inst_index].solid$inbox.add(namedNode(inbox))
-    await data[inst_index].solid$outbox.set(namedNode(outbox))
+    await data[inst_index].as$inbox.add(namedNode(inbox))
+    await data[inst_index].as$outbox.set(namedNode(outbox))
 
   }
 
@@ -171,7 +171,7 @@ class ShighlActivity {
         //        console.log(pod)
         let path = await this.getPath(pod)
         //        console.log(path)
-        let outbox = await data[path+"index.ttl#this"].solid$outbox
+        let outbox = await data[path+"index.ttl#this"].as$outbox
 
         console.log( "Must get OUTBOX", `${outbox}`)
         // first object
@@ -248,15 +248,15 @@ class ShighlActivity {
 
         let aclObjectFile = object_file+".acl"
 
-  if (act.object.target == "Public"){
-    await module.fc.createFile (aclObjectFile, aclOutboxObjectPublic, "text/turtle") .then (success => {
-      console.log (`Created ${aclObjectFile} .`)
-    }, err => console.log (err));
-  }else{
-    await module.fc.createFile (aclObjectFile, aclOutboxObjectPublic, "text/turtle") .then (success => {
-      console.log (`Created ${aclObjectFile} .`)
-    }, err => console.log (err));
-  }
+        if (act.object.target == "Public"){
+          await module.fc.createFile (aclObjectFile, aclOutboxObjectPublic, "text/turtle") .then (success => {
+            console.log (`Created ${aclObjectFile} .`)
+          }, err => console.log (err));
+        }else{
+          await module.fc.createFile (aclObjectFile, aclOutboxObjectPublic, "text/turtle") .then (success => {
+            console.log (`Created ${aclObjectFile} .`)
+          }, err => console.log (err));
+        }
 
 
 
@@ -320,22 +320,22 @@ class ShighlActivity {
           console.log("Send to Agora")
           to = "https://agora.solid.community/profile/card#me"
         }
-          let pod_recip = new sh.pod()
-          pod_recip.webId = to
-          //        console.log(pod)
-          let path_recip = await this.getPath(pod_recip)
-          //        console.log(path)
-          let recip_inbox = await data[path_recip+"index.ttl#this"].solid$inbox
-          //        let notification_uri = recip_inbox+notification_Id+"/index.ttl#this"
-          let notification_uri = recip_inbox+notification_Id+".ttl#this"
+        let pod_recip = new sh.pod()
+        pod_recip.webId = to
+        //        console.log(pod)
+        let path_recip = await this.getPath(pod_recip)
+        //        console.log(path)
+        let recip_inbox = await data[path_recip+"index.ttl#this"].as$inbox
+        //        let notification_uri = recip_inbox+notification_Id+"/index.ttl#this"
+        let notification_uri = recip_inbox+notification_Id+".ttl#this"
 
-          console.log(notification_uri)
-          await data[notification_uri]['https://www.w3.org/ns/activitystreams#type'].add(namedNode('https://www.w3.org/ns/activitystreams#'+act.type))
-          await data[notification_uri]['https://www.w3.org/ns/activitystreams#attributedTo'].add(namedNode(act.actor.id))
-          await data[notification_uri]['https://www.w3.org/ns/activitystreams#summary'].add(act.summary)
-          await data[notification_uri].rdfs$label.add(act.summary)
-          await data[notification_uri]['https://www.w3.org/ns/activitystreams#published'].add(date)
-          await data[notification_uri]['https://www.w3.org/ns/activitystreams#link'].add(namedNode(activity_uri))
+        console.log(notification_uri)
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#type'].add(namedNode('https://www.w3.org/ns/activitystreams#'+act.type))
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#attributedTo'].add(namedNode(act.actor.id))
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#summary'].add(act.summary)
+        await data[notification_uri].rdfs$label.add(act.summary)
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#published'].add(date)
+        await data[notification_uri]['https://www.w3.org/ns/activitystreams#link'].add(namedNode(activity_uri))
 
 
 
