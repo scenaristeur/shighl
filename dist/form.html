@@ -1,0 +1,243 @@
+<html>
+<head>
+  <script src="./vendor/solid-auth-client.bundle.js"></script>
+  <script src="./vendor/solid-query-ldflex.bundle.js"></script>
+  <script src="./window/shighl.bundle.js"></script>
+  <script src="./vendor/shex-core-browserify.min.js"></script>
+  <script src="./vendor/shex-loader-browserify.min.js"></script>
+  <script src="./vendor/shex-parser-browserify.min.js"></script>
+  <script src="main.js" defer></script>
+
+  <script>
+
+  async function init(){
+    let shape_url = "https://holacratie.solid.community/public/Schema/tension.shex"
+    let sh = new Shighl()
+    console.log(sh)
+    let pod = new sh.pod()
+    pod.webId = "https://spoggy.solid.community/profile/card#me"
+
+    // look if the url has a shape_url parameter
+    let params = recupParams()
+    console.log("Params",params)
+    if(params.shape_url != undefined && params.shape_url.length > 0){
+      shape_url = params.shape_url
+    }
+
+
+    //FORM
+    // init form with the id of the div where the form will be rendered
+    let form = new sh.form("root")
+    // set shape_url
+    form.shape_url = shape_url
+    //get shape_url
+    let su = form.shape_url
+    console.log("Shape_url", su)
+
+
+
+
+
+
+
+    console.log("shexCore", shexCore)
+    console.log("shexLoader", shexLoader)
+    console.log("shexParser", shexParser)
+    console.log("ShExJison", ShExJison)
+
+
+    //form.load_schema(su)
+
+    /*
+    let name = await pod.name
+    let photo = await pod.photo
+    let role = await pod.role
+    let organization = await pod.organization
+    let friends = await pod.friends
+    let pti = await pod.pti
+    let storage = await pod.storage
+
+    console.log("Name: ", name)
+    console.log("Photo: ", photo)
+    console.log("Role:", role)
+    console.log("Organization:", organization)
+    console.log("Friends: ", friends)
+    console.log("publicTypeIndex & instances: ", pti)
+    console.log("Storage: ", storage)
+
+    //Loop through friends
+    friends.forEach(async function(f, i) {
+    console.log(f.webId)
+    let f_pod = new sh.pod()
+    f_pod.webId = f.webId
+    let f_name = await f_pod.name
+    let f_role = await f_pod.role
+    let f_organization = await f_pod.organization
+    console.log("--"+f_name+" has role "+f_role+" in "+f_organization)
+  });
+
+  */
+
+
+}
+
+function recupParams(){
+  //console.log(window.location)
+  var url = window.location.search+window.location.hash;  // pour catcher les /card#me
+  var params = (function(a) {
+    if (a == "") return {};
+    var b = {};
+    for (var i = 0; i < a.length; ++i)
+    {        var p=a[i].split('=', 2);
+    if (p.length == 1)
+    b[p[0]] = "";
+    else
+    b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+  }
+  return b;
+})(url.substr(1).split('&'));
+return params;
+}
+
+function openCity(evt, cityName) {
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
+</script>
+<style>
+html {
+    font-size: 90%;
+}
+
+body {
+    color: #2b2b2b;
+    font-family: sans-serif;
+    margin: 0 auto;
+    max-width: 350px;
+    padding-top: 5rem;
+}
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+</style>
+</head>
+<body onload="init()">
+
+  <div id="root">Form will be rendered there</div>
+
+  <!-- Tab links -->
+  <div class="tab">
+    <button class="tablinks" onclick="openCity(event, 'London')">London</button>
+    <button class="tablinks" onclick="openCity(event, 'Paris')">Paris</button>
+    <button class="tablinks" onclick="openCity(event, 'Tokyo')">Tokyo</button>
+  </div>
+
+  <!-- Tab content -->
+  <div id="London" class="tabcontent">
+    <h3>London</h3>
+    <p>London is the capital city of England.</p>
+  </div>
+
+  <div id="Paris" class="tabcontent">
+    <h3>Paris</h3>
+    <p>Paris is the capital of France.</p>
+  </div>
+
+  <div id="Tokyo" class="tabcontent">
+    <h3>Tokyo</h3>
+    <p>Tokyo is the capital of Japan.</p>
+  </div>
+
+  <hr>
+
+  <template id="person-template">
+  <div>
+    <h2>Personal ID Card</h2>
+    <slot name="person-name">NAME MISSING</slot>
+    <ul>
+      <li><slot name="person-age">AGE MISSING</slot></li>
+      <li><slot name="person-occupation">OCCUPATION MISSING</slot></li>
+    </ul>
+  </div>
+</template>
+
+    <person-details>
+      <p slot="person-name"><edit-word>Morgan</edit-word> Stanley</p>
+      <span slot="person-age">36</span>
+      <span slot="person-occupation">Accountant</span>
+    </person-details>
+
+    <p>My name is <edit-word>Chris</edit-word>, the man said.</p>
+
+<hr>
+
+<editable-list
+       title="TODO"
+       list-item-0="First item on the list"
+       list-item-1="Second item on the list"
+       list-item-2="Third item on the list"
+       list-item-3="Fourth item on the list"
+       list-item-4="Fifth item on the list"
+       listItem="This will not appear"
+       add-item-text="Add new list item:"
+   >
+   </editable-list>
+  <hr>
+  You can use your own shape adding a shape_url parameter like : <br>
+  http://localhost:9000/form.html?shape_url=https://holacratie.solid.community/public/Schema/user.shex<br>
+  Look the web console to see the form infos (Ctrl+Maj+i)<br><br>
+  <a href="https://github.com/scenaristeur/shighl" target="_blank">Source</a>
+  <br>
+  <a href="index.html">Back to index</a>
+</body>
+
+</html>

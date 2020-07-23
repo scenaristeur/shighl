@@ -9,6 +9,7 @@ import ShighlPod from './Shighl-pod'
 import ShighlHola from './Shighl-hola'
 import ShighlNotes from './Shighl-notes'
 import ShighlActivity from './Shighl-activity'
+import ShighlForm from './Shighl-form'
 
 class Shighl {
   constructor () {
@@ -22,6 +23,7 @@ class Shighl {
     this.hola = ShighlHola
     this.notes = ShighlNotes
     this.activity = ShighlActivity
+    this.form = ShighlForm
   }
 
   async test(){
